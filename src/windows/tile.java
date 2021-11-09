@@ -20,22 +20,22 @@ public class tile{
 	private int file;
 	private char piece; //0 if tile has no piece/empty
 //	tileButton label;
-	JButton label;
+	JButton button;
 	
 	public tile(boolean COLOUR, int RANK, int FILE, char PIECE) {
 
-		label = new JButton();
+		button = new JButton();
 		if(COLOUR) {
 			colour = "black";
 //			label.setBackground(Color.BLACK);
-			label.setBackground(new Color(139, 168, 76));
+			button.setBackground(new Color(139, 168, 76));
 			
 		}else {
 			colour = "white";
-			label.setBackground(new Color(222, 222, 222));
+			button.setBackground(new Color(222, 222, 222));
 		}
 		//label.setPreferredSize(new Dimension(100, 100));
-		label.setBorderPainted(false);
+		button.setBorderPainted(false);
 		
 		rank = RANK;
 		file = FILE;

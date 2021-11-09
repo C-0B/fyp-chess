@@ -1,22 +1,19 @@
 package windows;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-
-import java.awt.Color;
-import java.awt.Insets;
-import java.awt.GridBagLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.Toolkit;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.util.Iterator;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.MouseInputListener;
-
 import javax.swing.JLabel;
-import java.awt.Point;
-import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.event.MouseInputListener;
 
 public class Main extends javax.swing.JFrame implements MouseInputListener{
 
@@ -119,6 +116,8 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		boolean colour = false; //false = white, true = black
 		Dimension tileSize = new Dimension((mainPanel.getWidth()/10), (mainPanel.getWidth()/10));
 		tileSize.getWidth();
+
+		Integer tileNum = 0;
 		for(int rank=0; rank<8; rank++) {
 			for(int file=0; file<8; file++) {
 				board[rank][file] = new tile(colour, rank, file, 'p');
@@ -129,7 +128,10 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 				gbc_tile.weightx = 0.111;
 				gbc_tile.weighty = 0.111;
 				gbc_tile.fill = GridBagConstraints.BOTH;
-				mainPanel.add(board[rank][file].label, gbc_tile);
+				board[rank][file].button.setText(tileNum.toString());
+				tileNum++;
+				board[rank][file].button.setFont(new Font("Arial", Font.BOLD, 18));
+				mainPanel.add(board[rank][file].button, gbc_tile);
 				
 				//board[rank][file].label.setPreferredSize(tileSize);
 			}
@@ -167,6 +169,14 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		// Keep this at the end
 		frame.pack();
 		frame.setVisible(true);
+	}
+	
+	private boolean readFEN(String FEN) {
+		int tilesCovered;
+		for (tilesCovered = 0; tilesCovered<64; tilesCovered++) { // For each tile starting from the top right
+			
+		}
+		return true;
 	}
 
 	@Override
