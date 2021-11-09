@@ -6,3 +6,8 @@ This software should in the future provide the user the ability to play a game o
 
 @ 23:44
 Eclipse workspace copied. 
+
+
+
+*Connor O'Brien*
+*Loughborough University*
