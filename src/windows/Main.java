@@ -8,12 +8,15 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Iterator;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.event.MouseInputListener;
+import javax.swing.JButton;
 
 public class Main extends javax.swing.JFrame implements MouseInputListener{
 
@@ -77,6 +80,16 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		mainLeftPanelGBC.weightx = 0.21875;
 		mainLeftPanelGBC.weighty = 0.8;
 		frame.getContentPane().add(mainLeftPanel, mainLeftPanelGBC);
+		
+		JButton btnReadFEN = new JButton("Read FEN");
+		btnReadFEN.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+				loadFENtoBoard(startFEN);
+			} 
+			});
+		mainLeftPanel.add(btnReadFEN);
 	
 		//Middle Panel - Chess Board
 		JPanel mainPanel = new JPanel();
@@ -171,12 +184,44 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		frame.setVisible(true);
 	}
 	
-	private boolean readFEN(String FEN) {
-		int tilesCovered;
-		for (tilesCovered = 0; tilesCovered<64; tilesCovered++) { // For each tile starting from the top right
-			
+	private boolean loadFENtoBoard(String FEN) {
+		String[] fenArray = FEN.split("(?!^)");
+		int tilesCovered = 0, FENcount = 0;
+		while(tilesCovered < 64) {
+			String s = fenArray[FENcount];
+//			System.out.println(tilesCovered+ " - "+s);
+			if(isNumber(s)) {
+				int emptyTiles = Integer.parseInt(s);
+				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
+					writeToTile(tilesCovered++, "");			
+				}
+				tilesCovered += emptyTiles;
+			}else{
+				if(s.equals("/")) {}
+				else {
+					writeToTile(tilesCovered, s);		
+					tilesCovered++;
+				}
+			}
+			FENcount++;
 		}
 		return true;
+	}
+	private static boolean isNumber(String str) {
+		try {  
+			Integer.parseInt(str);  
+		    return true;
+		}catch(NumberFormatException e){  
+		    return false;  
+		}  
+	}
+	
+	//Writes data to appear on the board
+	private void writeToTile(int tilesCovered, String s) {
+		int rank = tilesCovered / 8;
+		int file = tilesCovered % 8;
+		System.out.println(rank + ", "+file+" "+s);
+		board[rank][file].button.setText(s);
 	}
 
 	@Override
