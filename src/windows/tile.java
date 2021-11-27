@@ -5,7 +5,11 @@ import javax.swing.JButton;
 
 /**
  * @author Connor
+<<<<<<< HEAD
  * 
+=======
+ * <p>
+>>>>>>> 3b4c720239bc76a91a1a4572fe4e79f6bff6e1a3
  * The tile class is to used to represent one on the 64 tiles on a chess board.
  * 
  */
