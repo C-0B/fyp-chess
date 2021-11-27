@@ -10,13 +10,18 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.PrintWriter;
 import java.util.Iterator;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.event.MouseInputListener;
 import javax.swing.JButton;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class Main extends javax.swing.JFrame implements MouseInputListener{
 
@@ -32,7 +37,12 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					//UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					Main window = new Main();
+					
+					PrintWriter pw = new PrintWriter(System.out,true);
+					pw.println('\u2600');
+					System.out.println(String.valueOf('\u2600'));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -81,22 +91,22 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		mainLeftPanelGBC.weighty = 0.8;
 		frame.getContentPane().add(mainLeftPanel, mainLeftPanelGBC);
 		
-		JButton btnReadFEN = new JButton("Read FEN");
-		btnReadFEN.addActionListener(new ActionListener() {
+		JButton btnResetBoard = new JButton("Reset Board");
+		btnResetBoard.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 				loadFENtoBoard(startFEN);
 			} 
 			});
-		mainLeftPanel.add(btnReadFEN);
+		mainLeftPanel.add(btnResetBoard);
 	
 		//Middle Panel - Chess Board
 		JPanel mainPanel = new JPanel();
 		mainPanel.setBorder(null);
 		
 //		mainPanel.setBackground(new Color(108, 95, 217));
-		mainPanel.setBackground(Color.DARK_GRAY);
+		mainPanel.setBackground(new Color(64, 64, 64));
 //		mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 //		mainPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
 //			@Override
@@ -111,18 +121,15 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		GridBagConstraints mainPanelGBC = new GridBagConstraints();
 
 		mainPanelGBC.insets = new Insets(10, 10, 10, 10);
-//		mainPanelGBC.insets = new Insets(0, 0, 5, 5);
 		mainPanelGBC.fill = GridBagConstraints.BOTH;
 		mainPanelGBC.gridx = 1;
 		mainPanelGBC.gridy = 1;
 		mainPanelGBC.weightx = 0.5626;
-//		mainPanelGBC.weighty = 0.5;
 		GridBagLayout gbl_mainPanel = new GridBagLayout();
 		gbl_mainPanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_mainPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		mainPanel.setLayout(gbl_mainPanel);
 		
-
 		frame.getContentPane().add(mainPanel, mainPanelGBC);
 		
 		//Set up board
@@ -133,7 +140,7 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		Integer tileNum = 0;
 		for(int rank=0; rank<8; rank++) {
 			for(int file=0; file<8; file++) {
-				board[rank][file] = new tile(colour, rank, file, 'p');
+				board[rank][file] = new tile(colour, rank, file, "");
 				colour = !colour;
 				GridBagConstraints gbc_tile = new GridBagConstraints();
 				gbc_tile.gridx = file;
@@ -145,26 +152,11 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 				tileNum++;
 				board[rank][file].button.setFont(new Font("Arial", Font.BOLD, 18));
 				mainPanel.add(board[rank][file].button, gbc_tile);
-				
-				//board[rank][file].label.setPreferredSize(tileSize);
 			}
-
 			colour = !colour;
 		}
-		
-		/*
-		JLabel lblPawn1 = new JLabel("");
-		lblPawn1.setBackground(Color.WHITE);
-		lblPawn1.setIcon(new ImageIcon(home.class.getResource("/windows/pawn.png")));
-		lblPawn1.addMouseListener(this);
-		lblPawn1.addMouseMotionListener(this);
-		GridBagConstraints gbc_lblPawn1 = new GridBagConstraints();
-		gbc_lblPawn1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblPawn1.gridx = 1;
-		gbc_lblPawn1.gridy = 1;
-		mainPanel.add(lblPawn1, gbc_lblPawn1);
-		*/
-		
+
+		//lblPawn1.setIcon(new ImageIcon(home.class.getResource("/windows/pawn.png")));
 		
 		//Right panel
 		SquarePanel rightPanel = new SquarePanel();
@@ -177,6 +169,14 @@ public class Main extends javax.swing.JFrame implements MouseInputListener{
 		rightPanelGBC.weightx = 0.21875;
 		rightPanelGBC.weighty = 0.8;
 		frame.getContentPane().add(rightPanel, rightPanelGBC);
+		
+		JLabel lblRightPanel = new JLabel("make it even");
+		lblRightPanel.setForeground(Color.WHITE);
+		rightPanel.add(lblRightPanel);
+		
+		
+		//game game = new game();
+		//setBoard(game.board);
 
 		
 		// Keep this at the end

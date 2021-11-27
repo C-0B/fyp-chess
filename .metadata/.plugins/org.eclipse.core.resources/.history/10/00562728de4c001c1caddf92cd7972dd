@@ -1,0 +1,19 @@
+package help;
+
+public class bitBoard {
+
+	public bitBoard() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int firstHex = 0x0f1;
+		int file = firstHex & 7;
+		
+		System.out.println(file);
+		
+
+	}
+
+}

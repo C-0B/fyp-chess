@@ -4,6 +4,8 @@ public class game {
 	private String FEN;
 	private String[] PGN;
 	private String playerToMove;
+	private String board;
+	private String enPassant;
 	
 	//Constructors
 	public game() {
@@ -20,13 +22,19 @@ public class game {
 		playerToMove = "white";
 	}
 	
+	public boolean loadFEN(String fenToLoad) {
+		
+		
+		return true;
+	}
 	
+	private String updateFEN() {
+		return "";
+	}
 	
 	public String PGNtoFEN(String[] PGN) {
 		String fen = "";
-		
-		//Calcualte board move by move
-		
+		//Calculate board move by move
 		return fen;
 	}
 
