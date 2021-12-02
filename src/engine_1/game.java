@@ -92,7 +92,8 @@ public class game {
         for(int rank = 0; rank<8; rank++){
             System.out.print("|");
             for(int file = 0; file<8; file++){
-                System.out.print(board[rank][file]+"|");
+                //System.out.print(board[rank][file]+"|");
+                System.out.print(rank + ""+ file+"|");
             }
             System.out.println();
             

@@ -2,7 +2,7 @@ package engine_1;
 
 import java.util.ArrayList;
 
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.ColumnMap;
+import chessFunc.functions;
 
 public class pawn extends piece {
 	boolean hasMoved = false;
@@ -21,12 +21,12 @@ public class pawn extends piece {
 		 * +8, +16, +7, +9 => 
 		 */
 		
-		ArrayList<move> moves = null;
+		ArrayList<move> moves = new ArrayList<move>();
 		int startSquare = SQUARE;
 		
 		// Move forward one rank
 		int targetSquare = SQUARE - (8 * COLOUR);
-		if((targetSquare > 63 || targetSquare < 0)// Off board check
+		if((targetSquare < 63 && targetSquare > 0)// Off board check
 			&& 
 			(BOARD[targetSquare/8][targetSquare%8].equals(" "))) {
 			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
@@ -36,33 +36,42 @@ public class pawn extends piece {
 		// Double move on first move
 		if(!this.hasMoved) {
 			//Impossible to move off board from first move
-			targetSquare = SQUARE + 16;
+			targetSquare = SQUARE - (16 * COLOUR);
 			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 			moves.add(MOVE);
 		}
 		
 		//Attack on left
 		targetSquare = SQUARE - (9 * COLOUR);
-		if(!BOARD[targetSquare/8][targetSquare%8].equals(" ")) {
-			targetSquare = SQUARE + 7;
-			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-			moves.add(MOVE);
+		if(functions.isOnBoard(targetSquare)) {
+			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ")) {
+				targetSquare = SQUARE + 7;
+				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+				moves.add(MOVE);
+			}
 		}
 	
 		//Attack on right
+		
 		targetSquare = SQUARE - (7 * COLOUR);
-		if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 7)) {
-			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-			moves.add(MOVE);
+		if(functions.isOnBoard(targetSquare)) {
+			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 7)) {
+				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+				moves.add(MOVE);
+			}
 		}
+
 		
 		//Attack on left
 		targetSquare = SQUARE - (9 * COLOUR);
-		if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 0)) {
-			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-			moves.add(MOVE);
+		if(functions.isOnBoard(targetSquare)) {
+			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 0)) {
+				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+				moves.add(MOVE);
+			}
 		}
-		
 		return moves;
 	}
+
+
 }

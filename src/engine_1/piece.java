@@ -12,4 +12,7 @@ public abstract class piece {
 		SQUARE = square; // 0 -> 63
 		COLOUR = colour;
 	}
+	
+	
+	
 }

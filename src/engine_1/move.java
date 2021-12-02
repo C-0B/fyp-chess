@@ -1,5 +1,7 @@
 package engine_1;
 
+import org.junit.platform.engine.support.hierarchical.DefaultParallelExecutionConfigurationStrategy;
+
 public class move {
 	int PLAYER_TO_MOVE = 1; //1 = white -1 = black
 	piece PIECE;
