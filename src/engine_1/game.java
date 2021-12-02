@@ -11,7 +11,7 @@ public class game {
     String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String curentFEN = "";
     String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
-    int playerToMove = 0; // 0 = white, 1 = black
+    int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
 
     /*
      * Board is from the perspective of white
@@ -23,7 +23,7 @@ public class game {
      *  - 
      */
 
-    // 3 Constructors
+    // Had 3 Constructors
     public game(){
         curentFEN = startFEN;
     }
@@ -61,6 +61,30 @@ public class game {
         }catch(java.lang.NumberFormatException e){
             return false;
         }
+    }
+    
+    
+    ArrayList<move> generateMoves(){
+    	ArrayList<move> legalMoves = null;
+    	
+    	/*
+    	 * for each piece of player colour .isLowerCase .isUpperCase
+    	 */
+    	
+    	return legalMoves;
+    }
+    
+    void playMove (move MOVE) {
+    	/*
+    	 * Check move count + repetitions before generating a move
+    	 */
+    	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
+    	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.NANE;
+    	
+    	/* Update fen
+    	 *  - move count - 50 move rule etc
+    	 *  - castling privileges
+    	 */
     }
 
     void printBoard(){
