@@ -1,14 +1,16 @@
-package engine_1;
+package engine_1.pieces;
 
 import java.util.ArrayList;
 
-import chessFunc.functions;
+import chessFunc.func;
+import engine_1.move;
 
 public class pawn extends piece {
+	
 	boolean hasMoved = false;
 
-	public pawn(String[][] board, String pieceName, int square, int colour) {
-		super(board, pieceName, square, colour);
+	public pawn(String pieceName, int square, int colour) {
+		super(pieceName, square, colour);
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -16,13 +18,20 @@ public class pawn extends piece {
 		System.out.println("hello pawn");
 	}
 	
-	ArrayList<move> generateMoves(){
-		/*
-		 * +8, +16, +7, +9 => 
-		 */
-		
+	@Override
+	public ArrayList<move> generateMoves(String[][] BOARD){
+		System.out.println("pawn call");
 		ArrayList<move> moves = new ArrayList<move>();
 		int startSquare = SQUARE;
+
+		
+		if(((8 - (startSquare / 8)) == 2) && getNAME().equals(getNAME().toUpperCase())){
+			// On whites starting rank, can only be here if pawn hasn't moved
+			hasMoved = true;
+		}else if(((8 - (startSquare / 8)) == 6) && getNAME().equals(getNAME().toLowerCase())) {
+			// On blacks starting rank, pawn hasn't moved.
+			hasMoved = true;
+		}
 		
 		// Move forward one rank
 		int targetSquare = SQUARE - (8 * COLOUR);
@@ -43,7 +52,7 @@ public class pawn extends piece {
 		
 		//Attack on left
 		targetSquare = SQUARE - (9 * COLOUR);
-		if(functions.isOnBoard(targetSquare)) {
+		if(func.isOnBoard(targetSquare)) {
 			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ")) {
 				targetSquare = SQUARE + 7;
 				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
@@ -54,7 +63,7 @@ public class pawn extends piece {
 		//Attack on right
 		
 		targetSquare = SQUARE - (7 * COLOUR);
-		if(functions.isOnBoard(targetSquare)) {
+		if(func.isOnBoard(targetSquare)) {
 			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 7)) {
 				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 				moves.add(MOVE);
@@ -64,7 +73,7 @@ public class pawn extends piece {
 		
 		//Attack on left
 		targetSquare = SQUARE - (9 * COLOUR);
-		if(functions.isOnBoard(targetSquare)) {
+		if(func.isOnBoard(targetSquare)) {
 			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 0)) {
 				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 				moves.add(MOVE);
@@ -72,6 +81,4 @@ public class pawn extends piece {
 		}
 		return moves;
 	}
-
-
 }
