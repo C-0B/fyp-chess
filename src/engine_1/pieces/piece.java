@@ -25,6 +25,10 @@ public abstract class piece {
 	public String getNAME() {
 		return NAME;
 	}
+
+	public int getSQUARE() {
+		return SQUARE;
+	}
 	
 	
 	
