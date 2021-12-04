@@ -2,8 +2,33 @@ package chessFunc;
 
 public abstract class func {
 	
+	
+
+	/**
+	 * @param squareNum 0-63 int
+	 * @return 2D array of [0,0] to [7, 7] aka a8 to h1
+	 */
+	public static int[] sqNumToCoord(int squareNum) {
+		// 0 = a8 - top left
+		// 7 = h8 - top right
+		// 56 = a1 - bottom left
+		// 63 = h1 - bottom right
+		
+		int rank = squareNum / 8;
+		int file = squareNum % 8;
+		int[] coord = {rank, file};
+		
+		return coord;
+	}
+	public static int coordTosqNum(int[] coord) {
+		int rank = coord[0] ;
+		int file = coord[1];
+		return (rank*8) + file;
+	}
+	
 	// 0 = a7
 	// 63 = h1
+	//depreceated : see piece.isOnBoard
 	public static boolean isOnBoard(int square) {
 		if(square < 63 && square > 0) {
 			return true;
@@ -12,9 +37,8 @@ public abstract class func {
 		}
 		
 	}
-	
-	
-	public static String squareNumToString(int square) {
+		
+	public static String sqNumToStr(int square) {
 		int rank = square / 8;
 		int file = square % 8;
 		
@@ -58,6 +82,8 @@ public abstract class func {
 	/*
 	 * checks if 2 strings of length one are both
 	 * upper or lower case. if so returns true
+	 * 
+	 * deprecated : check piece.isSameColour
 	 */
 	public static boolean isSameColour(String piece, String attackedPiece) {
 		if(piece.equals(piece.toUpperCase())) {// If the player is white
