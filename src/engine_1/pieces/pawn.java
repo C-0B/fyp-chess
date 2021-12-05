@@ -51,7 +51,7 @@ public class pawn extends piece {
 			if(this.isOnBoard(target_coord)) {// on board check 
 				if((BOARD[target_coord[0]][target_coord[1]].equals(" ")) && (BOARD[(target_coord[0])+COLOUR][target_coord[1]].equals(" "))){// empty space check
 					targetSquare = func.coordTosqNum(target_coord);
-					int enPasssatSq = targetSquare - (COLOUR * 8);
+					int enPasssatSq = targetSquare + (COLOUR * 8);
 					pawnMove MOVE = new pawnMove(COLOUR, this, startSquare, targetSquare, enPasssatSq);
 					moves.add(MOVE);
 				}

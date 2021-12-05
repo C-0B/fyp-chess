@@ -88,8 +88,7 @@ public class game {
      	for (piece curPiece : pieces) {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
     		pieceMoves = curPiece.generateMoves(board);
-    		for(move pieceMove : pieceMoves) {
-    		}
+
     		pseudoLegalMoves.addAll(pieceMoves);
     	}
     	
