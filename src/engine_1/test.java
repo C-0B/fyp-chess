@@ -15,7 +15,7 @@ public class test {
         
         String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         
-        game1.readFEN("rnb3nr/pppp1ppp/4p3/8/4P3/2PPb1P1/PPQK3P/RNB2qNR w - - 2 9");
+        game1.readFEN("8/8/8/8/4B3/8/8/8 w - - 0 1");
         game1.printBoard();
         
         ArrayList<move> moves =  game1.generateMoves();
@@ -24,7 +24,7 @@ public class test {
         int moveCount = 0;
         for(move move : moves) {
         	game tempGame = new game();
-        	tempGame.readFEN("rnb3nr/pppp1ppp/4p3/8/4P3/2PPb1P1/PPQK3P/RNB2qNR w - - 2 9");
+        	tempGame.readFEN("8/8/8/8/4B3/8/8/8 w - - 0 1");
         	System.out.println("Move: "+ ++moveCount);
         	System.out.println(move);
         	tempGame.playMove(move);
