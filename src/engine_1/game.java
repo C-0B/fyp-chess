@@ -12,7 +12,7 @@ public class game {
     private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String curentFEN = "";
     String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
-    int playerToMove = -1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
+    int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
     
     //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
     //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
