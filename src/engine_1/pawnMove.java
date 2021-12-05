@@ -14,7 +14,7 @@ public class pawnMove extends move {
 	
 	@Override
 	public String toString() {
-		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" => "+func.sqNumToStr(TARGET_SQUARE)+"\n eP: "+EN_PASSANT_SQ;
+		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(TARGET_SQUARE)+"\n eP: "+EN_PASSANT_SQ;
 	}
 	
 }

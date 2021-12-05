@@ -9,18 +9,18 @@ public class test {
         
         //game1.readFENtoBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         //game1.readFENtoBoard("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2");
-        game1.readFEN("rnbqkbnr/pppppppp/8/PPPP4/3pp3/p4p2/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        game1.readFEN("rnbqkbnr/pppppppp/8/8/5N2/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
    
    
         ArrayList<move> moves =  game1.generateMoves();
-        
+        game1.printBoard();
         System.out.println("moves generated");
         
         // Plays each of the moves
         int moveCount = 0;
         for(move move : moves) {
         	game tempGame = new game();
-        	tempGame.readFEN("rnbqkbnr/pppppppp/8/PPPP4/3pp3/p4p2/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        	tempGame.readFEN("rnbqkbnr/pppppppp/8/8/5N2/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         	System.out.println("Move: "+ ++moveCount);
         	System.out.println(move);
         	tempGame.playMove(move);

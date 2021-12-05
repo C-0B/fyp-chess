@@ -39,6 +39,6 @@ public class move {
 	
 	@Override
 	public String toString() {
-		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" => "+func.sqNumToStr(TARGET_SQUARE);
+		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(TARGET_SQUARE);
 	}
 }
