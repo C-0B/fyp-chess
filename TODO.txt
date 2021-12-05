@@ -5,9 +5,7 @@ Pseudo legal move gen
 	 - takes on diagonal
 	
 	bishop 
-	 - passes through pieces (was tested on initial board state)
-	 - upwards moves do not continue / only once
-	 - downwards moves do continue until they hit an opponent / board edge
+	 - refactor to loop through an array of unit vectors with a subloop defining magnitude
 	 
 	rook, king, queen
 	 - all

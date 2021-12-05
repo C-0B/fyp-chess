@@ -9,7 +9,7 @@ import chessFunc.*;
 public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
-    private String startFEN = "rnbqkbnr/pppppppp/8/8/3B4/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private String startFEN = "rnbqkbnr/pppppppp/8/4Q3/3B4/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String curentFEN = "";
     String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
