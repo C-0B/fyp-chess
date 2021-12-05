@@ -1,57 +1,30 @@
-class pawn
-    genMoves:
-        - move 1 rank (-8)
-            • onboard check
-            • space is available
-        - move 2 ranks (-16)   
-            • has pawn moved? / is pawn on home rank?
-            • onboard check
-            • space is available
-        - attack left diagonal (-9)
-            • onboard check
-            • check if take available on left diagonal
-        - attack right diagonal (-7)
-            • onboard check
-            • check if take available on right diagonal
+Pseudo legal move gen
+	knights are all good :) i think
+	
+	pawn
+	 - takes on diagonal
+	
+	bishop 
+	 - passes through pieces (was tested on initial board state)
+	 - upwards moves do not continue / only once
+	 - downwards moves do continue until they hit an opponent / board edge
+	 
+	rook, king, queen
+	 - all
+	 - king cannot take opponent piece if it is defended
+	 
+	cannot take opponents king
+	
+Check if after the move is played your king is in check
 
-class rook
-    genMoves:
-    - +1
-    - -1
-    - +8
-    - -8
+Create a PGN
 
-class kngiht
-    genMoves:
-    - +15 +17
-    - -15 -17
-    - -10 -6
-    _ +10 +6
+Read PGN - play a series of moves
 
-class bishop
-    genMoves:
-    - + multiples of 7
-    - - multiples of 7
-    - + multiples of 9
-    - - multiples of 9
+on move played
+	Update half move count
+	Update full move count
+	Update FEN
+	Update PGN
 
-class queen
-    genMoves:
-
-class king
-    genMoves:
-
-any genMoves func:
-    is my king in check:
-        check king moves
-        block moves only
-
-    calculatings the target:
-        get square num
-        convert to x and y / and file
-        alter coords as neccesery
-        convert back to single sqaure num
-        return
-
-    is this piece pinned to my king:
-        store somthing about this - go to that one you tube video wher the guy made chess in unity 30 mins or so
+Create concept of checkmate - no moves after pseudo legal moves have been checked- the player wins (should be easy, hope i'm not wrong)
