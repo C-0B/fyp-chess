@@ -2,9 +2,11 @@ package engine_1.pieces;
 
 import java.util.ArrayList;
 
+import chessFunc.func;
 import engine_1.move;
 
 public class king extends piece {
+	boolean inCheck = false;
 
 	public king(String pieceName, int square, int colour) {
 		super(pieceName, square, colour);
@@ -12,8 +14,9 @@ public class king extends piece {
 	}
 	@Override
 	public ArrayList<move> generateMoves(String[][] BOARD){
-		//TODO To be finished
-		return null;
+		ArrayList<move> moves = new ArrayList<move>();
+		int startSquare = getSQUARE();
+		return moves;
 	}
 	
 	
