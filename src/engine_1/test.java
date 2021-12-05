@@ -15,7 +15,6 @@ public class test {
         
         //String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         
-        game1.readFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
         game1.printBoard();
         
         ArrayList<move> moves =  game1.generateMoves();

@@ -25,42 +25,47 @@ public class bishop extends piece {
 			target_coord[1] = start_coord[1] + index;
 			if(this.isOnBoard(target_coord)) {
 				String tgSquare = BOARD[target_coord[0]][target_coord[1]];
-				if(this.COLOUR == 1) {// White player to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(!tgSquare.equals(" ")){break;} // If a piece was taken, you cannot move in that direction any more
-					}
-				}else if (COLOUR == -1) {// Black PLayer to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(!tgSquare.equals(" ")){break;} // If a piece was taken, you cannot move in that direction any more
-					}
+				if(tgSquare.equals(" ")) {
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+				}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else {
+					break;
 				}
 			}
 		}
+		
 		for(int index = 1; index <= 8; index++) {// Down and left (up from the perspective of the array)
 			target_coord[0] = start_coord[0] + index;
 			target_coord[1] = start_coord[1] - index;
 			if(this.isOnBoard(target_coord)) {
 				String tgSquare = BOARD[target_coord[0]][target_coord[1]];
-				if(this.COLOUR == 1) {// White player to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(!tgSquare.equals(" ")){break;} // If a piece was taken, you cannot move in that direction any more
-					}
-				}else if (COLOUR == -1) {// Black PLayer to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(!tgSquare.equals(" ")){break;} // If a piece was taken, you cannot move in that direction any more
-					}
+				if(tgSquare.equals(" ")) {
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+				}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else {
+					break;
 				}
 			}
 		}
@@ -69,20 +74,22 @@ public class bishop extends piece {
 			target_coord[1] = start_coord[1] + index;
 			if(this.isOnBoard(target_coord)) {
 				String tgSquare = BOARD[target_coord[0]][target_coord[1]];
-				if(this.COLOUR == 1) {// White player to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(tgSquare.equals(tgSquare.toLowerCase())){break;} // If a piece was taken, you cannot move in that direction any more
-					}
-				}else if (COLOUR == -1) {// Black PLayer to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(tgSquare.equals(tgSquare.toUpperCase())){break;} // If a piece was taken, you cannot move in that direction any more
-					}
+				if(tgSquare.equals(" ")) {
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+				}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else {
+					break;
 				}
 			}
 		}
@@ -91,20 +98,22 @@ public class bishop extends piece {
 			target_coord[1] = start_coord[1] - index;
 			if(this.isOnBoard(target_coord)) {
 				String tgSquare = BOARD[target_coord[0]][target_coord[1]];
-				if(this.COLOUR == 1) {// White player to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(tgSquare.equals(tgSquare.toLowerCase())){break;} // If a piece was taken, you cannot move in that direction any more
-					}
-				}else if (COLOUR == -1) {// Black PLayer to move
-					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
-						if(tgSquare.equals(tgSquare.toUpperCase())){break;} // If a piece was taken, you cannot move in that direction any more
-					}
+				if(tgSquare.equals(" ")) {
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+				}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
+					int targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+					break;
+				}else {
+					break;
 				}
 			}
 		}
