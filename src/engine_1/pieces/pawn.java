@@ -20,65 +20,84 @@ public class pawn extends piece {
 	
 	@Override
 	public ArrayList<move> generateMoves(String[][] BOARD){
-		System.out.println("pawn call");
+		System.out.println(this.getNAME()+" "+this.getSQUARE());
 		ArrayList<move> moves = new ArrayList<move>();
-		int startSquare = SQUARE;
-
+		int startSquare = getSQUARE();
 		
-		if(((8 - (startSquare / 8)) == 2) && getNAME().equals(getNAME().toUpperCase())){
-			// On whites starting rank, can only be here if pawn hasn't moved
-			hasMoved = true;
-		}else if(((8 - (startSquare / 8)) == 6) && getNAME().equals(getNAME().toLowerCase())) {
-			// On blacks starting rank, pawn hasn't moved.
-			hasMoved = true;
-		}
+		int[] start_coord = func.sqNumToCoord(getSQUARE());
+		int[] target_coord = new int[2];// was passing by reference not by content
 		
-		// Move forward one rank
-		int targetSquare = SQUARE - (8 * COLOUR);
-		if((targetSquare < 63 && targetSquare > 0)// Off board check
-			&& 
-			(BOARD[targetSquare/8][targetSquare%8].equals(" "))) {
-			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-			moves.add(MOVE);
-		}
+		//Move one rank forward
+		target_coord[0] = start_coord[0] - (COLOUR);
+		target_coord[1] = start_coord[1];
+		int targetSquare = func.coordTosqNum(target_coord);
 		
-		// Double move on first move
-		if(!this.hasMoved) {
-			//Impossible to move off board from first move
-			targetSquare = SQUARE - (16 * COLOUR);
-			move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-			moves.add(MOVE);
-		}
-		
-		//Attack on left
-		targetSquare = SQUARE - (9 * COLOUR);
-		if(func.isOnBoard(targetSquare)) {
-			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ")) {
-				targetSquare = SQUARE + 7;
+		if(this.isOnBoard(target_coord)) {// on board check 
+			if(BOARD[target_coord[0]][target_coord[1]].equals(" ")){// empty space check
 				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 				moves.add(MOVE);
 			}
 		}
-	
-		//Attack on right
 		
-		targetSquare = SQUARE - (7 * COLOUR);
-		if(func.isOnBoard(targetSquare)) {
-			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 7)) {
-				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-				moves.add(MOVE);
+		
+		target_coord = func.sqNumToCoord(getSQUARE());
+		target_coord[0] = start_coord[0] - (COLOUR * 2);
+		target_coord[1] = start_coord[1];
+		// Move 2 ranks forward
+		if(((COLOUR == 1) && (start_coord[0] == 6)) || ((COLOUR == -1) && (start_coord[0] == 1))){//On starting rank
+			//move tempMove = new move(COLOUR, this, startSquare, targetSquare);
+			
+			if(this.isOnBoard(target_coord)) {// on board check 
+				if((BOARD[target_coord[0]][target_coord[1]].equals(" ")) && (BOARD[(target_coord[0])+COLOUR][target_coord[1]].equals(" "))){// empty space check
+					targetSquare = func.coordTosqNum(target_coord);
+					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					moves.add(MOVE);
+				}
 			}
 		}
-
-		
-		//Attack on left
-		targetSquare = SQUARE - (9 * COLOUR);
-		if(func.isOnBoard(targetSquare)) {
-			if(!BOARD[targetSquare/8][targetSquare%8].equals(" ") && (targetSquare%8 != 0)) {
-				move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-				moves.add(MOVE);
+		/*
+		// Attack left diagonal
+		target_coord = start_coord;
+		target_coord[0] = start_coord[0] - (COLOUR);
+		target_coord[1] = start_coord[1] - 1;
+		if(this.isOnBoard(target_coord)) {// on board check 
+			String tgtSqContents = BOARD[target_coord[0]][target_coord[1]];
+			if(!tgtSqContents.equals(" ")){// non-empty space check
+				if(COLOUR == 1) {//If the player is white
+					if(tgtSqContents.equals(tgtSqContents.toLowerCase())) {// If the piece in left diagonal is black
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+						moves.add(MOVE);
+					}
+				}else if(COLOUR == -1) {//If the player is black
+					if(tgtSqContents.equals(tgtSqContents.toUpperCase())) {// If the piece in left diagonal is black
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+						moves.add(MOVE);
+					}
+				}
 			}
 		}
+		
+		// Attack right diagonal
+		target_coord = start_coord;
+		target_coord[0] = start_coord[0] - (COLOUR);
+		target_coord[1] = start_coord[1] + 1;
+		if(this.isOnBoard(target_coord)) {// on board check 
+			String tgtSqContents = BOARD[target_coord[0]][target_coord[1]];
+			if(!tgtSqContents.equals(" ")){// non-empty space check
+				if(COLOUR == 1) {//If the player is white
+					if(tgtSqContents.equals(tgtSqContents.toLowerCase())) {// If the piece in left diagonal is black
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+						moves.add(MOVE);
+					}
+				}else if(COLOUR == -1) {//If the player is black
+					if(tgtSqContents.equals(tgtSqContents.toUpperCase())) {// If the piece in left diagonal is black
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+						moves.add(MOVE);
+					}
+				}
+			}
+		}
+		*/
 		return moves;
 	}
 }

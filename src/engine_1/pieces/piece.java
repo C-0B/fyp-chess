@@ -15,13 +15,43 @@ public abstract class piece {
 		COLOUR = colour;
 	}
 	
+	boolean isOnBoard(int[] coord) {
+		int rank = coord[0];
+		int file = coord[1];
+		if(rank < 8 && rank >= 0) {
+			if(file < 8 && file >= 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isSameColour(piece pieceToCheck) {
+		if(this.COLOUR == pieceToCheck.COLOUR) {
+			return false;
+		}else {
+			return true;
+		}
+	}
+	
+	// TO BE OVERRIDDEN
 	public ArrayList<move> generateMoves(String Board[][]){
 		return null;
 	}
 	
+	// Compare two pieces
+	public boolean equals(piece piece2) {
+		if(this.NAME.equals(piece2.NAME)) {
+			if(this.COLOUR == piece2.COLOUR) {
+				if(this.SQUARE == piece2.SQUARE) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
-	//public ArrayList<move> generateMoves(){return null;}
-
+	// Getters
 	public String getNAME() {
 		return NAME;
 	}
@@ -29,8 +59,4 @@ public abstract class piece {
 	public int getSQUARE() {
 		return SQUARE;
 	}
-	
-	
-	
-	
 }

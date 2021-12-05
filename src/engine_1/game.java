@@ -1,24 +1,30 @@
 package engine_1;
 
 import java.util.ArrayList;
+import java.util.random.RandomGenerator.LeapableGenerator;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import engine_1.pieces.*;
+import chessFunc.*;
 
 public class game {
     String[][] board = new String[8][8];
-    ArrayList<String> PGN; // What typ eshould this be?
-    String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    ArrayList<String> PGN; // What type should this be?
+    private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String curentFEN = "";
     String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
-
+    
+    //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
+    //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
+    int halfmove = 0; //Num plies since a pawn was moved or piece taken
+    int fullmove = 0; // Incremented after each of black's moves
+    
     /*
      * Board is from the perspective of white
      * 
-     *  - Fifty move rule check function to be aplied after each move
+     *  - Fifty move rule check function to be applied after each move
      *  - Move function 
-     *  - castling privalages check
+     *  - castling privileges check
      *  - check if the king is in 'check'
      *  - 
      */
@@ -28,8 +34,7 @@ public class game {
         curentFEN = startFEN;
     }
 
-
-    void readFENtoBoard(String fen){
+    void readFEN(String fen){
         String[] fenArray = fen.split("(?!^)");
         int fenIndex = 0;
         
@@ -47,12 +52,123 @@ public class game {
         	}
         	fenIndex++;
         }
+        // read and set player to move
+        // read and set move counters
+        // read and set castling privileges
+    }   
+    
+    ArrayList<move> generateMoves(){
+    	ArrayList<move> pseudoLegalMoves = new ArrayList<move>();
+    	ArrayList<piece> pieces = new ArrayList<piece>();
+    	
+    	/* Part 1
+    	 * Gets a list of the players pieces
+    	 */
+    	if(playerToMove == 1){//White is next  to move
+    		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
+				String currentSq = board[squareNum /8][squareNum % 8];
+				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toUpperCase())) ) { //Upper case = white
+					piece currentPiece = createPiece(currentSq, squareNum);
+					pieces.add(currentPiece);
+				}
+			}
+    	}else if(playerToMove == -1){//Black is next to move
+    		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
+				String currentSq = board[squareNum /8][squareNum % 8];
+				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toLowerCase())) ) {//Lower case = black
+					piece currentPiece = createPiece(currentSq, squareNum);
+					pieces.add(currentPiece);
+				}
+			}    		
+    	}
+    	
+    	/* Part 2
+    	 * Loops through the players pieces and calculates to moves for each piece
+    	 */
+     	for (piece curPiece : pieces) {
+    		ArrayList<move> pieceMoves = new ArrayList<move>();
+    		pieceMoves = curPiece.generateMoves(board);
+    		for(move pieceMove : pieceMoves) {
+    		}
+    		pseudoLegalMoves.addAll(pieceMoves);
+    	}
+    	
+    	/* 
+    	 * Part 3
+    	 * Check if each move leaves the players king in check
+    	 * 
+    	 *  TBD 
+    	 *  
+    	 */
+    	
+    	return pseudoLegalMoves;
+    }
+    
+    void playMove (move MOVE) {
+    	/*
+    	 * Check move count + repetitions before generating a move
+    	 */
+    	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
+    	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.getNAME();
+    	
+    	/* Update fen
+    	 *  - move count - 50 move rule etc
+    	 *  - castling privileges
+    	 */
+    }
+
+    private piece createPiece(String pName, int sqaure) {
+    	// Sets the piece colour
+    	int colour = 0;
+    	if(pName.equals(pName.toUpperCase())) {colour = 1;}//White
+    	else if(pName.equals(pName.toLowerCase())){colour = -1;}//Black
+    	
+    	if (pName.equals("p") || pName.equals("P")) {
+    		pawn PAWN = new pawn(pName, sqaure, colour);
+    		return PAWN;
+
+    	}else if (pName.equals("r") || pName.equals("R")) {
+    		rook ROOK = new rook(pName, sqaure, colour);
+    		return ROOK;
+
+    	}else if (pName.equals("n") || pName.equals("N")) {
+    		knight KNGIHT = new knight(pName, sqaure, colour);
+    		return KNGIHT;
+
+    	}else if (pName.equals("b") || pName.equals("B")) {
+    		bishop BISHOP = new bishop(pName, sqaure, colour);
+    		return BISHOP;
+
+    	}else if (pName.equals("k") || pName.equals("K")) {
+    		king KING = new king(pName, sqaure, colour);
+    		return KING;
+
+    	}else if (pName.equals("q") || pName.equals("Q")) {
+    		queen QUEEN = new queen(pName, sqaure, colour);
+    		return QUEEN;
+    	}
+    	// This would be an error
+    	System.out.println("createPiece returns null on: "+pName+" @ "+sqaure);
+		return null;
+    }
+    
+    void printBoard(){
+        System.out.println("+-+-+-+-+-+-+-+-+");
+        for(int rank = 0; rank<8; rank++){
+            System.out.print("|");
+            for(int file = 0; file<8; file++){
+                System.out.print(board[rank][file]+"|");
+                //System.out.print(rank + ""+ file+"|");
+            }
+            System.out.println();
+            
+            System.out.println("+-+-+-+-+-+-+-+-+");
+        }
     }
     
     private void setFEN(String fen){
         curentFEN = fen;
     }
-
 
     private boolean isInteger(String s){
         try{
@@ -61,51 +177,5 @@ public class game {
         }catch(java.lang.NumberFormatException e){
             return false;
         }
-    }
-    
-    
-    ArrayList<move> generateMoves(){
-    	ArrayList<move> legalMoves = null;
-    	
-    	/*
-    	 * for each piece of player colour .isLowerCase .isUpperCase
-    	 */
-    	
-    	return legalMoves;
-    }
-    
-    void playMove (move MOVE) {
-    	/*
-    	 * Check move count + repetitions before generating a move
-    	 */
-    	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
-    	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.NANE;
-    	
-    	/* Update fen
-    	 *  - move count - 50 move rule etc
-    	 *  - castling privileges
-    	 */
-    }
-
-    void printBoard(){
-        System.out.println("+-+-+-+-+-+-+-+-+");
-        for(int rank = 0; rank<8; rank++){
-            System.out.print("|");
-            for(int file = 0; file<8; file++){
-                //System.out.print(board[rank][file]+"|");
-                System.out.print(rank + ""+ file+"|");
-            }
-            System.out.println();
-            
-            System.out.println("+-+-+-+-+-+-+-+-+");
-        }
-    }
-
-    @Test
-    public void test_board(){
-        game game1 = new game();
-        game1.printBoard();
-        int i = 10;
-        Assertions.assertFalse(false);
     }
 }
