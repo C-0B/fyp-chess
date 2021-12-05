@@ -13,7 +13,12 @@ public class game {
     String curentFEN = "";
     String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
+    boolean wCastleKSide = false;
+    boolean wCastleQSide = false;
+    boolean bCastleKSide = false;
+    boolean bCastleQSide = false;
     
+   
     //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
     //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
     int halfmove = 0; //Num plies since a pawn was moved or piece taken
@@ -32,13 +37,15 @@ public class game {
     // Had 3 Constructors
     public game(){
         curentFEN = startFEN;
+        readFEN(curentFEN);
     }
 
     void readFEN(String fen){
+    	curentFEN = fen;
         String[] fenArray = fen.split("(?!^)");
-        int fenIndex = 0;
         
-        for(int square = 0; square<64; square++){
+        int fenIndex = 0;
+        for(int square = 0; square<64; square++){ // Set up the board
         	if(isInteger(fenArray[fenIndex])) {
         		for(int i =  0; i < Integer.parseInt(fenArray[fenIndex]); i ++) {
         			board[square/8][square%8] = " ";
@@ -52,9 +59,65 @@ public class game {
         	}
         	fenIndex++;
         }
+        
         // read and set player to move
+        fenIndex++; // skip over empty space
+        String p2Move = fenArray[fenIndex];
+        if(p2Move.equals("w")) {
+        	playerToMove = 1;
+        }else if(p2Move.equals("b")) {
+        	playerToMove = -1;
+        }
+        fenIndex++;
+        
+        // Castling privileges
+        fenIndex++;// Skip empty space
+        while(!fenArray[fenIndex].equals(" ")) {
+        	if(fenArray[fenIndex].equals("K")) {
+        		wCastleKSide = true;
+        	}else if(fenArray[fenIndex].equals("Q")) {
+        		wCastleQSide = true;
+        	}else if(fenArray[fenIndex].equals("k")) {
+        		bCastleKSide = true;
+        	}else if(fenArray[fenIndex].equals("q")) {
+        		bCastleQSide = true;
+        	}
+        	fenIndex++;
+        }
+ 
+        //En Passant
+        fenIndex++; // Skip empty space
+        if(fenArray[fenIndex].equals("-")) {
+        	enPassant = "";
+        }else {
+        	enPassant = fenArray[fenIndex] + fenArray[fenIndex+1];// enPassant is 2 characters eg. e3
+        	fenIndex++;
+        }
+        fenIndex++;
         // read and set move counters
+        fenIndex++; // Skip empty space
+        if(isInteger(fenArray[fenIndex])) {
+        	if(isInteger(fenArray[fenIndex+1])) {
+        		fenIndex++;
+        		halfmove = Integer.parseInt(fenArray[fenIndex-1] + fenArray[fenIndex]); //2 digit halfmove value - can never be more than 2 digits
+        	}else {
+        		halfmove = Integer.parseInt(fenArray[fenIndex]);
+        	}
+        	
+        }else {System.out.println("FEN Read string that is not an integer for the halfmove value");}
+
+        fenIndex++;
+
         // read and set castling privileges
+        fenIndex++; // Skip empty space
+        String fenFullmoveStr = "";
+        while(fenIndex < fenArray.length){// ALl remaining characters should be integers in the correct format
+        	fenFullmoveStr += fenArray[fenIndex];
+        	fenIndex++;
+        }
+        if(isInteger(fenFullmoveStr)) {
+        	fullmove = Integer.parseInt(fenFullmoveStr);
+        }else {System.out.println("FEN Read string that is not an integer for the fullmove value");}       
     }   
     
     ArrayList<move> generateMoves(){
@@ -111,7 +174,13 @@ public class game {
     	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.getNAME();
     	
     	/* Update fen
-    	 *  - move count - 50 move rule etc
+    	 *  - 50 move rule
+    	 *  	= after pawn move set halfmove to 0
+    	 *  	= after capture set halfmove to 0
+    	 *  	=	if 50 half moves reached, game ends in draw
+    	 *  
+    	 *  - Fullmove counter incremented
+    	 *  
     	 *  - castling privileges
     	 */
     }
@@ -165,10 +234,6 @@ public class game {
         }
     }
     
-    private void setFEN(String fen){
-        curentFEN = fen;
-    }
-
     private boolean isInteger(String s){
         try{
             int i = Integer.parseInt(s);
