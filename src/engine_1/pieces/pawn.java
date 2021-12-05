@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import chessFunc.func;
 import engine_1.move;
+import engine_1.pawnMove;
 
 public class pawn extends piece {
 	
@@ -50,7 +51,8 @@ public class pawn extends piece {
 			if(this.isOnBoard(target_coord)) {// on board check 
 				if((BOARD[target_coord[0]][target_coord[1]].equals(" ")) && (BOARD[(target_coord[0])+COLOUR][target_coord[1]].equals(" "))){// empty space check
 					targetSquare = func.coordTosqNum(target_coord);
-					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
+					int enPasssatSq = targetSquare - (COLOUR * 8);
+					pawnMove MOVE = new pawnMove(COLOUR, this, startSquare, targetSquare, enPasssatSq);
 					moves.add(MOVE);
 				}
 			}
