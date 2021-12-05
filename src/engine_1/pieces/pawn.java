@@ -100,7 +100,6 @@ public class pawn extends piece {
 			}
 		}
 		*/
-		return new ArrayList<move>();
-		//return moves;
+		return moves;
 	}
 }
