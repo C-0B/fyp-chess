@@ -9,9 +9,9 @@ import chessFunc.*;
 public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
-    private String startFEN = "rnbqkbnr/pppppppp/8/4Rr2/3B4/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1";
-    String curentFEN = "";
-    String enPassant = "";     // enPassant; the square where enPassant is available (empty if not)
+    private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    String currentFEN = "";
+    String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
     boolean wCastleKSide = false;
     boolean wCastleQSide = false;
@@ -36,16 +36,16 @@ public class game {
 
     // Had 3 Constructors
     public game(){
-        curentFEN = startFEN;
-        readFEN(curentFEN);
+        currentFEN = startFEN;
+        readFEN(currentFEN);
     }
 
     void readFEN(String fen){
-    	curentFEN = fen;
+    	currentFEN = fen;
         String[] fenArray = fen.split("(?!^)");
         
         int fenIndex = 0;
-        for(int square = 0; square<64; square++){ // Set up the board
+        for(int square = 0; square<64; square++){// Set up the board
         	if(isInteger(fenArray[fenIndex])) {
         		for(int i =  0; i < Integer.parseInt(fenArray[fenIndex]); i ++) {
         			board[square/8][square%8] = " ";
@@ -59,6 +59,7 @@ public class game {
         	}
         	fenIndex++;
         }
+
         
         // read and set player to move
         fenIndex++; // skip over empty space
@@ -69,7 +70,6 @@ public class game {
         	playerToMove = -1;
         }
         fenIndex++;
-        
         // Castling privileges
         fenIndex++;// Skip empty space
         while(!fenArray[fenIndex].equals(" ")) {
@@ -120,7 +120,7 @@ public class game {
         }else {System.out.println("FEN Read string that is not an integer for the fullmove value");}       
     }   
     
-    ArrayList<move> generateMoves(){
+    ArrayList<move> generatePseudoLegalMoves(){
     	ArrayList<move> pseudoLegalMoves = new ArrayList<move>();
     	ArrayList<piece> pieces = new ArrayList<piece>();
     	
@@ -170,6 +170,20 @@ public class game {
     	/*
     	 * Check move count + repetitions before generating a move
     	 */
+    	
+    	
+    	if(!board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8].equals(" ")) { // if capture occurs
+    		halfmove += 0;
+    	}else if(MOVE instanceof pawnMove) {// if pawn move
+    		try {
+        	    this.enPassant = func.sqNumToStr( ((pawnMove)MOVE).EN_PASSANT_SQ );
+    		}catch (ClassCastException e) {
+    			e.printStackTrace();
+			}
+    		halfmove += 0;
+    	}else {
+    		halfmove += 1;
+    	}
     	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
     	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.getNAME();
     	
@@ -183,6 +197,69 @@ public class game {
     	 *  
     	 *  - castling privileges
     	 */
+
+    	
+    	fullmove += 1;
+    	
+    	currentFEN = genFEN();
+    	readFEN(genFEN());
+    }
+    
+    
+    /** Generated the fen for the current board / game */
+    String genFEN() {
+    	String newFEN = "";
+    	for(int rank = 0; rank<8; rank++) {
+    		for(int file = 0; file<8; file++) {
+    			if(board[rank][file].equals(" ")) {
+    	    		int emptySpaceCount = 1;
+    	    		int chkSq = file+emptySpaceCount;
+    	    		while( (board[rank][chkSq].equals(" ")) && (chkSq < 8) ) {
+    					emptySpaceCount++;
+    				}
+    	    		newFEN += emptySpaceCount;
+    			}else {
+    				newFEN += board[rank][file];
+    			}
+    		}
+    		newFEN += "/";
+    	}
+    	
+
+       	newFEN.substring(0, newFEN.length()-1);// remove the last /
+       	newFEN += " ";
+       	
+       	if(playerToMove == 1) {
+       		newFEN += "w ";
+       	}else if(playerToMove == -1) {
+       		newFEN += "b ";
+       	}else {
+       		newFEN += "x ";
+       	}
+       
+       	//castling
+       	if(((wCastleKSide || wCastleQSide) || (bCastleKSide|| bCastleQSide))) {
+       		if(wCastleKSide == true) {
+       			newFEN += "w ";
+	       	}
+	       	if(wCastleQSide == true) {
+	       		newFEN += "b ";
+	       	}if(bCastleKSide == true) {
+	       		newFEN += "b ";
+	       	}if(bCastleQSide == true) {
+	       		newFEN += "b ";
+	       	}
+       	}else {
+       		newFEN += "- ";
+       	}
+
+       	// enpassant
+       	newFEN += enPassant+" ";
+       	// halfmove count
+       	newFEN += halfmove+" ";
+       	// full move count
+       	newFEN += fullmove+" ";
+    	return newFEN;
     }
 
     private piece createPiece(String pName, int sqaure) {
@@ -241,5 +318,9 @@ public class game {
         }catch(java.lang.NumberFormatException e){
             return false;
         }
+    }
+    
+    public String getFEN() {
+    	return currentFEN;
     }
 }

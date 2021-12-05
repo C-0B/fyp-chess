@@ -3,7 +3,7 @@ package engine_1;
 import java.util.ArrayList;
 import chessFunc.*;
 
-public class test {
+public class main {
 	public static void main(String[] args) {
         game game1 = new game();
         
@@ -17,7 +17,7 @@ public class test {
         
         game1.printBoard();
         
-        ArrayList<move> moves =  game1.generateMoves();
+        ArrayList<move> moves =  game1.generatePseudoLegalMoves();
         
         // Plays each of the moves
         int moveCount = 0;
@@ -30,4 +30,7 @@ public class test {
         	System.out.println();
         }
     }
+	
+	
+	// Define recursive function
 }

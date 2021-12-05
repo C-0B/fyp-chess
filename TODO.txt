@@ -1,17 +1,21 @@
 Pseudo legal move gen
-	knights are all good :) i think
+	knights, rooks, queens are all good :) i think
 	
 	pawn
 	 - takes on diagonal
+	 - enPassant takes
 	
 	bishop 
 	 - refactor to loop through an array of unit vectors with a subloop defining magnitude
 	 
-	rook, king, queen
+	king
 	 - all
 	 - king cannot take opponent piece if it is defended
 	 
 	cannot take opponents king
+	
+	
+Recursive function to calc number of moves at each depth
 	
 Check if after the move is played your king is in check
 
