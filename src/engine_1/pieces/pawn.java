@@ -15,13 +15,8 @@ public class pawn extends piece {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public static void main(String[] args) {
-		System.out.println("hello pawn");
-	}
-	
 	@Override
 	public ArrayList<move> generateMoves(String[][] BOARD){
-		System.out.println(this.getNAME()+" "+this.getSQUARE());
 		ArrayList<move> moves = new ArrayList<move>();
 		int startSquare = getSQUARE();
 		

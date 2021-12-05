@@ -13,19 +13,18 @@ public class test {
         //castling fen practice
         // "r2qk2r/8/8/8/8/8/8/R2QK2R w KQkq - 0 1"
         
-         String testString = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-        game1.readFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-   
-   
-        ArrayList<move> moves =  game1.generateMoves();
+        String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        
+        game1.readFEN("rnb3nr/pppp1ppp/4p3/8/4P3/2PPb1P1/PPQK3P/RNB2qNR w - - 2 9");
         game1.printBoard();
-        System.out.println("moves generated");
+        
+        ArrayList<move> moves =  game1.generateMoves();
         
         // Plays each of the moves
         int moveCount = 0;
         for(move move : moves) {
         	game tempGame = new game();
-        	tempGame.readFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        	tempGame.readFEN("rnb3nr/pppp1ppp/4p3/8/4P3/2PPb1P1/PPQK3P/RNB2qNR w - - 2 9");
         	System.out.println("Move: "+ ++moveCount);
         	System.out.println(move);
         	tempGame.playMove(move);
