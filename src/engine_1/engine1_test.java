@@ -3,7 +3,7 @@ package engine_1;
 import java.util.ArrayList;
 import chessFunc.*;
 
-public class main {
+public class engine1_test {
 	public static void main(String[] args) {
         game game1 = new game();
         
@@ -16,6 +16,7 @@ public class main {
         //String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
         
         game1.printBoard();
+        System.out.println();
         
         ArrayList<move> moves =  game1.generatePseudoLegalMoves();
         
