@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import chessFunc.func;
 import engine_1.move;
+import engine_bb.board;
 
 public class bishop extends piece {
 
@@ -34,13 +35,17 @@ public class bishop extends piece {
 						moves.add(MOVE);
 					}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
 						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 						break;
 					}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
 						int targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 						break;
 					}else {
 						break;
