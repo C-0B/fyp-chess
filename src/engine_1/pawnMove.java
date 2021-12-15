@@ -11,6 +11,11 @@ public class pawnMove extends move {
 		super(playerToMove, piece, startSquare, targetSquare);
 		EN_PASSANT_SQ = enPassantSq;
 	}
+
+	public pawnMove(move MOVE, int enPassantSq) {
+		super(MOVE.PLAYER_TO_MOVE, MOVE.PIECE, MOVE.START_SQUARE, MOVE.TARGET_SQUARE);
+		EN_PASSANT_SQ = enPassantSq;
+	}
 	
 	@Override
 	public String toString() {
