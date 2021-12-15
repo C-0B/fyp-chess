@@ -1,30 +1,26 @@
+CANNOT TAKE OPPONENTS KING
+
+REDUCE PSUEDOLEGAL MOVES SO THAT YOU ARE NOT IN CHECK AFTER THE MOVE
+
+CREATE CONCEPT OF CHECK
 
 Pseudo legal move gen
 	knights, rooks, queens are all good :) i think
 	
 	pawn
-	 - takes on diagonal
 	 - enPassant takes
 	
-	bishop 
-	 - refactor to loop through an array of unit vectors with a subloop defining magnitude
-	 
 	king
-	 - all
 	 - king cannot take opponent piece if it is defended
+	 - cannot be adjacent to opponent king
 	 
-	cannot take opponents king
-	
-Check if after the move is played your king is in check	
+	NO PEICE CAN TAKE THE OPPONENTS KING
 
 Create a PGN
 Read PGN - play a series of moves
 
 Recursive function to calc number of moves at each depth
 	
-
-
-
 on move played
 	Update half move count
 	Update full move count
