@@ -7,9 +7,10 @@ import engine_1.move;
 import engine_1.pawnMove;
 
 public class pawn extends piece {
-	
-	public pawn(String pieceName, int square, int colour) {
+	String enPassant = "";
+	public pawn(String pieceName, int square, int colour, String enpassant) {
 		super(pieceName, square, colour);
+		enPassant = enpassant;
 	}
 	
 	@Override
@@ -57,16 +58,20 @@ public class pawn extends piece {
 			String tgtSqContents = BOARD[target_coord[0]][target_coord[1]];
 			if(!tgtSqContents.equals(" ")){// non-empty space check
 				if(COLOUR == 1) {//If the player is white
-					if(tgtSqContents.equals(tgtSqContents.toLowerCase())) {// If the piece in left diagonal is black
+					if(  (tgtSqContents.equals(tgtSqContents.toLowerCase())) || (func.sqNumToStr(getSQUARE()).equals(enPassant))  ) {// If the piece in left diagonal is black
 						targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 					}
 				}else if(COLOUR == -1) {//If the player is black
-					if(tgtSqContents.equals(tgtSqContents.toUpperCase())) {// If the piece in left diagonal is black
+					if(  (tgtSqContents.equals(tgtSqContents.toUpperCase()))  || (func.sqNumToStr(getSQUARE()).equals(enPassant))  ) {// If the piece in left diagonal is black
 						targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 					}
 				}
 			}
@@ -81,14 +86,18 @@ public class pawn extends piece {
 				if(COLOUR == 1) {//If the player is white
 					if(tgtSqContents.equals(tgtSqContents.toLowerCase())) {// If the piece in left diagonal is black
 						targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 					}
 				}else if(COLOUR == -1) {//If the player is black
 					if(tgtSqContents.equals(tgtSqContents.toUpperCase())) {// If the piece in left diagonal is black
 						targetSquare = func.coordTosqNum(target_coord);
-						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-						moves.add(MOVE);
+						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
+						if(!MOVE.isKingTarget()) {
+							moves.add(MOVE);
+						}
 					}
 				}
 			}
