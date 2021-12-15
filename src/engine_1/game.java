@@ -1,8 +1,6 @@
 package engine_1;
 
 import java.util.ArrayList;
-import java.util.random.RandomGenerator.LeapableGenerator;
-
 import engine_1.pieces.*;
 import chessFunc.*;
 
@@ -25,7 +23,7 @@ public class game {
     int fullmove = 0; // Incremented after each of black's moves
     
     /*
-     * Board is from the perspective of white
+     * Board is from the perspective of white  - doe sthis need to be change when the board is flipped?
      * 
      *  - Fifty move rule check function to be applied after each move
      *  - Move function 
@@ -40,7 +38,7 @@ public class game {
         readFEN(currentFEN);
     }
 
-    void readFEN(String fen){
+    public void readFEN(String fen){
     	currentFEN = fen;
         String[] fenArray = fen.split("(?!^)");
         
@@ -88,9 +86,9 @@ public class game {
         //En Passant
         fenIndex++; // Skip empty space
         if(fenArray[fenIndex].equals("-")) {
-        	enPassant = "";
+        	enPassant = "-";
         }else {
-        	enPassant = fenArray[fenIndex] + fenArray[fenIndex+1];// enPassant is 2 characters eg. e3
+        	enPassant = fenArray[fenIndex] + fenArray[fenIndex+1];// enPassant is ALWAYS 2 characters eg. e3
         	fenIndex++;
         }
         fenIndex++;
@@ -166,99 +164,125 @@ public class game {
     	return pseudoLegalMoves;
     }
     
-    void playMove (move MOVE) {
-    	/*
-    	 * Check move count + repetitions before generating a move
+    /**
+     * IS ONLY PSUEDOLEGAL MOVES<br>
+     * CHECK IF AFTER THE MOVE IS PLAYED THE PLAYER IS IN CHECK
+     * 
+     */
+    public ArrayList<move> generateMoves(){
+    	return generatePseudoLegalMoves();
+    }
+    
+    
+    /**
+     * Uses a move object to play a chess move on the this game objects board[][]
+     */
+    public void playMove (move MOVE) {
+    	/* Check move count + repetitions before generating a move
     	 */
     	
-    	
-    	if(!board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8].equals(" ")) { // if capture occurs
-    		halfmove += 0;
-    	}else if(MOVE instanceof pawnMove) {// if pawn move
+    	if(!board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
+    		halfmove = 0;
+    	}else if(MOVE instanceof pawnMove) {// Set enPassant
     		try {
         	    this.enPassant = func.sqNumToStr( ((pawnMove)MOVE).EN_PASSANT_SQ );
-    		}catch (ClassCastException e) {
-    			e.printStackTrace();
-			}
-    		halfmove += 0;
+    		}catch (ClassCastException e) {e.printStackTrace();}
+    		
+    		halfmove = 0;
     	}else {
     		halfmove += 1;
     	}
     	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
     	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.getNAME();
+    	if(playerToMove == -1) { // If black has played a move
+    		fullmove += 1;
+    	}
     	
-    	/* Update fen
-    	 *  - 50 move rule
-    	 *  	= after pawn move set halfmove to 0
-    	 *  	= after capture set halfmove to 0
-    	 *  	=	if 50 half moves reached, game ends in draw
-    	 *  
-    	 *  - Fullmove counter incremented
-    	 *  
+    	
+    	
+    	/*  
     	 *  - castling privileges
+    	 *  - checkmate check
     	 */
 
-    	
-    	fullmove += 1;
+
     	
     	currentFEN = genFEN();
-    	readFEN(genFEN());
+    	readFEN(currentFEN);
+    	System.out.println("FEN: "+getFEN());
+    	
+    	/* 50 Move rule: check after move played
+    	 * If the halfmove clock becomes greater or equal than 100, and the side to move has at least one legal move, a draw score should be assigned
+    	 */
     }
     
     
-    /** Generated the fen for the current board / game */
+    /** Generated the FEN for the current board[][] / game */
+    
+    // This is borked
     String genFEN() {
     	String newFEN = "";
-    	for(int rank = 0; rank<8; rank++) {
-    		for(int file = 0; file<8; file++) {
-    			if(board[rank][file].equals(" ")) {
-    	    		int emptySpaceCount = 1;
-    	    		int chkSq = file+emptySpaceCount;
-    	    		while( (board[rank][chkSq].equals(" ")) && (chkSq < 8) ) {
-    					emptySpaceCount++;
-    				}
-    	    		newFEN += emptySpaceCount;
-    			}else {
-    				newFEN += board[rank][file];
-    			}
-    		}
-    		newFEN += "/";
-    	}
     	
-
-       	newFEN.substring(0, newFEN.length()-1);// remove the last /
+    	
+    	// Method 1
+    	
+    	for(int sqNum = 0; sqNum<64; sqNum++) {
+    		int curRank = sqNum/8;
+    				
+    		if(board[sqNum/8][sqNum%8].equals(" ")) {// empty space calc
+    			int emptySquares = 0;
+    			int chkSq = sqNum; // Square to check if the next value on the same rank is also blank
+    			while((board[chkSq/8][chkSq%8].equals(" ")) && (curRank == chkSq/8)) {
+    				chkSq++;
+    				emptySquares++;
+    			}
+    			sqNum = chkSq - 1;
+    			newFEN += emptySquares;
+    		}else {
+    			newFEN += board[sqNum/8][sqNum%8];
+    		}
+    		
+    		if(sqNum%8 == 7) {// If is the last column in the row before moving down a row
+    			newFEN += "/";
+    		}
+    	}
+    	    	
+       	newFEN = newFEN.substring(0, newFEN.length()-1);// remove the last / from the FEN
        	newFEN += " ";
        	
+       	// Chnage the player to move
        	if(playerToMove == 1) {
-       		newFEN += "w ";
-       	}else if(playerToMove == -1) {
        		newFEN += "b ";
+       	}else if(playerToMove == -1) {
+       		newFEN += "w ";
        	}else {
-       		newFEN += "x ";
+       		System.out.println("genFEN() setting the player to move"); // error: should never run
        	}
        
-       	//castling
+       	// Castling privileges
        	if(((wCastleKSide || wCastleQSide) || (bCastleKSide|| bCastleQSide))) {
        		if(wCastleKSide == true) {
-       			newFEN += "w ";
+       			newFEN += "K";
 	       	}
 	       	if(wCastleQSide == true) {
-	       		newFEN += "b ";
+	       		newFEN += "Q";
 	       	}if(bCastleKSide == true) {
-	       		newFEN += "b ";
+	       		newFEN += "k";
 	       	}if(bCastleQSide == true) {
-	       		newFEN += "b ";
+	       		newFEN += "q";
 	       	}
+	       	newFEN += " ";
        	}else {
        		newFEN += "- ";
        	}
 
-       	// enpassant
+       	// Set the En Passant square if there is one
        	newFEN += enPassant+" ";
        	// halfmove count
        	newFEN += halfmove+" ";
        	// full move count
-       	newFEN += fullmove+" ";
+       	newFEN += fullmove;
+       	
     	return newFEN;
     }
 

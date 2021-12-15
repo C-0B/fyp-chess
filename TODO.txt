@@ -1,3 +1,4 @@
+
 Pseudo legal move gen
 	knights, rooks, queens are all good :) i think
 	
@@ -14,14 +15,15 @@ Pseudo legal move gen
 	 
 	cannot take opponents king
 	
-	
-Recursive function to calc number of moves at each depth
-	
-Check if after the move is played your king is in check
+Check if after the move is played your king is in check	
 
 Create a PGN
-
 Read PGN - play a series of moves
+
+Recursive function to calc number of moves at each depth
+	
+
+
 
 on move played
 	Update half move count
@@ -30,3 +32,9 @@ on move played
 	Update PGN
 
 Create concept of checkmate - no moves after pseudo legal moves have been checked- the player wins (should be easy, hope i'm not wrong)
+
+
+ --- GUI ---
+ when and tile clicked: check if last button clicked has a piece of you colout on it.
+ if true: check if current tile is a valid move for that peice and the new tagert tile
+ else: ..
