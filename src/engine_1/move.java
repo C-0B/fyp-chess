@@ -1,6 +1,7 @@
 package engine_1;
 
 import engine_1.pieces.piece;
+import engine_bb.board;
 import chessFunc.*;
 
 public class move {
@@ -23,7 +24,35 @@ public class move {
 		TARGET_SQUARE = targetSquare;
 	}
 	
-	// Compare two moves
+	public move(int playerToMove, piece piece, int startSquare, int targetSquare, String capturePiece){
+		PLAYER_TO_MOVE = playerToMove;
+		PIECE = piece;
+		START_SQUARE = startSquare;
+		TARGET_SQUARE = targetSquare;
+		CAPTURED_PIECE = capturePiece;
+	}
+	
+	/**
+	 * Checks if the the opponents king is on the target square<p>
+	 * No piece can capture a king
+	 */
+	public boolean isKingTarget() {
+		if(PLAYER_TO_MOVE == 1){// White to move
+			if(CAPTURED_PIECE.equals("k")) {// Black king
+				return true;
+			}
+		}else if(PLAYER_TO_MOVE == -1) {// Black to move
+			if(CAPTURED_PIECE.equals("K")) {// White king
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 *  Compare two moves
+	 */
 	public boolean equals(move move2) {
 		if(this.PLAYER_TO_MOVE == move2.PLAYER_TO_MOVE) {
 			if(this.PIECE.equals(move2.PIECE)) {
