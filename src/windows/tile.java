@@ -1,6 +1,8 @@
 package windows;
 
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.JButton;
 
 /**
@@ -38,6 +40,8 @@ public class tile{
 			button.setBackground(new Color(222, 222, 222)); //Color.WHITE
 		}
 		//label.setPreferredSize(new Dimension(100, 100));
+		button.setPreferredSize(new Dimension(100, 100));
+		button.setMinimumSize(new Dimension(100, 100));
 		button.setBorderPainted(false);		
 	}
 }
