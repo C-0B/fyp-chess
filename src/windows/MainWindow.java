@@ -259,6 +259,7 @@ public class MainWindow extends javax.swing.JFrame implements MouseInputListener
 				imgPathString += "white-";
 			}else if(s.equals(s.toLowerCase())) {
 				imgPathString += "black-";
+				colour = -1; // why on earth was this 0?
 			}else { System.out.println("img colour error");}
 		}
 		
