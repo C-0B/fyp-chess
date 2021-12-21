@@ -42,17 +42,13 @@ public class knight extends piece {
 					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
 						int targetSquare = func.coordTosqNum(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
-						if(!MOVE.isKingTarget()) {
-							moves.add(MOVE);
-						}
+						moves.add(MOVE);
 					}
 				}else if (COLOUR == -1) {// Black PLayer to move
 					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or white piece
 						int targetSquare = func.coordTosqNum(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
-						if(!MOVE.isKingTarget()) {
-							moves.add(MOVE);
-						}
+						moves.add(MOVE);
 					}
 				}
 			}

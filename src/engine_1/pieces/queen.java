@@ -36,16 +36,12 @@ public class queen extends piece {
 					}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
 						int targetSquare = func.coordTosqNum(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
-						if(!MOVE.isKingTarget()) {
-							moves.add(MOVE);
-						}
+						moves.add(MOVE);
 						break;
 					}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
 						int targetSquare = func.coordTosqNum(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
-						if(!MOVE.isKingTarget()) {
-							moves.add(MOVE);
-						}
+						moves.add(MOVE);
 						break;
 					}else {
 						break;
