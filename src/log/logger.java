@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.lang.System.Logger;
 import java.nio.channels.NonWritableChannelException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import javax.sound.midi.VoiceStatus;
 
@@ -24,7 +27,7 @@ public class logger {
 	    	if(colourInt == 1) {colour="white";}else {colour="black";}
 	    	
 	    	
-	        String s = now()+" MOVE | "+colour+" "+peice+" "+startSqaure+" "+endSqaure+" | "+endFEN;
+	        String s = now()+"\t MOVE | "+colour+" "+peice+" @ "+startSqaure+" -> "+endSqaure+" | "+endFEN;
 	        
 	        FileWriter fw = new FileWriter("log.log", true);
 	        BufferedWriter bw = new BufferedWriter(fw);
@@ -58,7 +61,13 @@ public class logger {
 	
 	
 	private static String now() {
-		return "[ "+Instant.now()+" ]";
+		Instant current = Instant.now();
+		DateTimeFormatter DTformatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.from(ZoneOffset.UTC));
+		
+		String output = DTformatter.format(current);
+		System.out.println(output);
+		
+		return "[ "+output+" ]";
 	}
 	
 }
