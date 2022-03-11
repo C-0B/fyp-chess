@@ -13,13 +13,13 @@ public class pawnMove extends move {
 	}
 
 	public pawnMove(move MOVE, int enPassantSq) {
-		super(MOVE.PLAYER_TO_MOVE, MOVE.PIECE, MOVE.START_SQUARE, MOVE.TARGET_SQUARE);
+		super(MOVE.getPLAYER_TO_MOVE(), MOVE.PIECE, MOVE.START_SQUARE, MOVE.getTARGET_SQUARE());
 		EN_PASSANT_SQ = enPassantSq;
 	}
 	
 	@Override
 	public String toString() {
-		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(TARGET_SQUARE)+"\n eP: "+EN_PASSANT_SQ;
+		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+getTARGET_SQUARE()+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(getTARGET_SQUARE())+"\n eP: "+func.sqNumToStr(EN_PASSANT_SQ);
 	}
 	
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import engine_1.move;
 
-public abstract class piece {
+public class piece {
 	String NAME = "";
 	int SQUARE = 0;
 	int COLOUR = 1; // 1 = white, -1 = black
@@ -34,7 +34,10 @@ public abstract class piece {
 		}
 	}
 	
-	// TO BE OVERRIDDEN
+	/**
+	 * Use a piece to call this method to generate pseudolegal
+	 * moves for that piece with the given board parameter
+	 */
 	public ArrayList<move> generateMoves(String Board[][]){
 		return null;
 	}
@@ -58,5 +61,8 @@ public abstract class piece {
 
 	public int getSQUARE() {
 		return SQUARE;
+	}
+	public int getColour() {
+		return COLOUR;
 	}
 }

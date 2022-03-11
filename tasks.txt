@@ -1,0 +1,75 @@
+COMEPLETE PSUEDOLEGAL MOVES SO THAT YOU ARE NOT IN CHECK AFTER THE MOVE (isSquareAttacked[is in array of attacked squares, this would be updated on move generation])
+
+java.util.ConcurrentModificationException, when removing items from an array list during iteration
+CREATE CONCEPT OF CHECK (when king is attacked)
+
+Pseudo legal move gen
+	knights, rooks, queens are all good :) i think
+	
+	pawn
+	 - enPassant takes
+	 - make it so they cannot take the opponents king
+	
+	king
+	 - king cannot take opponent piece if it is defended
+	 - cannot be adjacent to opponent king
+	 - this is not compete
+	 
+	castling? hard code sort of?
+	
+	create isAttacked to check if a given square is attacked by the opponent
+	
+	NO PEICE CAN TAKE THE OPPONENTS KING
+
+on move played
+	Update FEN - (en passant currently does not update)
+	Update PGN
+
+Create concept of checkmate - if no moves after pseudo legal moves have been checked- the player wins (should be easy, hope i'm not wrong)
+
+ --- GUI ---
+2 click move system	
+
+Create a PGN
+Read PGN - play a series of moves
+
+??? Recursive function to calc number of moves at each depth
+
+
+engine
+    - game class
+    - move class
+    - pawn move class
+    - peices
+    - - pawn
+    - - king
+    - - queen
+    - - knight
+    - - rook
+    - - bishop.
+    
+    
+    
+MainWindow
+    initalise();
+	game = new game();
+	loadFENtoBoard(game.getFEN());
+    legalMovesForPosition = game.generateMoves();
+    
+    
+    drag / click square to make moves
+    check if move is legal (in legalMovesForPosition)
+    - make move (or not)
+    - 
+    
+    
+    Board:
+	    on press
+	    - 
+	    - ..
+	    - make all possible move squares red
+	    
+	    on release
+	    - 
+	    - ..
+	    - reset all square colours

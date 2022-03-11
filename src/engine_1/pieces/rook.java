@@ -50,5 +50,4 @@ public class rook extends piece {
 		}
 		return moves;
 	}
-
 }

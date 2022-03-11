@@ -8,6 +8,13 @@ import engine_1.pawnMove;
 
 public class pawn extends piece {
 	String enPassant = "";
+	
+	/**
+	 * @param pieceName
+	 * @param square
+	 * @param colour
+	 * @param enpassant
+	 */
 	public pawn(String pieceName, int square, int colour, String enpassant) {
 		super(pieceName, square, colour);
 		enPassant = enpassant;

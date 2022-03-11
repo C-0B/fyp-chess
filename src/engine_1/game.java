@@ -2,7 +2,9 @@ package engine_1;
 
 import java.util.ArrayList;
 import engine_1.pieces.*;
-import chessFunc.*;
+import log.logger;
+import chessFunc.func;
+import log.logger;
 
 public class game {
     String[][] board = new String[8][8];
@@ -16,7 +18,6 @@ public class game {
     boolean bCastleKSide = false;
     boolean bCastleQSide = false;
     
-   
     //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
     //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
     int halfmove = 0; //Num plies since a pawn was moved or piece taken
@@ -36,6 +37,22 @@ public class game {
     public game(){
         currentFEN = startFEN;
         readFEN(currentFEN);
+    }
+    
+    public game(String FENtoStartFrom) {
+    	currentFEN = FENtoStartFrom;
+        readFEN(currentFEN);
+    }
+    
+    /**
+     * Check if the player 's king is in check
+     * <p>
+     * @param player 1 for white, -1 for black
+     * @return true is the player given as a parameter is in check
+     */
+    public boolean isPlayerInCheck(int player) {
+    	// TO BE DONE
+    	return false;
     }
 
     public void readFEN(String fen){
@@ -118,14 +135,18 @@ public class game {
         }else {System.out.println("FEN Read string that is not an integer for the fullmove value");}       
     }   
     
-    ArrayList<move> generatePseudoLegalMoves(){
-    	ArrayList<move> pseudoLegalMoves = new ArrayList<move>();
+    /**
+     * NOT YET FINISHED
+     * @return
+     */
+    public ArrayList<move> generateMoves(){
+    	ArrayList<move> legalMoves = new ArrayList<move>();
     	ArrayList<piece> pieces = new ArrayList<piece>();
     	
     	/* Part 1
     	 * Gets a list of the players pieces
     	 */
-    	if(playerToMove == 1){//White is next  to move
+    	if(getPlayerToMove() == 1){//White is next  to move
     		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
 				String currentSq = board[squareNum /8][squareNum % 8];
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toUpperCase())) ) { //Upper case = white
@@ -133,7 +154,7 @@ public class game {
 					pieces.add(currentPiece);
 				}
 			}
-    	}else if(playerToMove == -1){//Black is next to move
+    	}else if(getPlayerToMove() == -1){//Black is next to move
     		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
 				String currentSq = board[squareNum /8][squareNum % 8];
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toLowerCase())) ) {//Lower case = black
@@ -150,29 +171,39 @@ public class game {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
     		pieceMoves = curPiece.generateMoves(board);
 
-    		pseudoLegalMoves.addAll(pieceMoves);
+    		legalMoves.addAll(pieceMoves);
     	}
     	
     	/* 
+    	 * Part 4
+    	 * Check if the target square is the opponents king(which is not allowed)
+    	 * 
+    	 *  - removed the items after iteration 
+    	 */
+     	
+    	int moveCount = 0;
+    	ArrayList<Integer> movesToRemove = new ArrayList<Integer>();
+    	for(move move : legalMoves) {
+    		if(move.isKingTarget()) {
+    			legalMoves.remove(moveCount);
+    			movesToRemove.add(moveCount);
+    			try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		} // Removes all moves that would capture the king
+    		moveCount++;
+    	}
+     	/*
     	 * Part 3
     	 * Check if each move leaves the players king in check
-    	 * 
-    	 *  TBD 
     	 *  
     	 */
     	
-    	return pseudoLegalMoves;
+    	return legalMoves;
     }
-    
-    /**
-     * IS ONLY PSUEDOLEGAL MOVES<br>
-     * CHECK IF AFTER THE MOVE IS PLAYED THE PLAYER IS IN CHECK
-     * 
-     */
-    public ArrayList<move> generateMoves(){
-    	return generatePseudoLegalMoves();
-    }
-    
     
     /**
      * Uses a move object to play a chess move on the this game objects board[][]
@@ -180,21 +211,28 @@ public class game {
     public void playMove (move MOVE) {
     	/* Check move count + repetitions before generating a move
     	 */
+    	enPassant = "-"; // Reset en passant
     	
-    	if(!board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
+    	System.out.println("instance "+(MOVE instanceof pawnMove));
+    	if(!board[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
     		halfmove = 0;
-    	}else if(MOVE instanceof pawnMove) {// Set enPassant
-    		try {
-        	    this.enPassant = func.sqNumToStr( ((pawnMove)MOVE).EN_PASSANT_SQ );
-    		}catch (ClassCastException e) {e.printStackTrace();}
-    		
-    		halfmove = 0;
-    	}else {
+    	}
+    	//else if(MOVE instanceof pawnMove) {// Set enPassant
+    	else {
     		halfmove += 1;
     	}
+    	
+		try {
+			System.out.println("before: "+this.enPassant);
+    	    this.enPassant = func.sqNumToStr( ((pawnMove)MOVE).EN_PASSANT_SQ );
+    	    System.out.println("after: "+this.enPassant);
+		}catch (ClassCastException e) {e.printStackTrace();}
+		
+		
+		
     	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
-    	board[MOVE.TARGET_SQUARE / 8][MOVE.TARGET_SQUARE % 8] = MOVE.PIECE.getNAME();
-    	if(playerToMove == -1) { // If black has played a move
+    	board[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8] = MOVE.PIECE.getNAME();
+    	if(getPlayerToMove() == -1) { // If black has played a move
     		fullmove += 1;
     	}
     	
@@ -209,23 +247,21 @@ public class game {
     	
     	currentFEN = genFEN();
     	readFEN(currentFEN);
-    	System.out.println("FEN: "+getFEN());
     	
     	/* 50 Move rule: check after move played
     	 * If the halfmove clock becomes greater or equal than 100, and the side to move has at least one legal move, a draw score should be assigned
     	 */
+    	
+    	logger log = new logger();
+    	log.logMove(MOVE.PIECE.getColour(), MOVE.PIECE.getNAME(), func.sqNumToStr(MOVE.START_SQUARE), func.sqNumToStr(MOVE.TARGET_SQUARE), currentFEN);
+    	
     }
     
-    
-    /** Generated the FEN for the current board[][] / game */
-    
-    // This is borked
+    /** Generated the FEN for the current board[][] / game
+     * this should no longer be borked and should work correctly
+     */
     String genFEN() {
     	String newFEN = "";
-    	
-    	
-    	// Method 1
-    	
     	for(int sqNum = 0; sqNum<64; sqNum++) {
     		int curRank = sqNum/8;
     				
@@ -250,10 +286,10 @@ public class game {
        	newFEN = newFEN.substring(0, newFEN.length()-1);// remove the last / from the FEN
        	newFEN += " ";
        	
-       	// Chnage the player to move
-       	if(playerToMove == 1) {
+       	// Change the player to move
+       	if(getPlayerToMove() == 1) {
        		newFEN += "b ";
-       	}else if(playerToMove == -1) {
+       	}else if(getPlayerToMove() == -1) {
        		newFEN += "w ";
        	}else {
        		System.out.println("genFEN() setting the player to move"); // error: should never run
@@ -293,7 +329,7 @@ public class game {
     	else if(pName.equals(pName.toLowerCase())){colour = -1;}//Black
     	
     	if (pName.equals("p") || pName.equals("P")) {
-    		pawn PAWN = new pawn(pName, sqaure, colour);
+    		pawn PAWN = new pawn(pName, sqaure, colour, enPassant);
     		return PAWN;
 
     	}else if (pName.equals("r") || pName.equals("R")) {
@@ -321,6 +357,48 @@ public class game {
 		return null;
     }
     
+
+    
+	/**
+	 * creates a temporary game from the current position to check which if
+	 * any pieces of the given colour are attacking the sqToChk.
+	 * </br></br>
+	 * If so returns true
+	 */
+	public boolean isSquareAttacked(int sqToChk, int pieceColour) {		
+		game tempGame = new game(this.getFEN());
+		tempGame.setPlayerToMove(pieceColour);
+		
+		ArrayList<move> movesToCheck = tempGame.generateMoves();
+		
+		for(move move : movesToCheck) {
+			if(move.getTARGET_SQUARE() == sqToChk) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	
+    /**
+     * ONLT FOR TESTING THE GUI
+     * @param moves
+     */
+    public void printPossibleMoves(ArrayList<move> moves) {
+    	int moveCount = 0;
+        for(move move : moves) {
+        	game tempGame = new game();
+        	System.out.println("Move: "+ ++moveCount);
+        	System.out.println(move);
+        	tempGame.playMove(move);
+        	tempGame.printBoard();
+        	System.out.println();
+        }
+    }
+    
+    
+	
     void printBoard(){
         System.out.println("+-+-+-+-+-+-+-+-+");
         for(int rank = 0; rank<8; rank++){
@@ -335,6 +413,22 @@ public class game {
         }
     }
     
+    public String getBoardasStr() {
+    	String boardStr = "<html>";
+    	boardStr += "+-+-+-+-+-+-+-+-+<br/>";
+        for(int rank = 0; rank<8; rank++){
+
+        	boardStr += "|";
+            for(int file = 0; file<8; file++){
+            	boardStr += board[rank][file]+"|";
+                //System.out.print(rank + ""+ file+"|");
+            }
+        	boardStr += "<br/>+-+-+-+-+-+-+-+-+<br/>";
+        }
+        boardStr += "</html>";
+        return boardStr;
+    }
+	
     private boolean isInteger(String s){
         try{
             int i = Integer.parseInt(s);
@@ -344,7 +438,18 @@ public class game {
         }
     }
     
+    
+    // --- GETERS & SETTERS GO HERE ---
     public String getFEN() {
     	return currentFEN;
     }
+    
+	public int getPlayerToMove() {
+		return playerToMove;
+	}
+	
+	public void setPlayerToMove(int pToMove) {
+		playerToMove = pToMove;
+	}
+
 }

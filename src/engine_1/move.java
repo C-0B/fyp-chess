@@ -37,27 +37,26 @@ public class move {
 	 * No piece can capture a king
 	 */
 	public boolean isKingTarget() {
-		if(PLAYER_TO_MOVE == 1){// White to move
+		if(getPLAYER_TO_MOVE() == 1){// White to move
 			if(CAPTURED_PIECE.equals("k")) {// Black king
 				return true;
 			}
-		}else if(PLAYER_TO_MOVE == -1) {// Black to move
+		}else if(getPLAYER_TO_MOVE() == -1) {// Black to move
 			if(CAPTURED_PIECE.equals("K")) {// White king
 				return true;
 			}
 		}
-		
 		return false;
 	}
-	
+		
 	/**
 	 *  Compare two moves
 	 */
 	public boolean equals(move move2) {
-		if(this.PLAYER_TO_MOVE == move2.PLAYER_TO_MOVE) {
+		if(this.getPLAYER_TO_MOVE() == move2.getPLAYER_TO_MOVE()) {
 			if(this.PIECE.equals(move2.PIECE)) {
 				if(this.START_SQUARE == move2.START_SQUARE) {
-					if(this.TARGET_SQUARE == move2.TARGET_SQUARE) {
+					if(this.getTARGET_SQUARE() == move2.getTARGET_SQUARE()) {
 						return true;
 					}
 				}
@@ -68,6 +67,14 @@ public class move {
 	
 	@Override
 	public String toString() {
-		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+TARGET_SQUARE+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(TARGET_SQUARE);
+		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+getTARGET_SQUARE()+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(getTARGET_SQUARE());
+	}
+
+	public int getTARGET_SQUARE() {
+		return TARGET_SQUARE;
+	}
+
+	public int getPLAYER_TO_MOVE() {
+		return PLAYER_TO_MOVE;
 	}
 }
