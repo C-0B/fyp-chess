@@ -17,14 +17,14 @@ public class game {
     boolean wCastleQSide = false;
     boolean bCastleKSide = false;
     boolean bCastleQSide = false;
+    int halfmove = 0; //Num plies since a pawn was moved or piece taken //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
+    int fullmove = 0; // Incremented after each of black's moves //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
     
-    //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
-    //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
-    int halfmove = 0; //Num plies since a pawn was moved or piece taken
-    int fullmove = 0; // Incremented after each of black's moves
+    pawn vunerbalePawn; // pawn that will be captured when the en passant capture occurs
+    
     
     /*
-     * Board is from the perspective of white  - doe sthis need to be change when the board is flipped?
+     * Board is from the perspective of white  - does this need to be change when the board is flipped?
      * 
      *  - Fifty move rule check function to be applied after each move
      *  - Move function 
@@ -57,98 +57,72 @@ public class game {
 
     public void readFEN(String fen){
     	currentFEN = fen;
-        String[] fenArray = fen.split("(?!^)");
-        
-        int fenIndex = 0;
+        String[] splitFEN = fen.split(" ");
+
+        // Board
+        String boardFEN[] = splitFEN[0].split("(?!^)");
+        int boardFENindex=0;
         for(int square = 0; square<64; square++){// Set up the board
-        	if(isInteger(fenArray[fenIndex])) {
-        		for(int i =  0; i < Integer.parseInt(fenArray[fenIndex]); i ++) {
-        			board[square/8][square%8] = " ";
-        			square++;
-        		}
-        		square--;
-        	}else if(!fenArray[fenIndex].equals("/")) {//else the character is a / which means go the next line
-        		board[square/8][square%8] = fenArray[fenIndex];	
-        	}else {
-        		square--;
-        	}
-        	fenIndex++;
+            if(isInteger(boardFEN[boardFENindex])) {
+                for(int i =  0; i < Integer.parseInt(boardFEN[boardFENindex]); i ++) {
+                    board[square/8][square%8] = " ";
+                    square++;
+                }
+                square--;
+            }else if(!boardFEN[boardFENindex].equals("/")) {//else the character is a / which means go the next line
+                board[square/8][square%8] = boardFEN[boardFENindex];	
+            }else {
+                square--;
+            }
+            boardFENindex++; 
         }
 
+        // Player To Move
+        if(splitFEN[1].equals("w"))		{ playerToMove = 1; }
+        else if(splitFEN[1].equals("b")){ playerToMove = -1; }
+        else{ System.out.println("Error reading player to move from FEN -> "+fen); }
+
+        // Castling Rights
+        if(!splitFEN[2].equals("-")){ // there are some castling rights
+            if(splitFEN[2].contains("K")) { wCastleKSide = true; }
+            if(splitFEN[2].contains("Q")) { wCastleQSide = true; }
+            if(splitFEN[2].contains("k")) { bCastleKSide = true; }
+            if(splitFEN[2].contains("q")) { bCastleQSide = true; }
+        }
+
+        // En passant
+        halfmove = Integer.parseInt(splitFEN[4]);// Half move counter
+        fullmove = Integer.parseInt(splitFEN[5]);// Full move counter
         
-        // read and set player to move
-        fenIndex++; // skip over empty space
-        String p2Move = fenArray[fenIndex];
-        if(p2Move.equals("w")) {
-        	playerToMove = 1;
-        }else if(p2Move.equals("b")) {
-        	playerToMove = -1;
-        }
-        fenIndex++;
-        // Castling privileges
-        fenIndex++;// Skip empty space
-        while(!fenArray[fenIndex].equals(" ")) {
-        	if(fenArray[fenIndex].equals("K")) {
-        		wCastleKSide = true;
-        	}else if(fenArray[fenIndex].equals("Q")) {
-        		wCastleQSide = true;
-        	}else if(fenArray[fenIndex].equals("k")) {
-        		bCastleKSide = true;
-        	}else if(fenArray[fenIndex].equals("q")) {
-        		bCastleQSide = true;
-        	}
-        	fenIndex++;
-        }
- 
-        //En Passant
-        fenIndex++; // Skip empty space
-        if(fenArray[fenIndex].equals("-")) {
-        	enPassant = "-";
-        }else {
-        	enPassant = fenArray[fenIndex] + fenArray[fenIndex+1];// enPassant is ALWAYS 2 characters eg. e3
-        	fenIndex++;
-        }
-        fenIndex++;
-        // read and set move counters
-        fenIndex++; // Skip empty space
-        if(isInteger(fenArray[fenIndex])) {
-        	if(isInteger(fenArray[fenIndex+1])) {
-        		fenIndex++;
-        		halfmove = Integer.parseInt(fenArray[fenIndex-1] + fenArray[fenIndex]); //2 digit halfmove value - can never be more than 2 digits
-        	}else {
-        		halfmove = Integer.parseInt(fenArray[fenIndex]);
-        	}
-        	
-        }else {System.out.println("FEN Read string that is not an integer for the halfmove value");}
-
-        fenIndex++;
-
-        // read and set castling privileges
-        fenIndex++; // Skip empty space
-        String fenFullmoveStr = "";
-        while(fenIndex < fenArray.length){// ALl remaining characters should be integers in the correct format
-        	fenFullmoveStr += fenArray[fenIndex];
-        	fenIndex++;
-        }
-        if(isInteger(fenFullmoveStr)) {
-        	fullmove = Integer.parseInt(fenFullmoveStr);
-        }else {System.out.println("FEN Read string that is not an integer for the fullmove value");}       
-    }   
+        printBoard();
+        System.out.println("Player To Move: "+splitFEN[1]+" aka "+playerToMove);
+        System.out.println("wK: "+wCastleKSide+" wQ: "+wCastleQSide);
+        System.out.println("bK: "+bCastleKSide+" bQ: "+bCastleQSide);
+        System.out.println("En Passant -> "+enPassant);
+        System.out.println("fullmove: "+fullmove);
+        System.out.println("halfmove: "+halfmove);
+    } // End of readFEN function
     
-    /**
-     * NOT YET FINISHED
-     * @return
-     */
+	/**
+	 * Part 1:
+	 *  - Gets a list of the players pieces with piece name and location
+	 *  <br>
+	 * Part 2:
+	 *  - Loops through the players pieces and calculates to pseudolegal moves for each piece
+	 *  <br>
+	 * Part 3/4:
+	 *  - Remove all moves where the current player is left in check
+	 *  - Check to see of the opponent is left in check?
+	 * @return 
+	 */
     public ArrayList<move> generateMoves(){
     	ArrayList<move> legalMoves = new ArrayList<move>();
     	ArrayList<piece> pieces = new ArrayList<piece>();
-    	
     	/* Part 1
-    	 * Gets a list of the players pieces
-    	 */
+    	 * Gets a list of the players pieces */
     	if(getPlayerToMove() == 1){//White is next  to move
     		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
-				String currentSq = board[squareNum /8][squareNum % 8];
+				String currentSq = board[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toUpperCase())) ) { //Upper case = white
 					piece currentPiece = createPiece(currentSq, squareNum);
 					pieces.add(currentPiece);
@@ -156,7 +130,7 @@ public class game {
 			}
     	}else if(getPlayerToMove() == -1){//Black is next to move
     		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
-				String currentSq = board[squareNum /8][squareNum % 8];
+				String currentSq = board[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toLowerCase())) ) {//Lower case = black
 					piece currentPiece = createPiece(currentSq, squareNum);
 					pieces.add(currentPiece);
@@ -165,7 +139,7 @@ public class game {
     	}
     	
     	/* Part 2
-    	 * Loops through the players pieces and calculates to moves for each piece
+    	 * Loops through the players pieces and calculates to pseudolegal moves for each piece
     	 */
      	for (piece curPiece : pieces) {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
@@ -213,7 +187,6 @@ public class game {
     	 */
     	enPassant = "-"; // Reset en passant
     	
-    	System.out.println("instance "+(MOVE instanceof pawnMove));
     	if(!board[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
     		halfmove = 0;
     	}
@@ -224,7 +197,7 @@ public class game {
     	
 		try {
 			System.out.println("before: "+this.enPassant);
-    	    this.enPassant = func.sqNumToStr( ((pawnMove)MOVE).EN_PASSANT_SQ );
+    	    this.enPassant = func.sqNumToStr( MOVE.EN_PASSANT_SQ );
     	    System.out.println("after: "+this.enPassant);
 		}catch (ClassCastException e) {e.printStackTrace();}
 		
@@ -245,7 +218,7 @@ public class game {
 
 
     	
-    	currentFEN = genFEN();
+    	currentFEN = genFENfromBoard();
     	readFEN(currentFEN);
     	
     	/* 50 Move rule: check after move played
@@ -257,10 +230,10 @@ public class game {
     	
     }
     
-    /** Generated the FEN for the current board[][] / game
-     * this should no longer be borked and should work correctly
+    /** Generates the FEN for the current board[][] / game
+     * this should no longer be borked and should work correctly ... Kap ...
      */
-    String genFEN() {
+    public String genFENfromBoard() {
     	String newFEN = "";
     	for(int sqNum = 0; sqNum<64; sqNum++) {
     		int curRank = sqNum/8;
@@ -357,8 +330,6 @@ public class game {
 		return null;
     }
     
-
-    
 	/**
 	 * creates a temporary game from the current position to check which if
 	 * any pieces of the given colour are attacking the sqToChk.
@@ -397,8 +368,6 @@ public class game {
         }
     }
     
-    
-	
     void printBoard(){
         System.out.println("+-+-+-+-+-+-+-+-+");
         for(int rank = 0; rank<8; rank++){
