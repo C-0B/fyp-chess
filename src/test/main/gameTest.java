@@ -44,6 +44,7 @@ class gameTest {
 	void generateSetOfFENsFromBoard(){
 		try (BufferedReader br = new BufferedReader(new FileReader("resources/listOfFens.txt"))) {
 		    String line;
+		    int i=0;
 		    while ((line = br.readLine()) != null) {
 		    	game GAME = new game(line);
 		    	System.out.println(" real  -> "+line);
