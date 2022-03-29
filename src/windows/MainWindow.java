@@ -1,7 +1,6 @@
 package windows;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -13,8 +12,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.nio.channels.NonReadableChannelException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +24,7 @@ import javax.swing.UIManager;
 import chessFunc.func;
 import engine_1.*;
 import engine_1.pieces.*;
+import engine_bb.board;
 
 import javax.swing.JButton;
 import javax.swing.ImageIcon;
@@ -35,7 +35,7 @@ public class MainWindow extends javax.swing.JFrame{
 	private JFrame frame;
 	private tile[][] boardTiles = new tile[8][8];
 	Point startPoint;
-	private game game = new game();
+	private game game;
 	private ArrayList<move> moves;
 	int index = 0;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
@@ -72,6 +72,7 @@ public class MainWindow extends javax.swing.JFrame{
 
 	private void newGame() {
 		game = new game();
+		//game = new game("8/5p2/4pk2/p6p/3P3P/2K1PP2/8/8 b - - 0 43");
 		loadFENtoBoard(game.getFEN());
 		legalMovesForPosition = game.generateMoves();
 			
@@ -80,7 +81,9 @@ public class MainWindow extends javax.swing.JFrame{
 		lblFENVal.setText(game.getFEN());
 	}
 	
-	private void startGame(String stFEN) {
+	/** Used to load a game from a user provided FEN
+	 */
+	private void startGamefromFEN(String stFEN) {
 		game = new game(stFEN);
 		loadFENtoBoard(game.getFEN());
 		legalMovesForPosition = game.generateMoves();
@@ -89,6 +92,145 @@ public class MainWindow extends javax.swing.JFrame{
 		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 		lblFENVal.setText(game.getFEN());
 	}
+	
+	/**
+	 * Uses the move created by the user using the GUI and plays the move on the game object,
+	 * displays the new board, generates the next legal moves, and prints them
+	 * @param MOVE
+	 */
+	private void makeMove(move MOVE) {
+		game.playMove(MOVE);
+		loadFENtoBoard(game.getFEN());
+		
+		legalMovesForPosition = game.generateMoves();
+//		game.printPossibleMoves(legalMovesForPosition);
+		
+		lblBoardVal.setText(game.getBoardasStr());
+		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
+		lblFENVal.setText(game.getFEN());
+	}
+	
+	/**
+	 * Loads a FEN by displaying the corresponding board position of the game object
+	 * on the board (GUI)
+	 */
+	private boolean loadFENtoBoard(String FEN) {
+		String[] fenArray = FEN.split("(?!^)");
+		int tilesCovered = 0, FENcount = 0;
+		while(tilesCovered < 64) {
+			String s = fenArray[FENcount];
+			if(isNumber(s)) {
+				int emptyTiles = Integer.parseInt(s);
+				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
+					//if player is black have the black pieces of the board
+					// if(playerColour==1){}else if{ ==-1} else{}
+					writeToTile(tilesCovered++, "");			
+				}
+				tilesCovered += emptyTiles;
+			}else{
+				if(s.equals("/")) {}
+				else {
+					writeToTile(tilesCovered, s);		
+					tilesCovered++;
+				}
+			}
+			FENcount++;
+		}
+		return true;
+	}
+	
+	private void loadBoardTilestoGUI(int closeColourSide) {
+		String[][] tempBoardStrings = new String[8][8];
+		if(closeColourSide == -1) {// If the player is black
+			tempBoardStrings = reverseString2DArr(game.getBoard().clone());
+		}else {
+			tempBoardStrings = game.getBoard().clone();
+		}
+		for(int row = 0; row<8; row++) {
+			for(int column = 0; column<8; column++) {
+				writeToTile( ((row*column)+column), tempBoardStrings[row][column]);
+			}
+		}
+	}
+	
+	/**
+	 * Checks if a string can be converted to an Integer
+	 */
+	private static boolean isNumber(String str) {
+		try {  
+			Integer.parseInt(str);  
+		    return true;
+		}catch(NumberFormatException e){  
+		    return false;  
+		}  
+	}
+	
+	/**
+	 * Writes data to appear on the board
+	 */
+	private void writeToTile(int trgtSqNum, String pieceName) {
+		int row = trgtSqNum / 8;
+		int column = trgtSqNum % 8;
+		int colour = 1; // White by default
+		
+		String imgPathString = "/images/_100x100/"; 
+		if(!pieceName.equals("")) {
+			if(pieceName.equals(pieceName.toUpperCase())) {
+				imgPathString += "white-";
+				colour = 1;
+			}else if(pieceName.equals(pieceName.toLowerCase())) {
+				imgPathString += "black-";
+				colour = -1; // why on earth was this 0?
+			}else { System.out.println("img colour error");}
+		}
+		
+		if(pieceName.toUpperCase().equals("P")) {
+			imgPathString += "pawn";
+			boardTiles[row][column].PIECE = new pawn(pieceName, trgtSqNum, colour, "");// Does this need enPassant?
+		}else if(pieceName.toUpperCase().equals("R")) {
+			imgPathString += "rook";
+			boardTiles[row][column].PIECE = new rook(pieceName, trgtSqNum, colour);
+		}else if(pieceName.toUpperCase().equals("N")) {
+			imgPathString += "knight";
+			boardTiles[row][column].PIECE = new knight(pieceName, trgtSqNum, colour);
+		}else if(pieceName.toUpperCase().equals("B")) {
+			imgPathString += "bishop";
+			boardTiles[row][column].PIECE = new bishop(pieceName, trgtSqNum, colour);
+		}else if(pieceName.toUpperCase().equals("Q")) {
+			imgPathString += "queen";
+			boardTiles[row][column].PIECE = new queen(pieceName, trgtSqNum, colour);
+		}else if(pieceName.toUpperCase().equals("K")) {
+			imgPathString += "king";
+			boardTiles[row][column].PIECE = new king(pieceName, trgtSqNum, colour);
+		}else {
+			imgPathString += "blank";
+			boardTiles[row][column].PIECE = null;
+		}
+		imgPathString += "_100x100.png";
+		boardTiles[row][column].button.setIcon(new ImageIcon(MainWindow.class.getResource(imgPathString)));
+	}
+	
+	/** 
+	 * Reverse a String array
+	 */
+    static String[] reverseStrArr(String[] array){
+        String reversedArray[] = new String[array.length];
+        for(int index = 0; index<reversedArray.length; index++){
+            reversedArray[index] = array[array.length-1-index];
+        }
+        return reversedArray;
+    }
+    /** Reverse a 2 dimenional string array, makes use of {@link #reverseStrArr()}
+     */
+    static String[][] reverseString2DArr(String[][] array2D){
+        String[][] rev2D = new String[array2D.length][array2D[0].length];
+        for(int row = 0; row<array2D.length; row++){
+            rev2D[row] = reverseStrArr(array2D[array2D.length-1-row]).clone();
+        }
+
+        return rev2D;
+    }
+
 
 	/**
 	 * Initialise the contents (elements) of the frame. */
@@ -145,8 +287,7 @@ public class MainWindow extends javax.swing.JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				move move = moves.get(index++);
-				game tempGame = new game();
-				tempGame.readFEN(game.getFEN());
+				game tempGame = new game(game.getFEN());
 				tempGame.playMove(move);
 				loadFENtoBoard(tempGame.getFEN());
 			}
@@ -368,7 +509,7 @@ public class MainWindow extends javax.swing.JFrame{
 		JButton btnLoadFromFEN = new JButton("Load Game From FEN");
 		btnLoadFromFEN.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {startGame(tfLoadFEN.getText());}
+			public void actionPerformed(ActionEvent e) {startGamefromFEN(tfLoadFEN.getText());}
 		});
 		GridBagConstraints gbc_btnLoadFromFEN = new GridBagConstraints();
 		gbc_btnLoadFromFEN.fill = GridBagConstraints.BOTH;
@@ -384,106 +525,4 @@ public class MainWindow extends javax.swing.JFrame{
 		frame.setVisible(true);
 	}
 	
-	/**
-	 * Uses the move created by the user using the GUI and plays the move on the game object,
-	 * displays the new board, generates the next legal moves, and prints them
-	 * @param MOVE
-	 */
-	private void makeMove(move MOVE) {
-		game.playMove(MOVE);
-		loadFENtoBoard(game.getFEN());
-		
-		legalMovesForPosition = game.generateMoves();
-//		game.printPossibleMoves(legalMovesForPosition);
-		
-		lblBoardVal.setText(game.getBoardasStr());
-		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
-		lblFENVal.setText(game.getFEN());
-	}
-	
-	/**
-	 * Loads a FEN by displaying the corresponding board position of the game object
-	 * on the board (GUI)
-	 */
-	private boolean loadFENtoBoard(String FEN) {
-		String[] fenArray = FEN.split("(?!^)");
-		int tilesCovered = 0, FENcount = 0;
-		while(tilesCovered < 64) {
-			String s = fenArray[FENcount];
-			if(isNumber(s)) {
-				int emptyTiles = Integer.parseInt(s);
-				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
-					//if player is black have the black pieces of the board
-					// if(playerColour==1){}else if{ ==-1} else{}
-					writeToTile(tilesCovered++, "");			
-				}
-				tilesCovered += emptyTiles;
-			}else{
-				if(s.equals("/")) {}
-				else {
-					writeToTile(tilesCovered, s);		
-					tilesCovered++;
-				}
-			}
-			FENcount++;
-		}
-		return true;
-	}
-	
-	/**
-	 * Checks if a string can be converted to an Integer
-	 */
-	private static boolean isNumber(String str) {
-		try {  
-			Integer.parseInt(str);  
-		    return true;
-		}catch(NumberFormatException e){  
-		    return false;  
-		}  
-	}
-	
-	/**
-	 * Writes data to appear on the board
-	 */
-	private void writeToTile(int trgtSqNum, String pieceName) {
-		int rank = trgtSqNum / 8;
-		int file = trgtSqNum % 8;
-		int colour = 1; // White by default
-		
-		String imgPathString = "/images/_100x100/"; 
-		if(!pieceName.equals("")) {
-			if(pieceName.equals(pieceName.toUpperCase())) {
-				imgPathString += "white-";
-				colour = 1;
-			}else if(pieceName.equals(pieceName.toLowerCase())) {
-				imgPathString += "black-";
-				colour = -1; // why on earth was this 0?
-			}else { System.out.println("img colour error");}
-		}
-		
-		if(pieceName.toUpperCase().equals("P")) {
-			imgPathString += "pawn";
-			boardTiles[rank][file].PIECE = new pawn(pieceName, trgtSqNum, colour, "");// Does this need enPassant?
-		}else if(pieceName.toUpperCase().equals("R")) {
-			imgPathString += "rook";
-			boardTiles[rank][file].PIECE = new rook(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("N")) {
-			imgPathString += "knight";
-			boardTiles[rank][file].PIECE = new knight(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("B")) {
-			imgPathString += "bishop";
-			boardTiles[rank][file].PIECE = new bishop(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("Q")) {
-			imgPathString += "queen";
-			boardTiles[rank][file].PIECE = new queen(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("K")) {
-			imgPathString += "king";
-			boardTiles[rank][file].PIECE = new king(pieceName, trgtSqNum, colour);
-		}else {
-			imgPathString += "blank";
-			boardTiles[rank][file].PIECE = null;
-		}
-		imgPathString += "_100x100.png";
-		boardTiles[rank][file].button.setIcon(new ImageIcon(MainWindow.class.getResource(imgPathString)));
-	}
 }

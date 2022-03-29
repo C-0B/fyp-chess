@@ -14,7 +14,6 @@ public class knight extends piece {
 	@Override
 	public ArrayList<move> generateMoves(String[][] BOARD){
 		ArrayList<move> moves = new ArrayList<move>();
-		
 		/*
 		 * 8 possible moves for a knight
 		 * +2 +1
@@ -26,7 +25,6 @@ public class knight extends piece {
 		 * -2 +1
 		 * -2 -1
 		 */
-		
 		
 		int startSquare = getSQUARE();		
 		int[] start_coord = func.sqNumToCoord(startSquare);

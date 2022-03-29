@@ -1,6 +1,7 @@
 package engine_1;
 
 import java.util.ArrayList;
+
 import engine_1.pieces.*;
 import log.logger;
 import chessFunc.func;
@@ -65,12 +66,12 @@ public class game {
         for(int square = 0; square<64; square++){// Set up the board
             if(isInteger(boardFEN[boardFENindex])) {
                 for(int i =  0; i < Integer.parseInt(boardFEN[boardFENindex]); i ++) {
-                    board[square/8][square%8] = " ";
+                    getBoard()[square/8][square%8] = " ";
                     square++;
                 }
                 square--;
             }else if(!boardFEN[boardFENindex].equals("/")) {//else the character is a / which means go the next line
-                board[square/8][square%8] = boardFEN[boardFENindex];	
+                getBoard()[square/8][square%8] = boardFEN[boardFENindex];	
             }else {
                 square--;
             }
@@ -122,7 +123,7 @@ public class game {
     	 * Gets a list of the players pieces */
     	if(getPlayerToMove() == 1){//White is next  to move
     		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
-				String currentSq = board[squareNum /8][squareNum % 8]; //Contents of current square
+				String currentSq = getBoard()[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toUpperCase())) ) { //Upper case = white
 					piece currentPiece = createPiece(currentSq, squareNum);
 					pieces.add(currentPiece);
@@ -130,7 +131,7 @@ public class game {
 			}
     	}else if(getPlayerToMove() == -1){//Black is next to move
     		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
-				String currentSq = board[squareNum /8][squareNum % 8]; //Contents of current square
+				String currentSq = getBoard()[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSq.equals(" ")) && (currentSq.equals(currentSq.toLowerCase())) ) {//Lower case = black
 					piece currentPiece = createPiece(currentSq, squareNum);
 					pieces.add(currentPiece);
@@ -143,7 +144,7 @@ public class game {
     	 */
      	for (piece curPiece : pieces) {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
-    		pieceMoves = curPiece.generateMoves(board);
+    		pieceMoves = curPiece.generateMoves(getBoard());
 
     		legalMoves.addAll(pieceMoves);
     	}
@@ -187,7 +188,7 @@ public class game {
     	 */
     	enPassant = "-"; // Reset en passant
     	
-    	if(!board[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
+    	if(!getBoard()[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8].equals(" ") || (MOVE.PIECE.getNAME().toUpperCase().equals("P"))) { // if capture occurs or pawn is moved halfmove counter is reset
     		halfmove = 0;
     	}
     	//else if(MOVE instanceof pawnMove) {// Set enPassant
@@ -203,8 +204,8 @@ public class game {
 		
 		
 		
-    	board[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
-    	board[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8] = MOVE.PIECE.getNAME();
+    	getBoard()[MOVE.START_SQUARE / 8][MOVE.START_SQUARE % 8] = " ";
+    	getBoard()[MOVE.getTARGET_SQUARE() / 8][MOVE.getTARGET_SQUARE() % 8] = MOVE.PIECE.getNAME();
     	if(getPlayerToMove() == -1) { // If black has played a move
     		fullmove += 1;
     	}
@@ -238,17 +239,17 @@ public class game {
     	for(int sqNum = 0; sqNum<64; sqNum++) {
     		int curRank = sqNum/8;
     				
-    		if(board[sqNum/8][sqNum%8].equals(" ")) {// empty space calc
+    		if(getBoard()[sqNum/8][sqNum%8].equals(" ")) {// empty space calc
     			int emptySquares = 0;
     			int chkSq = sqNum; // Square to check if the next value on the same rank is also blank
-    			while((board[chkSq/8][chkSq%8].equals(" ")) && (curRank == chkSq/8)) {
+    			while((getBoard()[chkSq/8][chkSq%8].equals(" ")) && (curRank == chkSq/8)) {
     				chkSq++;
     				emptySquares++;
     			}
     			sqNum = chkSq - 1;
     			newFEN += emptySquares;
     		}else {
-    			newFEN += board[sqNum/8][sqNum%8];
+    			newFEN += getBoard()[sqNum/8][sqNum%8];
     		}
     		
     		if(sqNum%8 == 7) {// If is the last column in the row before moving down a row
@@ -373,7 +374,7 @@ public class game {
         for(int rank = 0; rank<8; rank++){
             System.out.print("|");
             for(int file = 0; file<8; file++){
-                System.out.print(board[rank][file]+"|");
+                System.out.print(getBoard()[rank][file]+"|");
                 //System.out.print(rank + ""+ file+"|");
             }
             System.out.println();
@@ -389,7 +390,7 @@ public class game {
 
         	boardStr += "|";
             for(int file = 0; file<8; file++){
-            	boardStr += board[rank][file]+"|";
+            	boardStr += getBoard()[rank][file]+"|";
                 //System.out.print(rank + ""+ file+"|");
             }
         	boardStr += "<br/>+-+-+-+-+-+-+-+-+<br/>";
@@ -419,6 +420,10 @@ public class game {
 	
 	public void setPlayerToMove(int pToMove) {
 		playerToMove = pToMove;
+	}
+
+	public String[][] getBoard() {
+		return board;
 	}
 
 }

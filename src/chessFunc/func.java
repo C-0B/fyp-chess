@@ -2,11 +2,9 @@ package chessFunc;
 
 public abstract class func {
 	
-	
-
 	/**
 	 * @param squareNum 0-63 int
-	 * @return 2D array of [0,0] to [7, 7] aka a8 to h1
+	 * @return 2D array of [0,0] to [7, 7] aka a8 to h1 [top left to bottom right]
 	 */
 	public static int[] sqNumToCoord(int squareNum) {
 		// 0 = a8 - top left
