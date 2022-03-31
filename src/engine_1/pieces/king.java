@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import chessFunc.func;
 import engine_1.move;
-import engine_bb.board;
 
 public class king extends piece {
 	boolean inCheck = false;

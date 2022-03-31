@@ -1,7 +1,6 @@
 package engine_1;
 
 import engine_1.pieces.piece;
-import engine_bb.board;
 import chessFunc.*;
 
 public class move {
