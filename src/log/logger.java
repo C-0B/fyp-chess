@@ -29,7 +29,7 @@ public class logger {
 	    	
 	        String s = now()+"\t MOVE | "+colour+" "+peice+" @ "+startSqaure+" -> "+endSqaure+" | "+endFEN;
 	        
-	        FileWriter fw = new FileWriter("log.log", true);
+	        FileWriter fw = new FileWriter("resources/log.log", true);
 	        BufferedWriter bw = new BufferedWriter(fw);
 	        bw.write(s);
 	        bw.newLine();
