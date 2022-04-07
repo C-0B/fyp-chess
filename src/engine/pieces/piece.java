@@ -1,8 +1,9 @@
-package engine_1.pieces;
+package engine.pieces;
 
 import java.util.ArrayList;
 
-import engine_1.move;
+import chessFunc.func;
+import engine.move;
 
 public class piece {
 	String NAME = "";
@@ -13,6 +14,7 @@ public class piece {
 		NAME = pieceName;
 		SQUARE = square; // 0 -> 63
 		COLOUR = colour;
+		System.out.println(colour+" "+pieceName+" created at "+func.sqNumToStr(square));
 	}
 	
 	boolean isOnBoard(int[] coord) {

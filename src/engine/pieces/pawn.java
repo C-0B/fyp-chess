@@ -1,9 +1,9 @@
-package engine_1.pieces;
+package engine.pieces;
 
 import java.util.ArrayList;
 
 import chessFunc.func;
-import engine_1.move;
+import engine.move;
 
 /**
  * enPassant: value from the FEN string where an en passant capture is available (if there is one)
@@ -11,12 +11,10 @@ import engine_1.move;
 public class pawn extends piece {
 	String enPassant = "";
 	
-	/**
-	 * @param pieceName
+	/**@param pieceName
 	 * @param square
 	 * @param colour
-	 * @param enpassant -> value from the FEN string where an en passant capture is available on the board(if there is one)
-	 */
+	 * @param enpassant -> value from the FEN string where an en passant capture is available on the board(if there is one) */
 	public pawn(String pieceName, int square, int colour, String enpassant) {
 		super(pieceName, square, colour);
 		enPassant = enpassant;

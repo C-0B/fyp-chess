@@ -1,7 +1,7 @@
-package engine_1;
+package engine;
 
-import engine_1.pieces.piece;
 import chessFunc.*;
+import engine.pieces.piece;
 
 public class move {
 	int PLAYER_TO_MOVE = 1; //1 = white -1 = black

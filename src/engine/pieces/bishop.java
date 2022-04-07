@@ -1,13 +1,13 @@
-package engine_1.pieces;
+package engine.pieces;
 
 import java.util.ArrayList;
 
 import chessFunc.func;
-import engine_1.move;
+import engine.move;
 
-public class rook extends piece {
+public class bishop extends piece {
 
-	public rook(String pieceName, int square, int colour) {
+	public bishop(String pieceName, int square, int colour) {
 		super(pieceName, square, colour);
 		// TODO Auto-generated constructor stub
 	}
@@ -20,7 +20,7 @@ public class rook extends piece {
 		int[] start_coord = func.sqNumToCoord(startSquare);
 		int[] target_coord = new int[2];
 		
-		int[][] moveVectors = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+		int[][] moveVectors = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 		
 		for(int[] vector : moveVectors) {
 			for(int index = 1; index < 8; index++) {
@@ -48,6 +48,8 @@ public class rook extends piece {
 				}
 			}
 		}
+		//return new ArrayList<move>();
 		return moves;
 	}
+
 }

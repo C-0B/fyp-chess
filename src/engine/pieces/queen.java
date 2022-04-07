@@ -1,9 +1,9 @@
-package engine_1.pieces;
+package engine.pieces;
 
 import java.util.ArrayList;
 
 import chessFunc.func;
-import engine_1.move;
+import engine.move;
 
 public class queen extends piece {
 
