@@ -7,64 +7,48 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import chessFunc.func;
-import engine_1.*;
-import engine_1.pieces.*;
-import engine_bb.board;
+import engine.game;
+import engine.move;
 
-import javax.swing.JButton;
-import javax.swing.ImageIcon;
-import javax.swing.JTextField;
-
-public class MainWindow extends javax.swing.JFrame{
-
+public class MainWindow{
 	private JFrame frame;
 	private tile[][] boardTiles = new tile[8][8];
-	Point startPoint;
 	private game game;
 	private ArrayList<move> moves;
 	int index = 0;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
-	
 	private ArrayList<move> legalMovesForPosition;
-	
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
 	
-
-	/**
-	 * Launch the application.
-	 */
+	/** Launch the application. */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//					UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 					MainWindow window = new MainWindow();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				} catch (Exception e) { e.printStackTrace(); }
 			}
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
+	/** Construct the application. */
 	public MainWindow() {
 		initialize(); // Generate GUI
 		newGame(); // Load starting FEN and set up other elements
@@ -72,35 +56,21 @@ public class MainWindow extends javax.swing.JFrame{
 
 	private void newGame() {
 		game = new game();
-		//game = new game("8/5p2/4pk2/p6p/3P3P/2K1PP2/8/8 b - - 0 43");
-		loadFENtoBoard(game.getFEN());
+		loadGameToGUI();
+		
 		legalMovesForPosition = game.generateMoves();
-			
 		lblBoardVal.setText(game.getBoardasStr());
 		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 		lblFENVal.setText(game.getFEN());
 	}
 	
-	/** Used to load a game from a user provided FEN
-	 */
-	private void startGamefromFEN(String stFEN) {
-		game = new game(stFEN);
-		loadFENtoBoard(game.getFEN());
-		legalMovesForPosition = game.generateMoves();
-			
-		lblBoardVal.setText(game.getBoardasStr());
-		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
-		lblFENVal.setText(game.getFEN());
-	}
-	
-	/**
-	 * Uses the move created by the user using the GUI and plays the move on the game object,
+	/** Uses the move created by the user using the GUI and plays the move on the game object,
 	 * displays the new board, generates the next legal moves, and prints them
 	 * @param MOVE
 	 */
 	private void makeMove(move MOVE) {
 		game.playMove(MOVE);
-		loadFENtoBoard(game.getFEN());
+		loadGameToGUI();
 		
 		legalMovesForPosition = game.generateMoves();
 //		game.printPossibleMoves(legalMovesForPosition);
@@ -110,51 +80,60 @@ public class MainWindow extends javax.swing.JFrame{
 		lblFENVal.setText(game.getFEN());
 	}
 	
-	/**
-	 * Loads a FEN by displaying the corresponding board position of the game object
+	/** Loads a FEN by displaying the corresponding board position of the game object
 	 * on the board (GUI)
+	 * to deprecated 
 	 */
-	private boolean loadFENtoBoard(String FEN) {
-		String[] fenArray = FEN.split("(?!^)");
-		int tilesCovered = 0, FENcount = 0;
-		while(tilesCovered < 64) {
-			String s = fenArray[FENcount];
-			if(isNumber(s)) {
-				int emptyTiles = Integer.parseInt(s);
-				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
-					//if player is black have the black pieces of the board
-					// if(playerColour==1){}else if{ ==-1} else{}
-					writeToTile(tilesCovered++, "");			
-				}
-				tilesCovered += emptyTiles;
-			}else{
-				if(s.equals("/")) {}
-				else {
-					writeToTile(tilesCovered, s);		
-					tilesCovered++;
-				}
-			}
-			FENcount++;
-		}
-		return true;
-	}
+//	private boolean loadFENtoBoard(String FEN) {
+//		String[] fenArray = FEN.split(" ");
+//		int tilesCovered = 0, FENcount = 0;
+//		while(tilesCovered < 64) {
+//			String s = fenArray[FENcount];
+//			if(isNumber(s)) {
+//				int emptyTiles = Integer.parseInt(s);
+//				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
+//					//if player is black have the black pieces of the board
+//					// if(playerColour==1){}else if{ ==-1} else{}
+//					writeIconToTile(tilesCovered/8, tilesCovered%8, "");		
+//					tilesCovered++;
+//				}
+//				tilesCovered += emptyTiles;
+//			}else{
+//				if(s.equals("/")) {}
+//				else {
+//					writeIconToTile(tilesCovered/8, tilesCovered%8, s);		
+//					tilesCovered++;
+//				}
+//			}
+//			FENcount++;
+//		}
+//		return true;
+//	}
 	
-	private void loadBoardTilestoGUI(int closeColourSide) {
-		String[][] tempBoardStrings = new String[8][8];
-		if(closeColourSide == -1) {// If the player is black
-			tempBoardStrings = reverseString2DArr(game.getBoard().clone());
-		}else {
-			tempBoardStrings = game.getBoard().clone();
-		}
-		for(int row = 0; row<8; row++) {
+	private void loadGameToGUI() {
+		// Add a parameter of the players colour(to flip the board)
+		for(int row = 0; row<8 ; row++) {
 			for(int column = 0; column<8; column++) {
-				writeToTile( ((row*column)+column), tempBoardStrings[row][column]);
+				writeIconToTile(row, column, game.getBoard()[row][column]);				
 			}
 		}
 	}
+/** this was made but never used this idk really	*/
+//	private void loadBoardTilestoGUI(int closeColourSide) {
+//		String[][] tempBoardStrings = new String[8][8];
+//		if(closeColourSide == -1) {// If the player is black
+//			tempBoardStrings = reverseString2DArr(game.getBoard().clone());
+//		}else {
+//			tempBoardStrings = game.getBoard().clone();
+//		}
+//		for(int row = 0; row<8; row++) {
+//			for(int column = 0; column<8; column++) {
+//				writeIconToTile(row, column, tempBoardStrings[row][column]);
+//			}
+//		}
+//	}
 	
-	/**
-	 * Checks if a string can be converted to an Integer
+	/** Checks if a string can be converted to an Integer
 	 */
 	private static boolean isNumber(String str) {
 		try {  
@@ -165,50 +144,35 @@ public class MainWindow extends javax.swing.JFrame{
 		}  
 	}
 	
-	/**
-	 * Writes data to appear on the board
+	/** Writes data for a single tile to appear on the board
 	 */
-	private void writeToTile(int trgtSqNum, String pieceName) {
-		int row = trgtSqNum / 8;
-		int column = trgtSqNum % 8;
-		int colour = 1; // White by default
-		
-		String imgPathString = "/images/_100x100/"; 
-		if(!pieceName.equals("")) {
-			if(pieceName.equals(pieceName.toUpperCase())) {
-				imgPathString += "white-";
-				colour = 1;
-			}else if(pieceName.equals(pieceName.toLowerCase())) {
-				imgPathString += "black-";
-				colour = -1; // why on earth was this 0?
-			}else { System.out.println("img colour error");}
-		}
-		
-		if(pieceName.toUpperCase().equals("P")) {
-			imgPathString += "pawn";
-			boardTiles[row][column].PIECE = new pawn(pieceName, trgtSqNum, colour, "");// Does this need enPassant?
-		}else if(pieceName.toUpperCase().equals("R")) {
-			imgPathString += "rook";
-			boardTiles[row][column].PIECE = new rook(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("N")) {
-			imgPathString += "knight";
-			boardTiles[row][column].PIECE = new knight(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("B")) {
-			imgPathString += "bishop";
-			boardTiles[row][column].PIECE = new bishop(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("Q")) {
-			imgPathString += "queen";
-			boardTiles[row][column].PIECE = new queen(pieceName, trgtSqNum, colour);
-		}else if(pieceName.toUpperCase().equals("K")) {
-			imgPathString += "king";
-			boardTiles[row][column].PIECE = new king(pieceName, trgtSqNum, colour);
-		}else {
-			imgPathString += "blank";
-			boardTiles[row][column].PIECE = null;
-		}
-		imgPathString += "_100x100.png";
+	private void writeIconToTile(int row, int column, String pieceName) {
+		String imgPathString = genIconImgPath(pieceName);
 		boardTiles[row][column].button.setIcon(new ImageIcon(MainWindow.class.getResource(imgPathString)));
 	}
+	
+	/** Generates the path of the png that will be used as the icon for the tile */
+    private String genIconImgPath(String pieceName) {
+    	
+		String imgPathString = "/images/_100x100/";
+		if(!pieceName.equals("") && !pieceName.equals(" ")) {
+			if(pieceName.equals(pieceName.toUpperCase())) {
+				imgPathString += "white-";
+			}else if(pieceName.equals(pieceName.toLowerCase())) {
+				imgPathString += "black-";
+			}else { System.out.println("img colour error");}
+		}
+		// Assigning a piece to each of the tiles to on the GUI
+		if(pieceName.toUpperCase().equals("P")) 	 {imgPathString += "pawn";}
+		else if(pieceName.toUpperCase().equals("R")) {imgPathString += "rook";}
+		else if(pieceName.toUpperCase().equals("N")) {imgPathString += "knight";}
+		else if(pieceName.toUpperCase().equals("B")) {imgPathString += "bishop";}
+		else if(pieceName.toUpperCase().equals("Q")) {imgPathString += "queen";}
+		else if(pieceName.toUpperCase().equals("K")) {imgPathString += "king";}
+		else {imgPathString += "blank";}
+		imgPathString += "_100x100.png";
+		return imgPathString;
+    }
 	
 	/** 
 	 * Reverse a String array
@@ -230,18 +194,16 @@ public class MainWindow extends javax.swing.JFrame{
 
         return rev2D;
     }
-
-
+ 
 	/**
 	 * Initialise the contents (elements) of the frame. */
 	private void initialize() {
-		
 		// basics of the frame
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.DARK_GRAY);
 		frame.setBackground(Color.DARK_GRAY);
 		frame.getContentPane().setForeground(new Color(0, 102, 153));
-		frame.setBounds(100, 100, 1800, 875); // This is just big enough to not be full screen but show all elements (not birng hidden)
+		frame.setBounds(100, 100, 1600, 900); // This is just big enough to not be full screen but show all elements (not birng hidden)
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH );
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -261,6 +223,12 @@ public class MainWindow extends javax.swing.JFrame{
 //		lpGBC.weightx = 0.21875;
 //		lpGBC.weighty = 0.8;
 		frame.getContentPane().add(leftPanel, lpGBC);
+		GridBagLayout gbl_leftPanel = new GridBagLayout();
+		gbl_leftPanel.columnWidths = new int[]{83, 111, 85, 0};
+		gbl_leftPanel.rowHeights = new int[]{23, 0, 0, 0};
+		gbl_leftPanel.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		leftPanel.setLayout(gbl_leftPanel);
 		
 		// Button to clear the board and reset currentGame
 		JButton btnNewGame = new JButton("New Game");
@@ -268,8 +236,12 @@ public class MainWindow extends javax.swing.JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {newGame();}
 		});
-		leftPanel.add(btnNewGame);
-		
+		GridBagConstraints gbc_btnNewGame = new GridBagConstraints();
+		gbc_btnNewGame.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnNewGame.insets = new Insets(0, 0, 5, 5);
+		gbc_btnNewGame.gridx = 0;
+		gbc_btnNewGame.gridy = 0;
+		leftPanel.add(btnNewGame, gbc_btnNewGame);
 		
 		JButton btnGenMoves = new JButton("Generate Moves");
 		btnGenMoves.addActionListener(new ActionListener() {
@@ -279,20 +251,30 @@ public class MainWindow extends javax.swing.JFrame{
 				index = 0;
 			}
 		});
-		leftPanel.add(btnGenMoves);
-		
+		GridBagConstraints gbc_btnGenMoves = new GridBagConstraints();
+		gbc_btnGenMoves.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnGenMoves.insets = new Insets(0, 0, 5, 5);
+		gbc_btnGenMoves.gridx = 0;
+		gbc_btnGenMoves.gridy = 1;
+		leftPanel.add(btnGenMoves, gbc_btnGenMoves);
 		
 		JButton btnNextMove = new JButton("Next Move");
+		btnNextMove.setIcon(new ImageIcon(MainWindow.class.getResource("/images/_100x100/white-bishop_100x100.png")));
 		btnNextMove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				move move = moves.get(index++);
 				game tempGame = new game(game.getFEN());
 				tempGame.playMove(move);
-				loadFENtoBoard(tempGame.getFEN());
+//				loadFENtoBoard(tempGame.getFEN());
 			}
 		});
-		leftPanel.add(btnNextMove);
+		GridBagConstraints gbc_btnNextMove = new GridBagConstraints();
+		gbc_btnNextMove.insets = new Insets(0, 0, 0, 5);
+		gbc_btnNextMove.anchor = GridBagConstraints.NORTHWEST;
+		gbc_btnNextMove.gridx = 0;
+		gbc_btnNextMove.gridy = 2;
+		leftPanel.add(btnNextMove, gbc_btnNextMove);
 	
 		// ----- Middle Panel ----- (chess board)
 		JPanel mainPanel = new JPanel();
@@ -312,7 +294,7 @@ public class MainWindow extends javax.swing.JFrame{
 		
 		frame.getContentPane().add(mainPanel, mpGBC);
 		
-		//Set up board
+		//Set up the chess board (inside the middle panel)
 		boolean colour = false; //false = white, true = black
 		Dimension tileSize = new Dimension((mainPanel.getWidth()/10), (mainPanel.getWidth()/10));
 		tileSize.getWidth();
@@ -321,8 +303,7 @@ public class MainWindow extends javax.swing.JFrame{
 		for(int rank=0; rank<8; rank++) {
 			for(int file=0; file<8; file++) {
 				boardTiles[rank][file] = new tile(colour, rank, file, "");
-				/*
-				 * Button action of each tile is defined here to be able to access 
+				/* Button action of each tile is defined here to be able to access 
 				 */
 				final Integer RANK = rank;
 				final Integer FILE = file;
@@ -369,9 +350,7 @@ public class MainWindow extends javax.swing.JFrame{
 							if(moveIsLegal) {
 								System.out.println(game.isSquareAttacked(thisMove.getTARGET_SQUARE(), (0-thisMove.getPLAYER_TO_MOVE())));
 								makeMove(thisMove);
-							}else {
-								JOptionPane.showMessageDialog(mainPanel, "That Move is invalid");
-							}
+							}else { JOptionPane.showMessageDialog(mainPanel, "That Move is invalid");}
 						}
 					}
 					/*
@@ -415,7 +394,6 @@ public class MainWindow extends javax.swing.JFrame{
 
 //		JLabel lblNewLabel = new JLabel("Player To Move:");
 
-//		
 //		JLabel lblNewLabel_1 = new JLabel("start");
 //		lblNewLabel_1.setForeground(Color.WHITE);
 //		rightPanel.add(lblNewLabel_1, "4, 2");
@@ -429,9 +407,7 @@ public class MainWindow extends javax.swing.JFrame{
 //		rpGBC.weightx = 0.21875;
 //		rpGBC.weighty = 0.8;
 		frame.getContentPane().add(rightPanel, rpGBC);
-		
-		
-		
+
 		// The layout of elements in the right panel
 		GridBagLayout gbl_RP = new GridBagLayout();
 		gbl_RP.columnWidths = new int[]{0, 0};
@@ -509,20 +485,25 @@ public class MainWindow extends javax.swing.JFrame{
 		JButton btnLoadFromFEN = new JButton("Load Game From FEN");
 		btnLoadFromFEN.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {startGamefromFEN(tfLoadFEN.getText());}
+			public void actionPerformed(ActionEvent e) {
+				// Creates and loads a new game to the GUI using the FEN given by the user.
+				String stFEN = tfLoadFEN.getText();
+				game = new game(stFEN);
+				loadGameToGUI(); //loadFENtoBoard(game.getFEN());
+				legalMovesForPosition = game.generateMoves();	
+				lblBoardVal.setText(game.getBoardasStr());
+				lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
+				lblFENVal.setText(game.getFEN());
+			}
 		});
 		GridBagConstraints gbc_btnLoadFromFEN = new GridBagConstraints();
 		gbc_btnLoadFromFEN.fill = GridBagConstraints.BOTH;
 		gbc_btnLoadFromFEN.gridx = 0;
 		gbc_btnLoadFromFEN.gridy = 3;
 		rightPanel.add(btnLoadFromFEN, gbc_btnLoadFromFEN);
-		
-		// End of right panel + and it's elements
-		
 
-		// Keep this at the end 
-		//frame.pack(); 
+		// End of right panel + and it's elements
+//		frame.pack(); // Keep this at the end
 		frame.setVisible(true);
 	}
-	
 }
