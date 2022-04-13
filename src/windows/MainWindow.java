@@ -312,7 +312,7 @@ public class MainWindow{
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
 						if(boardTiles[RANK][FILE].PIECE != null) {
-							System.out.println(boardTiles[RANK][FILE].PIECE.getNAME() +" @ "+func.sqNumToStr((RANK*8) + FILE));
+							System.out.println(boardTiles[RANK][FILE].PIECE.getNAME() +" @ "+func.sqIntToStr((RANK*8) + FILE));
 						}
 					}
 				});

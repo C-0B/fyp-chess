@@ -85,7 +85,7 @@ public class move {
 	
 	@Override
 	public String toString() {
-		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+getTARGET_SQUARE()+" \n  "+func.sqNumToStr(this.START_SQUARE)+" -> "+func.sqNumToStr(getTARGET_SQUARE())+" \n En Passant: "+EN_PASSANT_SQ;
+		return PIECE.getNAME()+"@"+START_SQUARE+" -> "+getTARGET_SQUARE()+" \n  "+func.sqIntToStr(this.START_SQUARE)+" -> "+func.sqIntToStr(getTARGET_SQUARE())+" \n En Passant: "+EN_PASSANT_SQ;
 	}
 
 	public int getTARGET_SQUARE() {
