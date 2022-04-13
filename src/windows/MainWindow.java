@@ -65,9 +65,7 @@ public class MainWindow{
 	}
 	
 	/** Uses the move created by the user using the GUI and plays the move on the game object,
-	 * displays the new board, generates the next legal moves, and prints them
-	 * @param MOVE
-	 */
+	 * displays the new board, generates the next legal moves, and prints them */
 	private void makeMove(move MOVE) {
 		game.playMove(MOVE);
 		loadGameToGUI();
@@ -82,8 +80,7 @@ public class MainWindow{
 	
 	/** Loads a FEN by displaying the corresponding board position of the game object
 	 * on the board (GUI)
-	 * to deprecated 
-	 */
+	 * to deprecated */
 //	private boolean loadFENtoBoard(String FEN) {
 //		String[] fenArray = FEN.split(" ");
 //		int tilesCovered = 0, FENcount = 0;
@@ -226,8 +223,8 @@ public class MainWindow{
 		GridBagLayout gbl_leftPanel = new GridBagLayout();
 		gbl_leftPanel.columnWidths = new int[]{83, 111, 85, 0};
 		gbl_leftPanel.rowHeights = new int[]{23, 0, 0, 0};
-		gbl_leftPanel.columnWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_leftPanel.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		leftPanel.setLayout(gbl_leftPanel);
 		
 		// Button to clear the board and reset currentGame
@@ -259,7 +256,6 @@ public class MainWindow{
 		leftPanel.add(btnGenMoves, gbc_btnGenMoves);
 		
 		JButton btnNextMove = new JButton("Next Move");
-		btnNextMove.setIcon(new ImageIcon(MainWindow.class.getResource("/images/_100x100/white-bishop_100x100.png")));
 		btnNextMove.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -302,78 +298,94 @@ public class MainWindow{
 		Integer tileNum = 0;
 		for(int rank=0; rank<8; rank++) {
 			for(int file=0; file<8; file++) {
-				boardTiles[rank][file] = new tile(colour, rank, file, "");
+				boardTiles[rank][file] = new tile(colour, rank, file, " ");
 				/* Button action of each tile is defined here to be able to access 
 				 */
-				final Integer RANK = rank;
-				final Integer FILE = file;
+				final Integer RANK = rank; // rank of the current tile/button
+				final Integer FILE = file; // file of the current tile/button
 				boardTiles[rank][file].button.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
-						if(boardTiles[RANK][FILE].PIECE != null) {
-							System.out.println(boardTiles[RANK][FILE].PIECE.getNAME() +" @ "+func.sqIntToStr((RANK*8) + FILE));
-						}
+//						if(boardTiles[RANK][FILE].PIECE != null) {
+//							System.out.println(boardTiles[RANK][FILE].PIECE.getNAME() +" @ "+func.sqIntToStr((RANK*8) + FILE));
+//						}
+						System.out.println("button action");
 					}
 				});
 				
 				// Board button actions
 				boardTiles[rank][file].button.addMouseListener(new MouseListener() {					
-					/* 
-					 *  --- Create move by dragging ---
-					 */
+					/** Used to get the grid of the tile the mouse
+					 *  is over currently<p>
+					 *  Occurs when the mouse is dragged/moved into
+					 *  /onto the element */
 					@Override
 					public void mouseEntered(MouseEvent e) {
 						recentTile = boardTiles[RANK][FILE];
 					}
-					//Store recentTile to startTile
+					/** Store recentTile to startTile<p>
+					 *  Occurs when the mouse button is first
+					 *  pressed on the element, does not need to
+					 *  be released */
 					@Override
 					public void mousePressed(MouseEvent e) {
 						startTile = boardTiles[RANK][FILE];
 					}
 					
-					// Create move and see if its legal
+					/** Create move and see if its legal<p>
+					 *  Occurs when the mouse button is released 
+					 *  on the element*/
 					@Override
 					public void mouseReleased(MouseEvent e) {
 						boolean moveIsLegal = false;
 						endTile = recentTile; //Determined by which tiles the mouse has entered during the press(drag)
-						if(startTile.PIECE != null) {
+/*						if(startTile.PIECE != null) {
 							move thisMove = new move(game.getPlayerToMove(), startTile.PIECE, ((startTile.getRank()*8) + startTile.getFile()),((endTile.getRank()*8) + endTile.getFile()));
-							for(move move : legalMovesForPosition) {
+							for(move move : legalMovesForPosition) {// legalMovesForPosition.contains ?? maybe change to this
 								if(thisMove.equals(move)){
 									moveIsLegal = true;
 									break;
 								}// else isMoveLegal = false
 							}
-							
-							//Play the move
-							if(moveIsLegal) {
+							if(moveIsLegal) {//Play the move
 								System.out.println(game.isSquareAttacked(thisMove.getTARGET_SQUARE(), (0-thisMove.getPLAYER_TO_MOVE())));
 								makeMove(thisMove);
 							}else { JOptionPane.showMessageDialog(mainPanel, "That Move is invalid");}
+						}*/
+						String startSquareStr = func.sqIntToStr((startTile.getRank()*8)+startTile.getFile());
+						String targetSquareStr = func.sqIntToStr((endTile.getRank()*8)+endTile.getFile());
+						move move = new move(startSquareStr, targetSquareStr);
+						System.out.println("Move created: "+move);
+						if(true) {//legalMovesForPosition.contains(move)
+							game.playMove(move);
+							loadGameToGUI();
 						}
 					}
-					/*
-					 * --- Create move by clicking 2 squares
-					 * TODO
-					 */
+					
+					/** Occurs when press and release on the same button
+					 *  without moving the mouse to another element
+					 *  <p>
+					 *  Used for the user two click two seperate tiles on the board*/
 					@Override
 					public void mouseClicked(MouseEvent e) {
-						tile thisTile = boardTiles[RANK][FILE];
-						if(startTile != thisTile) {// Start of a move
-							move thisMove = new move(game.getPlayerToMove(), startTile.PIECE, ((startTile.getRank()*8)+startTile.getFile()) , ((RANK*8)+FILE));
-						}else {
-						}
-						if(thisTile.PIECE != null) {						
-						}
-						startTile = boardTiles[RANK][FILE]; // Reset start tile for the next click
+						System.out.println("click");
+//						tile thisTile = boardTiles[RANK][FILE];
+//						if(startTile != thisTile) {// Start of a move
+//							move thisMove = new move(game.getPlayerToMove(), startTile.PIECE, ((startTile.getRank()*8)+startTile.getFile()) , ((RANK*8)+FILE));
+//						}else {
+//							
+//						}
+//						if(thisTile.PIECE != null) {
+//							
+//						}
+//						startTile = boardTiles[RANK][FILE]; // Reset start tile for the next click
 					}
 
 					// Don't need - might delete later :)					
 					@Override
 					public void mouseExited(MouseEvent e) {}
 				});
-				
 				colour = !colour;
 				GridBagConstraints gbc_tile = new GridBagConstraints();
 				gbc_tile.gridx = file;
@@ -387,17 +399,11 @@ public class MainWindow{
 			}
 			colour = !colour;
 		}
-//		
+
 		// ----- Right panel -----
 		SquarePanel rightPanel = new SquarePanel();
 		rightPanel.setBackground(Color.BLACK);
 
-//		JLabel lblNewLabel = new JLabel("Player To Move:");
-
-//		JLabel lblNewLabel_1 = new JLabel("start");
-//		lblNewLabel_1.setForeground(Color.WHITE);
-//		rightPanel.add(lblNewLabel_1, "4, 2");
-//
 		//Placing the right panel in the window
 		GridBagConstraints rpGBC = new GridBagConstraints();
 		rpGBC.insets = new Insets(10, 10, 10, 10);
@@ -487,8 +493,16 @@ public class MainWindow{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Creates and loads a new game to the GUI using the FEN given by the user.
-				String stFEN = tfLoadFEN.getText();
-				game = new game(stFEN);
+				
+				//* add a verifcation/validation to the FEN str before the it is used for processing
+				String strFEN = tfLoadFEN.getText();
+				try {
+					game tempGame = new game(strFEN);
+				}catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, "There was an error reading the FEN");
+					return;
+				}
+				game = new game(strFEN);
 				loadGameToGUI(); //loadFENtoBoard(game.getFEN());
 				legalMovesForPosition = game.generateMoves();	
 				lblBoardVal.setText(game.getBoardasStr());
