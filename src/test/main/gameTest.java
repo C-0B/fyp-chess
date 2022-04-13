@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import engine_1.game;
+import engine.game;
 
 class gameTest {
 	public static void main(String[] args) {
@@ -17,7 +17,7 @@ class gameTest {
 		    while ((line = br.readLine()) != null) {
 		    	game GAME = new game(line);
 		    	System.out.println(" real  -> "+line);
-		    	GAME.genFENfromBoard();
+		    	GAME.generateFENfromBoard();
 		    	System.out.println("genFEN -> "+GAME.getFEN());
 		    }
 		}catch(IOException E) {
@@ -48,7 +48,7 @@ class gameTest {
 		    while ((line = br.readLine()) != null) {
 		    	game GAME = new game(line);
 		    	System.out.println(" real  -> "+line);
-		    	GAME.genFENfromBoard();
+		    	GAME.generateFENfromBoard();
 		    	System.out.println("genFEN -> "+GAME.getFEN());
 		    }
 		}catch(IOException E) {
