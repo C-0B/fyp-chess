@@ -5,8 +5,7 @@ import java.util.ArrayList;
 import chessFunc.func;
 import engine.move;
 
-/**
- * enPassant: value from the FEN string where an en passant capture is available (if there is one)
+/** enPassant: value from the FEN string where an en passant capture is available (if there is one)
  */
 public class pawn extends piece {
 	String enPassant = "";
