@@ -1,12 +1,13 @@
 package chessFunc;
 
+import org.junit.experimental.theories.Theories;
+
 public abstract class func {
 	
-	/**
-	 * @param squareNum 0-63 int
+	/**@param squareNum 0-63 int
 	 * @return 2D array of [0,0] to [7, 7] aka a8 to h1 [top left to bottom right]
 	 */
-	public static int[] sqNumToCoord(int squareNum) {
+	public static int[] sqIntToCoord(int squareNum) {
 		// 0 = a8 - top left
 		// 7 = h8 - top right
 		// 56 = a1 - bottom left
@@ -18,7 +19,7 @@ public abstract class func {
 		
 		return coord;
 	}
-	public static int coordTosqNum(int[] coord) {
+	public static int coordTosqInt(int[] coord) {
 		int rank = coord[0] ;
 		int file = coord[1];
 		return (rank*8) + file;
@@ -36,7 +37,7 @@ public abstract class func {
 		
 	}
 		
-	public static String sqNumToStr(int square) {
+	public static String sqIntToStr(int square) {
 		int rank = square / 8;
 		int file = square % 8;
 		
@@ -67,7 +68,6 @@ public abstract class func {
 		case 0:
 			fileString = "a";
 			break;
-
 		default:
 			break;
 		}
@@ -77,8 +77,7 @@ public abstract class func {
 	}
 	
 	
-	/*
-	 * checks if 2 strings of length one are both
+	/**checks if 2 strings of length one are both
 	 * upper or lower case. if so returns true
 	 * 
 	 * deprecated : check piece.isSameColour
@@ -99,5 +98,52 @@ public abstract class func {
 		}
 		
 		return false; // Don't think this should ever run :/
+	}
+	
+	
+	public static int sqStrToInt(String squareStr) {
+		int sqrInt = 0;
+		int fileInt=0, rankInt=0;
+		if(squareStr.length() == 2) {
+			String fileStr = squareStr.substring(0, 1);
+			String rankStr = squareStr.substring(1, 2);
+			
+			switch (fileStr) {
+			case "h":
+				fileInt = 7;
+				break;
+			case "g":
+				fileInt = 6;
+				break;
+			case "f":
+				fileInt = 5;
+				break;
+			case "e":
+				fileInt = 4;
+				break;
+			case "d":
+				fileInt = 3;
+				break;
+			case "c":
+				fileInt = 2;
+				break;
+			case "b":
+				fileInt = 1;
+				break;
+			case "a":
+				fileInt = 0;
+				break;
+			default:
+				break;
+			}
+			
+			rankInt = Integer.parseInt(rankStr);
+			
+			sqrInt = (rankInt*8) + fileInt;
+			return sqrInt;
+		}else {
+			System.out.println("func squareStrToInt input is not of length 2");
+			return sqrInt;
+		}		
 	}
 }
