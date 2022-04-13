@@ -107,7 +107,6 @@ public abstract class func {
 		if(squareStr.length() == 2) {
 			String fileStr = squareStr.substring(0, 1);
 			String rankStr = squareStr.substring(1, 2);
-			
 			switch (fileStr) {
 			case "h":
 				fileInt = 7;
@@ -136,10 +135,8 @@ public abstract class func {
 			default:
 				break;
 			}
-			
 			rankInt = Integer.parseInt(rankStr);
-			
-			sqrInt = (rankInt*8) + fileInt;
+			sqrInt = ((8-rankInt)*8) + fileInt;
 			return sqrInt;
 		}else {
 			System.out.println("func squareStrToInt input is not of length 2");
