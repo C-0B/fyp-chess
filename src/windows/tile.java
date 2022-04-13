@@ -1,44 +1,26 @@
-package windows;
+ package windows;
 
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.TileObserver;
 
 import javax.swing.JButton;
 
-import org.w3c.dom.html.HTMLTitleElement;
+import engine.pieces.piece;
 
-import engine_1.pieces.pawn;
-import engine_1.pieces.piece;
-import chessFunc.func;
-
-/**
- * @author Connor
-<<<<<<< HEAD
- * 
-=======
- * <p>
->>>>>>> 3b4c720239bc76a91a1a4572fe4e79f6bff6e1a3
- * The tile class is to used to represent one on the 64 tiles on a chess board.
- * 
+/** The tile class is to used to represent one on the 64 tiles on a chess board.
  */
-
 public class tile{
-	private String colour;
+	private String colour;// this is dumb / not needed i think; but it stays here for now
 	private int rank;
 	private int file;
-	private String current; //"none" if tile has no piece/empty
-	private boolean isAttacked = false; //Initially no pieces can attack each other.
+	private String current; //" " if tile has no piece/empty
 	JButton button;
-	piece PIECE;
+//	piece PIECE;
 	
-	public tile(boolean COLOUR, int RANK, int FILE, String PIECE) {	
+	public tile(boolean COLOUR, int RANK, int FILE, String pieceStr) {	
 		rank = RANK;
 		file = FILE;
-		current = PIECE;
+		current = pieceStr;
 		if(current.toUpperCase().equals("P")) {
 			
 		}else if(current.toUpperCase().equals("R")) {
