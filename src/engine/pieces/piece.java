@@ -12,9 +12,9 @@ public class piece {
 	
 	public piece(String pieceName, int square, int colour) {
 		NAME = pieceName;
-		SQUARE = square; // 0 -> 63
+		SQUARE = square; // 0 -> 63 starting from top left of the baord
 		COLOUR = colour;
-		System.out.println(colour+" "+pieceName+" created at "+func.sqNumToStr(square));
+		System.out.println(colour+" "+pieceName+" created at "+func.sqIntToStr(square));
 	}
 	
 	boolean isOnBoard(int[] coord) {
@@ -41,6 +41,11 @@ public class piece {
 	 * moves for that piece with the given board parameter
 	 */
 	public ArrayList<move> generateMoves(String Board[][]){
+		return null;
+	}
+	
+	/** @return string values such as a1, a2, h4, h5 etc */
+	public ArrayList<String> generateSqauresAttacking(String Board[][]) {
 		return null;
 	}
 	

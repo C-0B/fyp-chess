@@ -17,7 +17,7 @@ public class queen extends piece {
 	public ArrayList<move> generateMoves(String[][] BOARD){
 		ArrayList<move> moves = new ArrayList<move>();
 		int startSquare = getSQUARE();
-		int[] start_coord = func.sqNumToCoord(startSquare);
+		int[] start_coord = func.sqIntToCoord(startSquare);
 		int[] target_coord = new int[2];
 		
 		int[][] moveVectors = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, 
@@ -30,16 +30,16 @@ public class queen extends piece {
 				if(isOnBoard(target_coord)) {
 					String tgSquare = BOARD[target_coord[0]][target_coord[1]];
 					if(tgSquare.equals(" ")) {
-						int targetSquare = func.coordTosqNum(target_coord);
+						int targetSquare = func.coordTosqInt(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 						moves.add(MOVE);
 					}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
-						int targetSquare = func.coordTosqNum(target_coord);
+						int targetSquare = func.coordTosqInt(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
 						moves.add(MOVE);
 						break;
 					}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
-						int targetSquare = func.coordTosqNum(target_coord);
+						int targetSquare = func.coordTosqInt(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
 						moves.add(MOVE);
 						break;

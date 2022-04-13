@@ -27,7 +27,7 @@ public class knight extends piece {
 		 */
 		
 		int startSquare = getSQUARE();		
-		int[] start_coord = func.sqNumToCoord(startSquare);
+		int[] start_coord = func.sqIntToCoord(startSquare);
 		int[] target_coord = new int[2];
 		int[][] moveVectors = {{2, 1}, {2, -1}, {1, 2}, {1, -2},
 							   {-1, 2}, {-1, -2}, {-2, 1}, {-2, -1}};
@@ -38,13 +38,13 @@ public class knight extends piece {
 				String tgSquare = BOARD[target_coord[0]][target_coord[1]];
 				if(this.COLOUR == 1) {// White player to move
 					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toLowerCase())) {// If target is empty or black piece
-						int targetSquare = func.coordTosqNum(target_coord);
+						int targetSquare = func.coordTosqInt(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
 						moves.add(MOVE);
 					}
 				}else if (COLOUR == -1) {// Black PLayer to move
 					if((tgSquare.equals(" ")) || tgSquare.equals(tgSquare.toUpperCase())) {// If target is empty or white piece
-						int targetSquare = func.coordTosqNum(target_coord);
+						int targetSquare = func.coordTosqInt(target_coord);
 						move MOVE = new move(COLOUR, this, startSquare, targetSquare, BOARD[targetSquare/8][targetSquare%8]);
 						moves.add(MOVE);
 					}
