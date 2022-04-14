@@ -21,8 +21,8 @@ public class king extends piece {
 		int[] target_coord = new int[2];
 		
 		int[][] moveVectors = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, 
-							   {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-							   }; //Castling vectors;
+							   {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+								//Castling vectors;
 								// {0, 2}, {2, 0} castling tinleg vectors tempotraily removed 11/4/22 @ 00:20
 		
 		for(int[] vector : moveVectors) {
@@ -33,29 +33,23 @@ public class king extends piece {
 				if(tgSquare.equals(" ")) {
 					int targetSquare = func.coordTosqInt(target_coord);
 					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-					if(!this.isAdjacentToKing(targetSquare, BOARD, COLOUR)){ // If the new king position is not next to the opponents king
-						moves.add(MOVE);
-					}
+					moves.add(MOVE);
 				}else if((COLOUR == 1) && (tgSquare.equals(tgSquare.toLowerCase()))){// White Player
 					int targetSquare = func.coordTosqInt(target_coord);
 					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-					if(!this.isAdjacentToKing(targetSquare, BOARD, COLOUR)){ // If the new king position is not next to the opponents king
-						moves.add(MOVE);
-					}
+					moves.add(MOVE);
 				}else if((COLOUR == -1) && (tgSquare.equals(tgSquare.toUpperCase()))) {// Black Player
 					int targetSquare = func.coordTosqInt(target_coord);
 					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
-					if(!this.isAdjacentToKing(targetSquare, BOARD, COLOUR)){ // If the new king position is not next to the opponents king
-						moves.add(MOVE);
-					}
+					moves.add(MOVE);
 				}else {
 					break;
 				}
 			}
 		}
 		return moves;
-	}	
-	
+	}
+		
 	/** Used to check if the move would place the players king
 	 *  adjacent to the opponents king
 	 *  
