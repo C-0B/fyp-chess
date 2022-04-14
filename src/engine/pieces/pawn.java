@@ -114,7 +114,29 @@ public class pawn extends piece {
 		return moves;
 	}
 	
-	public ArrayList<String> generateSquaresAttacking(){
-		return null;
+	@Override
+	public ArrayList<String> generateSqauresAttacking(String Board[][]){
+		ArrayList<String> targetAttackingCoordStr = new ArrayList<String>();
+		int[] start_coord = func.sqIntToCoord(getSQUARE());
+		int startSquare = func.coordTosqInt(start_coord);
+		int[] target_coord = func.sqIntToCoord(getSQUARE());
+		
+		//Attacking diagonal left from the perspective of the player
+		target_coord[0] = start_coord[0] - (COLOUR);
+		target_coord[1] = start_coord[1] - 1;
+		int targetSquare = func.coordTosqInt(target_coord);
+		if(this.isOnBoard(target_coord)) {// on board check
+			targetAttackingCoordStr.add(func.sqIntToStr(targetSquare));
+		}
+		
+		//Attacking diagonal right from the perspective of the player
+		target_coord[0] = start_coord[0] - (COLOUR);
+		target_coord[1] = start_coord[1] - 1;
+		targetSquare = func.coordTosqInt(target_coord);
+		if(this.isOnBoard(target_coord)) {// on board check
+			targetAttackingCoordStr.add(func.sqIntToStr(targetSquare));
+		}
+
+		return targetAttackingCoordStr;
 	}
 }
