@@ -1,7 +1,5 @@
 package chessFunc;
 
-import org.junit.experimental.theories.Theories;
-
 public abstract class func {
 	
 	/**@param squareNum 0-63 int
@@ -19,6 +17,7 @@ public abstract class func {
 		
 		return coord;
 	}
+	
 	public static int coordTosqInt(int[] coord) {
 		int rank = coord[0] ;
 		int file = coord[1];
