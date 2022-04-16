@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -33,7 +34,6 @@ public class MainWindow{
 	private ArrayList<move> moves;
 	int index = 0;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
-	private ArrayList<move> legalMovesForPosition;
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
 	
 	/** Launch the application. */
@@ -51,61 +51,18 @@ public class MainWindow{
 	/** Construct the application. */
 	public MainWindow() {
 		initialize(); // Generate GUI
-		newGame(); // Load starting FEN and set up other elements
+		newGame(); // create new game, load it to GUI and set up other elements
 	}
 
 	private void newGame() {
 		game = new game();
+		moves = game.generateMoves();
 		loadGameToGUI();
-		
-		legalMovesForPosition = game.generateMoves();
-		lblBoardVal.setText(game.getBoardasStr());
-		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
-		lblFENVal.setText(game.getFEN());
-	}
-	
-	/** Uses the move created by the user using the GUI and plays the move on the game object,
-	 * displays the new board, generates the next legal moves, and prints them */
-	private void makeMove(move MOVE) {
-		game.playMove(MOVE);
-		loadGameToGUI();
-		
-		legalMovesForPosition = game.generateMoves();
-//		game.printPossibleMoves(legalMovesForPosition);
 		
 		lblBoardVal.setText(game.getBoardasStr());
 		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 		lblFENVal.setText(game.getFEN());
 	}
-	
-	/** Loads a FEN by displaying the corresponding board position of the game object
-	 * on the board (GUI)
-	 * to deprecated */
-//	private boolean loadFENtoBoard(String FEN) {
-//		String[] fenArray = FEN.split(" ");
-//		int tilesCovered = 0, FENcount = 0;
-//		while(tilesCovered < 64) {
-//			String s = fenArray[FENcount];
-//			if(isNumber(s)) {
-//				int emptyTiles = Integer.parseInt(s);
-//				for(emptyTiles = Integer.parseInt(s); emptyTiles>0; emptyTiles--) {
-//					//if player is black have the black pieces of the board
-//					// if(playerColour==1){}else if{ ==-1} else{}
-//					writeIconToTile(tilesCovered/8, tilesCovered%8, "");		
-//					tilesCovered++;
-//				}
-//				tilesCovered += emptyTiles;
-//			}else{
-//				if(s.equals("/")) {}
-//				else {
-//					writeIconToTile(tilesCovered/8, tilesCovered%8, s);		
-//					tilesCovered++;
-//				}
-//			}
-//			FENcount++;
-//		}
-//		return true;
-//	}
 	
 	private void loadGameToGUI() {
 		// Add a parameter of the players colour(to flip the board)
@@ -115,34 +72,8 @@ public class MainWindow{
 			}
 		}
 	}
-/** this was made but never used this idk really	*/
-//	private void loadBoardTilestoGUI(int closeColourSide) {
-//		String[][] tempBoardStrings = new String[8][8];
-//		if(closeColourSide == -1) {// If the player is black
-//			tempBoardStrings = reverseString2DArr(game.getBoard().clone());
-//		}else {
-//			tempBoardStrings = game.getBoard().clone();
-//		}
-//		for(int row = 0; row<8; row++) {
-//			for(int column = 0; column<8; column++) {
-//				writeIconToTile(row, column, tempBoardStrings[row][column]);
-//			}
-//		}
-//	}
 	
-	/** Checks if a string can be converted to an Integer
-	 */
-	private static boolean isNumber(String str) {
-		try {  
-			Integer.parseInt(str);  
-		    return true;
-		}catch(NumberFormatException e){  
-		    return false;  
-		}  
-	}
-	
-	/** Writes data for a single tile to appear on the board
-	 */
+	/** Writes data for a single tile to appear on the board */
 	private void writeIconToTile(int row, int column, String pieceName) {
 		String imgPathString = genIconImgPath(pieceName);
 		boardTiles[row][column].button.setIcon(new ImageIcon(MainWindow.class.getResource(imgPathString)));
@@ -171,9 +102,7 @@ public class MainWindow{
 		return imgPathString;
     }
 	
-	/** 
-	 * Reverse a String array
-	 */
+	/** Reverse a String array */
     static String[] reverseStrArr(String[] array){
         String reversedArray[] = new String[array.length];
         for(int index = 0; index<reversedArray.length; index++){
@@ -181,8 +110,7 @@ public class MainWindow{
         }
         return reversedArray;
     }
-    /** Reverse a 2 dimenional string array, makes use of {@link #reverseStrArr()}
-     */
+    /** Reverse a 2 dimenional string array, makes use of {@link #reverseStrArr()} */
     static String[][] reverseString2DArr(String[][] array2D){
         String[][] rev2D = new String[array2D.length][array2D[0].length];
         for(int row = 0; row<array2D.length; row++){
@@ -191,9 +119,29 @@ public class MainWindow{
 
         return rev2D;
     }
- 
-	/**
-	 * Initialise the contents (elements) of the frame. */
+    
+    private void showPossibleMoves(String startSqStr, ArrayList<move> legalMoves) {
+    	for(move legalMove : legalMoves) {
+    		if(legalMove.getStartSquareStr().equals(startSqStr)) {
+    			String tgtSqStr = legalMove.getTargetSquareStr();
+    			int tgtSqInt = func.sqStrToInt(tgtSqStr);
+    			
+    			int tgtSqRow = tgtSqInt / 8;
+    			int tgtSqColumn = tgtSqInt % 8;
+    			
+    			boardTiles[tgtSqRow][tgtSqColumn].setSelectedColour();
+    		}
+    	}
+    }
+    
+    private void resetTileCololurs() {
+    	for(tile[]rowTiles : boardTiles ) {
+    		for(tile tile : rowTiles) {
+    			tile.resetColour();
+    		}
+    	}
+    }
+	/** Initialise the contents (elements) of the frame. */
 	private void initialize() {
 		// basics of the frame
 		frame = new JFrame();
@@ -222,9 +170,9 @@ public class MainWindow{
 		frame.getContentPane().add(leftPanel, lpGBC);
 		GridBagLayout gbl_leftPanel = new GridBagLayout();
 		gbl_leftPanel.columnWidths = new int[]{83, 111, 85, 0};
-		gbl_leftPanel.rowHeights = new int[]{23, 0, 0, 0};
+		gbl_leftPanel.rowHeights = new int[]{0, 0, 0, 0, 0};
 		gbl_leftPanel.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE, 0.0};
 		leftPanel.setLayout(gbl_leftPanel);
 		
 		// Button to clear the board and reset currentGame
@@ -239,38 +187,7 @@ public class MainWindow{
 		gbc_btnNewGame.gridx = 0;
 		gbc_btnNewGame.gridy = 0;
 		leftPanel.add(btnNewGame, gbc_btnNewGame);
-		
-		JButton btnGenMoves = new JButton("Generate Moves");
-		btnGenMoves.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				moves = game.generateMoves();
-				index = 0;
-			}
-		});
-		GridBagConstraints gbc_btnGenMoves = new GridBagConstraints();
-		gbc_btnGenMoves.anchor = GridBagConstraints.NORTHWEST;
-		gbc_btnGenMoves.insets = new Insets(0, 0, 5, 5);
-		gbc_btnGenMoves.gridx = 0;
-		gbc_btnGenMoves.gridy = 1;
-		leftPanel.add(btnGenMoves, gbc_btnGenMoves);
-		
-		JButton btnNextMove = new JButton("Next Move");
-		btnNextMove.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				move move = moves.get(index++);
-				game tempGame = new game(game.getFEN());
-				tempGame.playMove(move);
-//				loadFENtoBoard(tempGame.getFEN());
-			}
-		});
-		GridBagConstraints gbc_btnNextMove = new GridBagConstraints();
-		gbc_btnNextMove.insets = new Insets(0, 0, 0, 5);
-		gbc_btnNextMove.anchor = GridBagConstraints.NORTHWEST;
-		gbc_btnNextMove.gridx = 0;
-		gbc_btnNextMove.gridy = 2;
-		leftPanel.add(btnNextMove, gbc_btnNextMove);
+
 	
 		// ----- Middle Panel ----- (chess board)
 		JPanel mainPanel = new JPanel();
@@ -291,7 +208,8 @@ public class MainWindow{
 		frame.getContentPane().add(mainPanel, mpGBC);
 		
 		//Set up the chess board (inside the middle panel)
-		boolean colour = false; //false = white, true = black
+//		boolean colour = false; //false = white, true = black
+		int colour = 1;//1 = white, -1 = black
 		Dimension tileSize = new Dimension((mainPanel.getWidth()/10), (mainPanel.getWidth()/10));
 		tileSize.getWidth();
 
@@ -305,13 +223,7 @@ public class MainWindow{
 				final Integer FILE = file; // file of the current tile/button
 				boardTiles[rank][file].button.addActionListener(new ActionListener() {
 					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-//						if(boardTiles[RANK][FILE].PIECE != null) {
-//							System.out.println(boardTiles[RANK][FILE].PIECE.getNAME() +" @ "+func.sqIntToStr((RANK*8) + FILE));
-//						}
-						System.out.println("button action");
-					}
+					public void actionPerformed(ActionEvent e) { System.out.println("button action"); }
 				});
 				
 				// Board button actions
@@ -331,36 +243,33 @@ public class MainWindow{
 					@Override
 					public void mousePressed(MouseEvent e) {
 						startTile = boardTiles[RANK][FILE];
+						showPossibleMoves(startTile.getSqName(), moves);
 					}
 					
 					/** Create move and see if its legal<p>
 					 *  Occurs when the mouse button is released 
-					 *  on the element*/
+					 *  on the element */
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						boolean moveIsLegal = false;
 						endTile = recentTile; //Determined by which tiles the mouse has entered during the press(drag)
-/*						if(startTile.PIECE != null) {
-							move thisMove = new move(game.getPlayerToMove(), startTile.PIECE, ((startTile.getRank()*8) + startTile.getFile()),((endTile.getRank()*8) + endTile.getFile()));
-							for(move move : legalMovesForPosition) {// legalMovesForPosition.contains ?? maybe change to this
-								if(thisMove.equals(move)){
-									moveIsLegal = true;
-									break;
-								}// else isMoveLegal = false
-							}
-							if(moveIsLegal) {//Play the move
-								System.out.println(game.isSquareAttacked(thisMove.getTARGET_SQUARE(), (0-thisMove.getPLAYER_TO_MOVE())));
-								makeMove(thisMove);
-							}else { JOptionPane.showMessageDialog(mainPanel, "That Move is invalid");}
-						}*/
 						String startSquareStr = func.sqIntToStr((startTile.getRank()*8)+startTile.getFile());
 						String targetSquareStr = func.sqIntToStr((endTile.getRank()*8)+endTile.getFile());
-						move move = new move(startSquareStr, targetSquareStr);
-						System.out.println("Move created: "+move);
-						if(true) {//legalMovesForPosition.contains(move)
-							game.playMove(move);
+						move userMove = new move(startSquareStr, targetSquareStr);
+						System.out.println("move attempted: "+userMove);
+						if( game.isMoveLegal(userMove)) {
+							game.playMove(userMove, 1);
 							loadGameToGUI();
+							moves = game.generateMoves();
+							
+							lblBoardVal.setText(game.getBoardasStr());
+							lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
+							lblFENVal.setText(game.getFEN());
+						}else {
+							//JOptionPane.showMessageDialog(null, "invalid move");
+							System.out.println("invalid move: "+userMove);
 						}
+
+						resetTileCololurs();
 					}
 					
 					/** Occurs when press and release on the same button
@@ -370,23 +279,13 @@ public class MainWindow{
 					@Override
 					public void mouseClicked(MouseEvent e) {
 						System.out.println("click");
-//						tile thisTile = boardTiles[RANK][FILE];
-//						if(startTile != thisTile) {// Start of a move
-//							move thisMove = new move(game.getPlayerToMove(), startTile.PIECE, ((startTile.getRank()*8)+startTile.getFile()) , ((RANK*8)+FILE));
-//						}else {
-//							
-//						}
-//						if(thisTile.PIECE != null) {
-//							
-//						}
-//						startTile = boardTiles[RANK][FILE]; // Reset start tile for the next click
 					}
 
 					// Don't need - might delete later :)					
 					@Override
 					public void mouseExited(MouseEvent e) {}
 				});
-				colour = !colour;
+				colour -= 2*colour;
 				GridBagConstraints gbc_tile = new GridBagConstraints();
 				gbc_tile.gridx = file;
 				gbc_tile.gridy = rank;
@@ -397,7 +296,7 @@ public class MainWindow{
 				boardTiles[rank][file].button.setFont(new Font("Arial", Font.BOLD, 18));
 				mainPanel.add(boardTiles[rank][file].button, gbc_tile);
 			}
-			colour = !colour;
+			colour -= 2*colour;
 		}
 
 		// ----- Right panel -----
@@ -504,7 +403,6 @@ public class MainWindow{
 				}
 				game = new game(strFEN);
 				loadGameToGUI(); //loadFENtoBoard(game.getFEN());
-				legalMovesForPosition = game.generateMoves();	
 				lblBoardVal.setText(game.getBoardasStr());
 				lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 				lblFENVal.setText(game.getFEN());
@@ -520,4 +418,16 @@ public class MainWindow{
 //		frame.pack(); // Keep this at the end
 		frame.setVisible(true);
 	}
+	
+	/** IS NEVER USED LOCALLY <p>
+	 * Checks if a string can be converted to an Integer */
+	private static boolean isNumber(String str) {
+		try {  
+			Integer.parseInt(str);  
+		    return true;
+		}catch(NumberFormatException e){  
+		    return false;  
+		}  
+	}
+	
 }
