@@ -8,8 +8,12 @@ import org.junit.jupiter.api.Test;
 
 class funcTest {
 	public static void main(String[] args) {
+		int[] plyrKingCoords = {7, 4};//0 indexed
+		System.out.println(func.sqIntToStr(func.coordTosqInt(plyrKingCoords)));
 
 	}
+	
+	
 	@Test
 	void squareIntToStringCoord(){
 		try {
@@ -57,4 +61,5 @@ class funcTest {
 	void sqStrToIntTesth1() {assertEquals(63, func.sqStrToInt("h1"));}
 	@Test
 	void sqStrToIntTesth8() {assertEquals(7, func.sqStrToInt("h8"));}
+
 }
