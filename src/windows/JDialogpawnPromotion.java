@@ -64,15 +64,6 @@ public class JDialogpawnPromotion extends JDialog {
 		gbl_contentPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		contentPanel.setLayout(gbl_contentPanel);
 		
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setVisible(false);
-				dispose();
-			}
-		});
-		
 		JButton btnQueen = new JButton();
 		if(colour == 1) {
 			btnQueen.setIcon(new ImageIcon(JDialogpawnPromotion.class.getResource("/images/_100x100/white-queen_100x100.png")));
@@ -148,12 +139,6 @@ public class JDialogpawnPromotion extends JDialog {
 		gbc_btnRook.gridx = 3;
 		gbc_btnRook.gridy = 2;
 		contentPanel.add(btnRook, gbc_btnRook);
-		GridBagConstraints gbc_btnCancel = new GridBagConstraints();
-		gbc_btnCancel.gridwidth = 2;
-		gbc_btnCancel.insets = new Insets(0, 0, 0, 5);
-		gbc_btnCancel.gridx = 2;
-		gbc_btnCancel.gridy = 3;
-		contentPanel.add(btnCancel, gbc_btnCancel);
 
 		JButton btnBishop = new JButton();
 		if(colour == 1) {
