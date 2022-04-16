@@ -5,59 +5,53 @@ import java.awt.Dimension;
 
 import javax.swing.JButton;
 
+import chessFunc.func;
 import engine.pieces.piece;
 
 /** The tile class is to used to represent one on the 64 tiles on a chess board.
  */
 public class tile{
-	private String colour;// this is dumb / not needed i think; but it stays here for now
+	private int colour; // 1 = white, -1 = black
 	private int rank;
 	private int file;
+	private String sqName = "";
 	private String current; //" " if tile has no piece/empty
 	JButton button;
-//	piece PIECE;
 	
-	public tile(boolean COLOUR, int RANK, int FILE, String pieceStr) {	
-		rank = RANK;
+
+	public int getRank() { return rank; }
+	public int getFile() { return file; }
+	public String getSqName() {return sqName; }
+	public String getCurrent() { return current; }
+		
+	public tile(int COLOUR, int RANK, int FILE, String pieceStr) {
+		colour = COLOUR;
 		file = FILE;
+		rank = RANK;
 		current = pieceStr;
-		if(current.toUpperCase().equals("P")) {
-			
-		}else if(current.toUpperCase().equals("R")) {
-			
-		}else if(current.toUpperCase().equals("N")) {
-			
-		}else if(current.toUpperCase().equals("B")) {
-			
-		}else if(current.toUpperCase().equals("Q")) {
-			
-		}else if(current.toUpperCase().equals("K")) {
-			
-		}		
+		
+		sqName = func.sqIntToStr((rank*8 + file));
+		
 		button = new JButton();
-		if(COLOUR) {
-			colour = "dark";
-			button.setBackground(new Color(139, 168, 76)); //Color.BLACK
-			
-		}else {
-			colour = "light";
-			button.setBackground(new Color(222, 222, 222)); //Color.WHITE
-		}
+		
+		resetColour();
+		//setSelectedColour(colour);
 		button.setPreferredSize(new Dimension(100, 100));
 		button.setMinimumSize(new Dimension(100, 100));
-		button.setBorderPainted(false);		
+		button.setBorderPainted(false);	
+	}
+
+	
+	public void resetColour() {
+		// Green and pale colours
+		if(colour == -1)    { button.setBackground(new Color(139, 168, 76)); } // "dark"
+		else if(colour == 1){ button.setBackground(new Color(222, 222, 222)); } // "light"	
 	}
 	
-	public String getCurrent() {
-		return current;
-	}
-
-	public int getRank() {
-		return rank;
-	}
-
-	public int getFile() {
-		return file;
+	public void setSelectedColour() {
+		// Light and dark red colours
+		if(colour == -1)    { button.setBackground(new Color(215, 102, 101)); } // "dark"
+		else if(colour == 1){ button.setBackground(new Color(236, 126, 112)); } // "light"	
 	}
 }
 
