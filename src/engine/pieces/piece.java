@@ -14,7 +14,7 @@ public class piece {
 		NAME = pieceName;
 		SQUARE = square; // 0 -> 63 starting from top left of the baord
 		COLOUR = colour;
-		System.out.println(colour+" "+pieceName+" created at "+func.sqIntToStr(square));
+//		System.out.println(colour+" "+pieceName+" created at "+func.sqIntToStr(square));
 	}
 	
 	boolean isOnBoard(int[] coord) {
