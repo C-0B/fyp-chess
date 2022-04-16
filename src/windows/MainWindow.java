@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -35,6 +34,7 @@ public class MainWindow{
 	int index = 0;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
+	JDialogpawnPromotion promotion;
 	
 	/** Launch the application. */
 	public static void main(String[] args) {
@@ -52,6 +52,8 @@ public class MainWindow{
 	public MainWindow() {
 		initialize(); // Generate GUI
 		newGame(); // create new game, load it to GUI and set up other elements
+		
+//		promotion = new JDialogpawnPromotion(1);
 	}
 
 	private void newGame() {
@@ -116,7 +118,6 @@ public class MainWindow{
         for(int row = 0; row<array2D.length; row++){
             rev2D[row] = reverseStrArr(array2D[array2D.length-1-row]).clone();
         }
-
         return rev2D;
     }
     
@@ -171,21 +172,19 @@ public class MainWindow{
 		lpGBC.fill = GridBagConstraints.BOTH;
 		lpGBC.gridx = 0;
 		lpGBC.gridy = 1;
-//		lpGBC.weightx = 0.21875;
-//		lpGBC.weighty = 0.8;
 		frame.getContentPane().add(leftPanel, lpGBC);
 		GridBagLayout gbl_leftPanel = new GridBagLayout();
-		gbl_leftPanel.columnWidths = new int[]{83, 111, 85, 0};
-		gbl_leftPanel.rowHeights = new int[]{0, 0, 0, 0, 0};
+		gbl_leftPanel.columnWidths = new int[]{0, 0, 0};
+		gbl_leftPanel.rowHeights = new int[]{0, 0, 0};
 		gbl_leftPanel.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE, 0.0};
+		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		leftPanel.setLayout(gbl_leftPanel);
 		
 		// Button to clear the board and reset currentGame
 		JButton btnNewGame = new JButton("New Game");
 		btnNewGame.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {newGame();}
+			public void actionPerformed(ActionEvent e) {newGame();System.out.println(promotion.getPieceSelected());}
 		});
 		GridBagConstraints gbc_btnNewGame = new GridBagConstraints();
 		gbc_btnNewGame.anchor = GridBagConstraints.NORTHWEST;
@@ -205,7 +204,6 @@ public class MainWindow{
 		mpGBC.fill = GridBagConstraints.BOTH;
 		mpGBC.gridx = 1;
 		mpGBC.gridy = 1;
-//		mpGBC.weightx = 0.5626;
 		GridBagLayout mpGBL = new GridBagLayout();
 		mpGBL.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		mpGBL.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -223,18 +221,17 @@ public class MainWindow{
 		for(int rank=0; rank<8; rank++) {
 			for(int file=0; file<8; file++) {
 				boardTiles[rank][file] = new tile(colour, rank, file, " ");
-				/* Button action of each tile is defined here to be able to access 
-				 */
+				/* Button action of each tile is defined here to be able to access  */
 				final Integer RANK = rank; // rank of the current tile/button
 				final Integer FILE = file; // file of the current tile/button
 				boardTiles[rank][file].button.addActionListener(new ActionListener() {
 					@Override
-					public void actionPerformed(ActionEvent e) { System.out.println("button action"); }
+					public void actionPerformed(ActionEvent e) { }
 				});
 				
 				// Board button actions
 				boardTiles[rank][file].button.addMouseListener(new MouseListener() {					
-					/** Used to get the grid of the tile the mouse
+					/** Used to get the grid of the tile the mouse1
 					 *  is over currently<p>
 					 *  Occurs when the mouse is dragged/moved into
 					 *  /onto the element */
@@ -257,11 +254,10 @@ public class MainWindow{
 					 *  on the element */
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						endTile = recentTile; //Determined by which tiles the mouse has entered during the press(drag)
+						endTile = recentTile; // Determined by which tiles the mouse has entered during the press(drag)
 						String startSquareStr = func.sqIntToStr((startTile.getRank()*8)+startTile.getFile());
 						String targetSquareStr = func.sqIntToStr((endTile.getRank()*8)+endTile.getFile());
 						move userMove = new move(startSquareStr, targetSquareStr);
-						System.out.println("move attempted: "+userMove);
 						if( game.isMoveLegal(userMove)) {
 							game.playMove(userMove, 1);
 							loadGameToGUI();
@@ -283,9 +279,7 @@ public class MainWindow{
 					 *  <p>
 					 *  Used for the user two click two seperate tiles on the board*/
 					@Override
-					public void mouseClicked(MouseEvent e) {
-						System.out.println("click");
-					}
+					public void mouseClicked(MouseEvent e) { }
 
 					// Don't need - might delete later :)					
 					@Override
