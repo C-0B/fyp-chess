@@ -39,6 +39,7 @@ public class tile{
 		button.setPreferredSize(new Dimension(100, 100));
 		button.setMinimumSize(new Dimension(100, 100));
 		button.setBorderPainted(false);	
+		button.setFocusPainted(false);
 	}
 
 	
@@ -51,12 +52,13 @@ public class tile{
 	public void setSelectedColour() {
 		// Light and dark red colours
 		if(colour == -1)    { button.setBackground(new Color(215, 102, 101)); } // "dark"
-		else if(colour == 1){ button.setBackground(new Color(236, 126, 112)); } // "light"	
+		else if(colour == 1){ button.setBackground(new Color(230, 150, 140)); } // "light"	236, 126, 112
+		
 	}
 	
 	public void setCurrentTile() {
-		if(colour == -1)    { button.setBackground(new Color(79, 95, 214)); } // "dark"
-		else if(colour == 1){ button.setBackground(new Color(79, 162, 214)); } // "light"	
+		if(colour == -1)    { button.setBackground(new Color(54, 100, 227)); } // "dark"
+		else if(colour == 1){ button.setBackground(new Color(99, 195, 230)); } // "light"	
 	}
 }
 
