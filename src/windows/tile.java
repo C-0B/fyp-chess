@@ -53,6 +53,11 @@ public class tile{
 		if(colour == -1)    { button.setBackground(new Color(215, 102, 101)); } // "dark"
 		else if(colour == 1){ button.setBackground(new Color(236, 126, 112)); } // "light"	
 	}
+	
+	public void setCurrentTile() {
+		if(colour == -1)    { button.setBackground(new Color(79, 95, 214)); } // "dark"
+		else if(colour == 1){ button.setBackground(new Color(79, 162, 214)); } // "light"	
+	}
 }
 
 

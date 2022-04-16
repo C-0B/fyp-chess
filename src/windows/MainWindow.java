@@ -121,6 +121,12 @@ public class MainWindow{
     }
     
     private void showPossibleMoves(String startSqStr, ArrayList<move> legalMoves) {
+    	
+    	int startSqInt = func.sqStrToInt(startSqStr);
+    	int startSqRow = startSqInt / 8;
+    	int startSqColumn = startSqInt % 8;
+    	boardTiles[startSqRow][startSqColumn].setCurrentTile();
+    	
     	for(move legalMove : legalMoves) {
     		if(legalMove.getStartSquareStr().equals(startSqStr)) {
     			String tgtSqStr = legalMove.getTargetSquareStr();
