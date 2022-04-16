@@ -42,8 +42,6 @@ public class king extends piece {
 					int targetSquare = func.coordTosqInt(target_coord);
 					move MOVE = new move(COLOUR, this, startSquare, targetSquare);
 					moves.add(MOVE);
-				}else {
-					break;
 				}
 			}
 		}
