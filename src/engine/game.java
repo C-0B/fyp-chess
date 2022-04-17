@@ -16,7 +16,7 @@ public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
-    private String startFEN = "rnbqk3/pppp4/8/8/8/8/4PPPP/3QKBNR w Kq - 0 1";
+    private String startFEN = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
@@ -36,12 +36,10 @@ public class game {
      *  - Move function 
      *  - castling privileges check
      *  - check if the king is in 'check' */
-    public game(){
-        readFEN(startFEN);
-    }
-    public game(String FENtoStartFrom) {
-        readFEN(FENtoStartFrom);
-    }
+    public game()					   { readFEN(startFEN);  }
+    public game(String FENtoStartFrom) { readFEN(FENtoStartFrom); }
+    
+    
     //Getter and setters (utilities)
     public String getFEN() { return fen; }
 	public int getPlayerToMove() { return playerToMove; }
@@ -111,18 +109,6 @@ public class game {
     		pieceMoves = curPiece.generateMoves(board);
     		pseudolegalMoves.addAll(pieceMoves);
     	}
-
-    	
-    	/* add castling moves where appropriate
-    	 * must check if the king passes though check here. */
-//    	if(playerToMove == 1) {
-//    		if(wCastleKSide) { pseudolegalMoves.add(new move("e1", "g1")); }
-//    		if(wCastleQSide) { pseudolegalMoves.add(new move("e1", "c1")); }
-//    	}else if(playerToMove == -1) {
-//    		if(bCastleKSide) { pseudolegalMoves.add(new move("e8", "g8")); }
-//    		if(bCastleQSide) { pseudolegalMoves.add(new move("e8", "c8")); }
-//    	}
-//    	
     	return pseudolegalMoves;
     }// end of generateMoves function  
     
@@ -155,23 +141,29 @@ public class game {
             			}
             		} 
             	}
-        	}
-        	if(getPlayerToMove() == -1) {
-            	if(bCastleKSide) {
-            		if( !isSquareAttacked(5, getPlayerToMove()) ){
-            			if( isSquareEmpty(5) && isSquareEmpty(6)) {
-            				System.out.println(new move("e8", "g8")+" bCastleKSide added");
-            				pseudolegalMoves.add(new move("e8", "g8"));	
-            			}
-            		}
-            	}
-            	if(bCastleQSide) {
-            		if( !isSquareAttacked(5, getPlayerToMove()) ) {
-            			if( isSquareEmpty(5) && isSquareEmpty(4) ) {
-            				System.out.println(new move("e8", "c8")+" bCastleQSide added");
-            				pseudolegalMoves.add(new move("e8", "c8"));
-            			}
-            		}
+        	}else if( getPlayerToMove() == -1 ) {
+        		System.out.println("blacks turn");
+            	if( !isPlayerInCheck(getPlayerToMove()) ) {
+                	if(bCastleKSide) {
+                		System.out.println(getPlayerToMove()+" bCastleKSide");
+                		if( !isSquareAttacked(5, getPlayerToMove()) ){
+                			System.out.println(isSquareEmpty(5)+" isSquareEmpty(5) | "+isSquareEmpty(6)+" isSquareEmpty(6)");
+                			if( (isSquareEmpty(5)) && (isSquareEmpty(6)) ) {
+                				System.out.println(new move("e8", "g8")+" bCastleKSide added");
+                				pseudolegalMoves.add(new move("e8", "g8"));	
+                			}
+                		}
+                	}
+                	if(bCastleQSide) {
+                		System.out.println("bCastleQSide");
+                		if( !isSquareAttacked(3, getPlayerToMove()) ) {
+                			System.out.println(isSquareEmpty(3)+" isSquareEmpty(3) | "+isSquareEmpty(2)+" isSquareEmpty(2)");
+                			if( isSquareEmpty(3) && isSquareEmpty(2)) {
+                				System.out.println(new move("e8", "c8")+" bCastleQSide added");
+                				pseudolegalMoves.add(new move("e8", "c8"));
+                			}
+                		}
+                	}
             	}
         	}
     	}
@@ -220,34 +212,39 @@ public class game {
    	 			}
    	 		}
    	 	}
-   	 	String kingCoordStr = func.sqIntToStr( (plyrKingCoords[0]*8) + plyrKingCoords[1]);
+   	 	String kingCoordStr = func.sqIntToStr( (plyrKingCoords[0]*8) + plyrKingCoords[1] );
+   	 	ArrayList<move> attackingMoves = new ArrayList<move>();
    	 	
-   	 	ArrayList<String> squaresAttackingStr = new ArrayList<String>();
    	 	ArrayList<piece> opponentPiecesNoPawns = getListOfPiecesNoPawns(opponent);
    	 	for(piece noPawns : opponentPiecesNoPawns) {
    	 		ArrayList<move> noPawnMoves = noPawns.generateMoves(board);
    	 		for(move move : noPawnMoves) {
-   	 			squaresAttackingStr.add(move.getTargetSquareStr());
+   	 			attackingMoves.add(move);
    	 		}
    	 	}
    	 	
    	 	ArrayList<piece> opponentPiecesPawns = getListOfPawns(opponent);
    	 	for(piece pawn : opponentPiecesPawns) {
-   	 		ArrayList<String> pawnAttckingSqrsStr = pawn.generateSqauresAttacking(board);
-   	 		for(String attackingMove:pawnAttckingSqrsStr) {
-   	 			squaresAttackingStr.add(attackingMove);
+   	 		ArrayList<move> pawnAttckingMoves = pawn.generateAttackingMoves(board);
+   	 		for(move attackingMove :pawnAttckingMoves) {
+   	 			attackingMoves.add(attackingMove);
    	 		}
    	 	}
-   	 	if( squaresAttackingStr.contains(kingCoordStr) ) {
-   	 		System.out.println("illegal move");
-   	 	}else {
-   	 		System.out.println("legal move");
+   	 	
+   	 	ArrayList<String> squaresAttackingStr = new ArrayList<String>();
+   	 	System.out.println("atacking moves:");
+   	 	for(move attackingMove : attackingMoves) {
+   	 		System.out.println(kingCoordStr+" | "+getPieceAt(attackingMove.getStartSquareStr())+" "+attackingMove);
+   	 		squaresAttackingStr.add(attackingMove.getTargetSquareStr());
    	 	}
+   	 	
+   	 	if( squaresAttackingStr.contains(kingCoordStr) ) { System.out.println("illegal move"); }
+   	 	else 											 { System.out.println("legal move"); }
 		return squaresAttackingStr.contains(kingCoordStr);
 	}
     
     
-	public ArrayList<String> generateSqauresAttacking (int colour){
+	public ArrayList<String> generateSquaresAttacking (int colour){
 		System.out.println("generateSqauresAttacking");
     	int opponent = colour - (2*(colour));
     	ArrayList<String> squaresAttacking = new ArrayList<String>();  	    	
@@ -274,20 +271,27 @@ public class game {
     	
     	String piece = board[startCoord[0]][startCoord[1]];
     	
-    	if(piece.equals("p")) {//Promotions
-    		if(targetCoord[0] == 7 && depth == 1) {
+    	if(piece.equals("p")) {
+    		if(targetCoord[0] == 7 && depth == 1) {//Promotions
     			//promote pawn
     			System.out.print("promote pawn ");
     			JDialogpawnPromotion p = new JDialogpawnPromotion(-1);
     			movePiece(p.getPieceSelected(), MOVE); 
-    		}else { movePiece(piece, MOVE); }
+    		}//else if(){ } // en passant move
+    		
+    		else {
+    			movePiece(piece, MOVE);
+    		}
     	}else if(piece.equals("P")) {
-    		if(targetCoord[0] == 0 && depth == 1) {
-    			//promote pawn
+    		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
     			System.out.print("promote pawn ");
     			JDialogpawnPromotion p = new JDialogpawnPromotion(1);
     			movePiece(p.getPieceSelected(), MOVE); 
-    		}else { movePiece(piece, MOVE); }
+    		}//else if(){ } // en passant move
+    		
+    		else {
+    			movePiece(piece, MOVE);
+    		}
     	//Castling Moves
     	}else if (wCastleKSide && MOVE.equals(new move("e1", "g1"))) {
     		movePiece("K", new move("e1", "g1"));
@@ -301,12 +305,12 @@ public class game {
     		wCastleQSide = false;
     	}else if (bCastleKSide && MOVE.equals(new move("e8", "g8"))) {
     		movePiece("k",new move("e8", "g8"));
-    		movePiece("R", new move("h8", "f8"));
+    		movePiece("r", new move("h8", "f8"));
     		bCastleKSide = false;
     		bCastleQSide = false;
     	}else if (bCastleQSide && MOVE.equals(new move("e8", "c8"))) {
     		movePiece("k", new move("e8", "c8"));
-    		movePiece("R", new move("a8", "d8"));
+    		movePiece("r", new move("a8", "d8"));
     		bCastleKSide = false;
     		bCastleQSide = false;
 		}else {
@@ -342,7 +346,6 @@ public class game {
     		fullmove++;
     	}
     	
-    	
     	togglePlayerToMove();
     	fen = generateFENfromBoard();
     	
@@ -353,10 +356,15 @@ public class game {
     	}else {
     		System.out.print(MOVE+" | ");
     	}
+    	
+    	if(isGameFinshed()) {
+    		// End the game
+    		// Display some stats?
+    	}
     }
     
     /** Moves a piece from its square to another square and 
-     *  leaves the starting tile blank*/
+     *  leaves the starting tile blank */
     private void movePiece(String piece, move MOVE) {
     	int startSqInt = func.sqStrToInt(MOVE.getStartSquareStr());
     	int targetSqInt = func.sqStrToInt(MOVE.getTargetSquareStr());
@@ -367,6 +375,19 @@ public class game {
     	board[startCoord[0]][startCoord[1]] = " ";
     	board[targetCoord[0]][targetCoord[1]] = piece;
 	}
+    /** Goes though a series of checks to see if
+     *  the game is finished. eg stalemate, checkmate,
+     *  draw by repetition. */
+    public boolean isGameFinshed() {
+    	return false;
+    }
+    
+    private String getPieceAt(String tileName) {
+    	int sqInt = func.sqStrToInt(tileName);
+    	int[] sqCoords = func.sqIntToCoord(sqInt);
+    	return board[sqCoords[0]][sqCoords[1]];
+    }
+    
 	/** Generates the FEN for the current board[][] / game */
     public String generateFENfromBoard() {
         String newFEN = "";
@@ -437,6 +458,9 @@ public class game {
     	}
     	return pieces;
     }
+    
+    
+    
     private ArrayList<piece> getListOfPiecesNoPawns(int colourOfPlayer){
     	ArrayList<piece> piecesNoPawns = new ArrayList<piece>();
     	if(colourOfPlayer == 1){//White is next  to move
@@ -462,6 +486,8 @@ public class game {
     	}
     	return piecesNoPawns;
     }
+    
+    
     
     private ArrayList<piece> getListOfPawns(int colourOfPlayer){
     	ArrayList<piece> piecesNoPawns = new ArrayList<piece>();
@@ -528,24 +554,30 @@ public class game {
 		int opponent = movingPieceColour-(2*movingPieceColour);
 		
    	 	String sqToChkStr = func.sqIntToStr( sqToChk );
-   	 	ArrayList<String> squaresAttackingStr = new ArrayList<String>();
+   	 	ArrayList<move> attackingMoves = new ArrayList<move>();
    	 	ArrayList<piece> opponentPiecesNoPawns = getListOfPiecesNoPawns(opponent);
+   	 	ArrayList<String> squaresAttacked = new ArrayList<String>(); 
    	 	
    	 	for(piece noPawns : opponentPiecesNoPawns) {
    	 		ArrayList<move> noPawnMoves = noPawns.generateMoves(board);
    	 		for(move move : noPawnMoves) {
-   	 			squaresAttackingStr.add(move.getTargetSquareStr());
+   	 			attackingMoves.add(move);
    	 		}
    	 	}
    	 	
    	 	ArrayList<piece> opponentPiecesPawns = getListOfPawns(opponent);
+   	 	System.out.println("attacking moves");
    	 	for(piece pawn : opponentPiecesPawns) {
-   	 		ArrayList<String> pawnAttckingSqrsStr = pawn.generateSqauresAttacking(board);
-   	 		for(String attackingMove:pawnAttckingSqrsStr) {
-   	 			squaresAttackingStr.add(attackingMove);
+   	 		ArrayList<move> pawnAttckingMoves = pawn.generateAttackingMoves(board);
+   	 		for(move attackingMove:pawnAttckingMoves) {
+   	 			System.out.println(attackingMove);
+   	 			attackingMoves.add(attackingMove);
    	 		}
    	 	}
-		return squaresAttackingStr.contains(sqToChkStr);
+   	 	for(move attackingMove : attackingMoves){
+   	 		squaresAttacked.add(attackingMove.getTargetSquareStr());
+   	 	}
+		return attackingMoves.contains(sqToChkStr);
 	}
 	
 	private boolean isSquareEmpty(int sqToChk) {
