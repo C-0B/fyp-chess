@@ -45,7 +45,7 @@ public class piece {
 	}
 	
 	/** @return string values such as a1, a2, h4, h5 etc */
-	public ArrayList<String> generateSqauresAttacking(String Board[][]) {
+	public ArrayList<move> generateAttackingMoves(String Board[][]) {
 		return null;
 	}
 	
