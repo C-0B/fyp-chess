@@ -268,8 +268,15 @@ public class MainWindow{
 						}else {
 							System.out.println("invalid move: "+userMove);
 						}
-
 						resetTileCololurs();
+						
+						if(moves.size() == 0){
+							if( game.isPlayerInCheck(game.getPlayerToMove())){
+								JOptionPane.showMessageDialog(null, "Checkmate");
+							}else {
+								JOptionPane.showMessageDialog(null, "StaleMate");
+							}
+						}
 					}
 					
 					/** Occurs when press and release on the same button
@@ -389,9 +396,6 @@ public class MainWindow{
 		btnLoadFromFEN.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Creates and loads a new game to the GUI using the FEN given by the user.
-				
-				//* add a verifcation/validation to the FEN str before the it is used for processing
 				String strFEN = tfLoadFEN.getText();
 				try {
 					game tempGame = new game(strFEN);
@@ -400,6 +404,7 @@ public class MainWindow{
 					return;
 				}
 				game = new game(strFEN);
+				moves = game.generateMoves();
 				loadGameToGUI(); //loadFENtoBoard(game.getFEN());
 				lblBoardVal.setText(game.getBoardasStr());
 				lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
