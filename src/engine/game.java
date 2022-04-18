@@ -373,11 +373,6 @@ public class game {
     	}else {
     		System.out.print(MOVE+" | ");
     	}
-    	
-    	if(isGameFinshed()) {
-    		// End the game
-    		// Display some stats?
-    	}
     }
     
     /** Moves a piece from its square to another square and 
@@ -394,8 +389,15 @@ public class game {
 	}
     /** Goes though a series of checks to see if
      *  the game is finished. eg stalemate, checkmate,
-     *  draw by repetition. */
+     *  draw by repetition. 
+     *  
+     *  not used locally */
     public boolean isGameFinshed() {
+    	if(legalMovesForPosition.size() == 0) {
+    		return true;
+    	}
+    	// if one player has king and knight award win to the other player
+    	// if one played has king and bishop award win to the other player
     	return false;
     }
     
