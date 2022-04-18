@@ -31,7 +31,7 @@ public class MainWindow{
 	private tile[][] boardTiles = new tile[8][8];
 	private game game;
 	private ArrayList<move> moves;
-	int index = 0;
+	int colourOfPlayer = -1;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
 	
@@ -67,41 +67,25 @@ public class MainWindow{
 	
 	private void loadGameToGUI() {
 		// Add a parameter of the players colour(to flip the board)
-		for(int row = 0; row<8 ; row++) {
-			for(int column = 0; column<8; column++) {
-				writeIconToTile(row, column, game.getBoard()[row][column]);				
+		if( colourOfPlayer == 1 ) {
+			for(int row = 0; row<8 ; row++) {
+				for(int column = 0; column<8; column++) {
+					boardTiles[row][column].setCurrent(game.getBoard()[row][column]);
+					boardTiles[row][column].setChessIcon();
+					boardTiles[row][column].setRankandFile(row, column);
+				}
+			}
+		}else if ( colourOfPlayer == -1 ) {
+			for(int row = 0; row<8 ; row++) {
+				for(int column = 0; column<8; column++) {
+					boardTiles[7-row][7-column].setCurrent(game.getBoard()[row][column]);
+					boardTiles[7-row][7-column].setChessIcon();
+					boardTiles[7-row][7-column].setRankandFile(row, column);
+				}
 			}
 		}
 	}
 	
-	/** Writes data for a single tile to appear on the board */
-	private void writeIconToTile(int row, int column, String pieceName) {
-		String imgPathString = genIconImgPath(pieceName);
-		boardTiles[row][column].button.setIcon(new ImageIcon(MainWindow.class.getResource(imgPathString)));
-	}
-	
-	/** Generates the path of the png that will be used as the icon for the tile */
-    private String genIconImgPath(String pieceName) {
-    	
-		String imgPathString = "/images/_100x100/";
-		if(!pieceName.equals("") && !pieceName.equals(" ")) {
-			if(pieceName.equals(pieceName.toUpperCase())) {
-				imgPathString += "white-";
-			}else if(pieceName.equals(pieceName.toLowerCase())) {
-				imgPathString += "black-";
-			}else { System.out.println("img colour error");}
-		}
-		// Assigning a piece to each of the tiles to on the GUI
-		if(pieceName.toUpperCase().equals("P")) 	 {imgPathString += "pawn";}
-		else if(pieceName.toUpperCase().equals("R")) {imgPathString += "rook";}
-		else if(pieceName.toUpperCase().equals("N")) {imgPathString += "knight";}
-		else if(pieceName.toUpperCase().equals("B")) {imgPathString += "bishop";}
-		else if(pieceName.toUpperCase().equals("Q")) {imgPathString += "queen";}
-		else if(pieceName.toUpperCase().equals("K")) {imgPathString += "king";}
-		else {imgPathString += "blank";}
-		imgPathString += "_100x100.png";
-		return imgPathString;
-    }
 	
 	/** Reverse a String array */
     static String[] reverseStrArr(String[] array){
@@ -125,8 +109,13 @@ public class MainWindow{
     	int startSqInt = func.sqStrToInt(startSqStr);
     	int startSqRow = startSqInt / 8;
     	int startSqColumn = startSqInt % 8;
-    	boardTiles[startSqRow][startSqColumn].setCurrentTile();
     	
+		if( colourOfPlayer == 1 ) {
+	    	boardTiles[startSqRow][startSqColumn].setCurrentTile();
+		}else if( colourOfPlayer == -1 ) {
+	    	boardTiles[7-startSqRow][7-startSqColumn].setCurrentTile();
+		}
+		
     	for(move legalMove : legalMoves) {
     		if(legalMove.getStartSquareStr().equals(startSqStr)) {
     			String tgtSqStr = legalMove.getTargetSquareStr();
@@ -134,8 +123,13 @@ public class MainWindow{
     			
     			int tgtSqRow = tgtSqInt / 8;
     			int tgtSqColumn = tgtSqInt % 8;
-    			
-    			boardTiles[tgtSqRow][tgtSqColumn].setSelectedColour();
+    			if( colourOfPlayer == 1 ) {
+    				boardTiles[tgtSqRow][tgtSqColumn].setSelectedColour();
+    		    	boardTiles[startSqRow][startSqColumn].setCurrentTile();
+    			}else if( colourOfPlayer == -1 ) {
+    		    	boardTiles[7-startSqRow][7-startSqColumn].setCurrentTile();
+    				boardTiles[7-tgtSqRow][7-tgtSqColumn].setSelectedColour();
+    			}
     		}
     	}
     }
@@ -191,6 +185,25 @@ public class MainWindow{
 		gbc_btnNewGame.gridx = 0;
 		gbc_btnNewGame.gridy = 0;
 		leftPanel.add(btnNewGame, gbc_btnNewGame);
+		
+		JButton btnFlipBoard = new JButton();
+		btnFlipBoard.setBackground(new Color(64, 64, 64));
+		btnFlipBoard.setPreferredSize(new Dimension(80, 80));
+		btnFlipBoard.setMinimumSize(new Dimension(80, 80));
+		btnFlipBoard.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/rotate-black_64x64.png")));
+		btnFlipBoard.setToolTipText("Rotate the board");
+		btnFlipBoard.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				colourOfPlayer -= 2*(colourOfPlayer);
+				loadGameToGUI();
+			}
+		});
+		GridBagConstraints gbc_btnFlipBoard = new GridBagConstraints();
+		gbc_btnFlipBoard.insets = new Insets(0, 0, 0, 5);
+		gbc_btnFlipBoard.gridx = 0;
+		gbc_btnFlipBoard.gridy = 1;
+		leftPanel.add(btnFlipBoard, gbc_btnFlipBoard);
 
 	
 		// ----- Middle Panel ----- (chess board)
@@ -254,8 +267,8 @@ public class MainWindow{
 					@Override
 					public void mouseReleased(MouseEvent e) {
 						endTile = recentTile; // Determined by which tiles the mouse has entered during the press(drag)
-						String startSquareStr = func.sqIntToStr((startTile.getRank()*8)+startTile.getFile());
-						String targetSquareStr = func.sqIntToStr((endTile.getRank()*8)+endTile.getFile());
+						String startSquareStr = startTile.getSqName();
+						String targetSquareStr = endTile.getSqName();
 						move userMove = new move(startSquareStr, targetSquareStr);
 						if( game.isMoveLegal(userMove)) {
 							game.playMove(userMove, 1);
@@ -305,7 +318,7 @@ public class MainWindow{
 		}
 
 		// ----- Right panel -----
-		SquarePanel rightPanel = new SquarePanel();
+		JPanel rightPanel = new JPanel();
 		rightPanel.setBackground(Color.BLACK);
 
 		//Placing the right panel in the window
