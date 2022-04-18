@@ -16,7 +16,7 @@ public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
-    private String startFEN = "r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1";
+    private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
@@ -98,17 +98,68 @@ public class game {
     public ArrayList<move> generatePseudoLegalMoves(){
     	ArrayList<move> pseudolegalMoves = new ArrayList<move>();
     	
-    	/* Part 1
-    	 * Gets a list of the players pieces */
+    	/* Gets a list of the players pieces */
     	 ArrayList<piece> pieces = getListOfPiecesOf(getPlayerToMove());
     	 
-    	/* Part 2
-    	 * Loops through the players pieces and calculates to pseudolegal moves for each piece */
+    	/* Loops through the players pieces and calculates to pseudolegal moves for each piece */
      	for (piece curPiece : pieces) {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
     		pieceMoves = curPiece.generateMoves(board);
     		pseudolegalMoves.addAll(pieceMoves);
     	}
+     	
+     	// Castling moves
+    	if( !isPlayerInCheck(getPlayerToMove()) ) {
+        	if( getPlayerToMove() == 1 ) {
+            	if(wCastleKSide) {
+            		if( !isSquareAttacked(61, getPlayerToMove())){
+            			if((isSquareEmpty(61)) && (isSquareEmpty(62)) ) {
+                			pseudolegalMoves.add(new move("e1", "g1"));
+            			}
+            		}
+            	}
+            	if(wCastleQSide) {
+            		if( !isSquareAttacked(58, getPlayerToMove())) {
+            			if( isSquareEmpty(58) && isSquareEmpty(59) ) {
+                			pseudolegalMoves.add(new move("e1", "c1"));
+            			}
+            		} 
+            	}
+        	}else if( getPlayerToMove() == -1 ) {
+            	if(bCastleKSide) {
+            		if( !isSquareAttacked(5, getPlayerToMove()) ){
+            			if( (isSquareEmpty(5)) && (isSquareEmpty(6)) ) {
+            				pseudolegalMoves.add(new move("e8", "g8"));	
+            			}
+            		}
+	            	if(bCastleQSide) {
+	            		if( !isSquareAttacked(3, getPlayerToMove()) ) {
+	            			if( isSquareEmpty(3) && isSquareEmpty(2)) {
+	            				pseudolegalMoves.add(new move("e8", "c8"));
+	            			}
+	            		}
+	            	}
+            	}
+        	}
+    	}
+    	
+    	//en passant moves
+    	if( !enPassant.equals("-") ) {
+    		System.out.println("en passant available");
+    		ArrayList<piece> pawns = getListOfPawns(getPlayerToMove());
+    		ArrayList<move> pawnAttackingMoves = new ArrayList<move>();
+    		for(piece pawn : pawns) {
+    			pawnAttackingMoves.addAll(pawn.generateAttackingMoves(board));
+    			System.out.println("pawnAttackingMoves = pawn.generateAttackingMoves(board);");
+    		}
+    		for(move attackingPawnMove : pawnAttackingMoves) {
+    			System.out.println("pawn attacks: "+attackingPawnMove);
+    			if(attackingPawnMove.getTargetSquareStr().equals(enPassant)) {
+    				pseudolegalMoves.add(attackingPawnMove);
+    			}
+    		}
+    	}
+    	
     	return pseudolegalMoves;
     }// end of generateMoves function  
     
@@ -121,52 +172,9 @@ public class game {
     public ArrayList<move> generateMoves(){
     	long startTime = System.nanoTime();
     	ArrayList<move> pseudolegalMoves = generatePseudoLegalMoves();
-    	ArrayList<move> legalMoves = new ArrayList<move>();
     	
-    	if( !isPlayerInCheck(getPlayerToMove()) ) {
-        	if( getPlayerToMove() == 1 ) {
-            	if(wCastleKSide) {
-            		if( !isSquareAttacked(61, getPlayerToMove())){
-            			if((isSquareEmpty(61)) && (isSquareEmpty(62)) ) {
-                			System.out.println(new move("e1", "g1")+" wCastleKSide added");
-                			pseudolegalMoves.add(new move("e1", "g1"));
-            			}
-            		}
-            	}
-            	if(wCastleQSide) {
-            		if( !isSquareAttacked(58, getPlayerToMove())) {
-            			if( isSquareEmpty(58) && isSquareEmpty(59) ) {
-                			System.out.println(new move("e1", "c1")+" wCastleQSide added");
-            				pseudolegalMoves.add(new move("e1", "c1"));
-            			}
-            		} 
-            	}
-        	}else if( getPlayerToMove() == -1 ) {
-        		System.out.println("blacks turn");
-            	if( !isPlayerInCheck(getPlayerToMove()) ) {
-                	if(bCastleKSide) {
-                		System.out.println(getPlayerToMove()+" bCastleKSide");
-                		if( !isSquareAttacked(5, getPlayerToMove()) ){
-                			System.out.println(isSquareEmpty(5)+" isSquareEmpty(5) | "+isSquareEmpty(6)+" isSquareEmpty(6)");
-                			if( (isSquareEmpty(5)) && (isSquareEmpty(6)) ) {
-                				System.out.println(new move("e8", "g8")+" bCastleKSide added");
-                				pseudolegalMoves.add(new move("e8", "g8"));	
-                			}
-                		}
-                	}
-                	if(bCastleQSide) {
-                		System.out.println("bCastleQSide");
-                		if( !isSquareAttacked(3, getPlayerToMove()) ) {
-                			System.out.println(isSquareEmpty(3)+" isSquareEmpty(3) | "+isSquareEmpty(2)+" isSquareEmpty(2)");
-                			if( isSquareEmpty(3) && isSquareEmpty(2)) {
-                				System.out.println(new move("e8", "c8")+" bCastleQSide added");
-                				pseudolegalMoves.add(new move("e8", "c8"));
-                			}
-                		}
-                	}
-            	}
-        	}
-    	}
+    	ArrayList<move> legalMoves = new ArrayList<move>();
+
      	/* Check if each move leaves the players king in check */
     	for(move move : pseudolegalMoves) {
     		int plyr = getPlayerToMove();
@@ -182,7 +190,7 @@ public class game {
     	long duration  = (endTime-startTime)/1000000;
     	
     	legalMovesForPosition = legalMoves;
-    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms");
+    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
     
@@ -232,25 +240,14 @@ public class game {
    	 	}
    	 	
    	 	ArrayList<String> squaresAttackingStr = new ArrayList<String>();
-   	 	System.out.println("atacking moves:");
    	 	for(move attackingMove : attackingMoves) {
-   	 		System.out.println(kingCoordStr+" | "+getPieceAt(attackingMove.getStartSquareStr())+" "+attackingMove);
    	 		squaresAttackingStr.add(attackingMove.getTargetSquareStr());
    	 	}
    	 	
    	 	if( squaresAttackingStr.contains(kingCoordStr) ) { System.out.println("illegal move"); }
    	 	else 											 { System.out.println("legal move"); }
 		return squaresAttackingStr.contains(kingCoordStr);
-	}
-    
-    
-	public ArrayList<String> generateSquaresAttacking (int colour){
-		System.out.println("generateSqauresAttacking");
-    	int opponent = colour - (2*(colour));
-    	ArrayList<String> squaresAttacking = new ArrayList<String>();  	    	
-    	return squaresAttacking;
-     }
-    
+	}    
 	
     public boolean isMoveLegal(move userMove) {
     	for(move legalMove: legalMovesForPosition) {
@@ -259,15 +256,22 @@ public class game {
     	return false;
     }
     
-    /**Make a legal move on the board,
-     * only legal moves should be passed to this function <br><br>
-     * castling will call this twice.*/
+    /** Make a legal move on the board,
+     *  only legal moves should be passed to this function <br><br>
+     *  castling will call this twice.*/
     public void playMove (move MOVE, int depth) {
     	int startSqInt = func.sqStrToInt(MOVE.getStartSquareStr());
     	int targetSqInt = func.sqStrToInt(MOVE.getTargetSquareStr());
     	
     	int[] startCoord = func.sqIntToCoord(startSqInt);
     	int[] targetCoord = func.sqIntToCoord(targetSqInt);
+    	
+    	// Check move counters before the board is updated
+    	if( board[startCoord[0]][startCoord[1]].toUpperCase().equals("P") ) { halfmove = 0; } // Pawn is moved
+    	else if( !board[targetCoord[0]][targetCoord[1]].equals(" ") ) 		{ halfmove = 0; } // Piece is captured
+    	else { halfmove++; } // Increment halfmove if a piece is moved with no capture
+    	
+    	if(playerToMove == -1) { fullmove++; }// After black has made a move the fullmove counter is incremented
     	
     	String piece = board[startCoord[0]][startCoord[1]];
     	
@@ -277,20 +281,41 @@ public class game {
     			System.out.print("promote pawn ");
     			JDialogpawnPromotion p = new JDialogpawnPromotion(-1);
     			movePiece(p.getPieceSelected(), MOVE); 
-    		}//else if(){ } // en passant move
-    		
-    		else {
+    			enPassant = "-";
+    		} else if(startCoord[0] == (targetCoord[0]-2) ){// double move
     			movePiece(piece, MOVE);
+    			int enPassantSqInt = targetSqInt - 8;
+    			enPassant = func.sqIntToStr(enPassantSqInt);
+    		} else if( MOVE.getTargetSquareStr().equals(enPassant) ){ // en passant move capture
+    			movePiece("p", MOVE);
+    			int enPassantInt = func.sqStrToInt(enPassant);
+    			int[] enPassantCoord = func.sqIntToCoord(enPassantInt);
+    			board[enPassantCoord[0]-1][enPassantCoord[1]] = " ";
+    			enPassant = "-";
+    		} else {
+    			movePiece(piece, MOVE);
+    			enPassant = "-";
     		}
     	}else if(piece.equals("P")) {
     		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
     			System.out.print("promote pawn ");
     			JDialogpawnPromotion p = new JDialogpawnPromotion(1);
     			movePiece(p.getPieceSelected(), MOVE); 
-    		}//else if(){ } // en passant move
-    		
+    			enPassant = "-";
+    		} else if(startCoord[0] == (targetCoord[0]+2) ){// double move
+    			movePiece(piece, MOVE);
+    			int enPassantSqInt = targetSqInt + 8;
+    			enPassant = func.sqIntToStr(enPassantSqInt);
+    		} else if( MOVE.getTargetSquareStr().equals(enPassant) ){ // en passant move
+    			movePiece("P", MOVE);
+    			int enPassantInt = func.sqStrToInt(enPassant);
+    			int[] enPassantCoord = func.sqIntToCoord(enPassantInt);
+    			board[enPassantCoord[0]+1][enPassantCoord[1]] = " ";
+    			enPassant = "-";
+    		}
     		else {
     			movePiece(piece, MOVE);
+    			enPassant = "-";
     		}
     	//Castling Moves
     	}else if (wCastleKSide && MOVE.equals(new move("e1", "g1"))) {
@@ -298,21 +323,25 @@ public class game {
     		movePiece("R", new move("h1", "f1"));
     		wCastleKSide = false;
     		wCastleQSide = false;
+			enPassant = "-";
     	}else if (wCastleQSide && MOVE.equals(new move("e1", "c1"))) {
     		movePiece("K", new move("e1", "c1"));
     		movePiece("R", new move("a1", "d1"));
     		wCastleKSide = false;
     		wCastleQSide = false;
+			enPassant = "-";
     	}else if (bCastleKSide && MOVE.equals(new move("e8", "g8"))) {
     		movePiece("k",new move("e8", "g8"));
     		movePiece("r", new move("h8", "f8"));
     		bCastleKSide = false;
     		bCastleQSide = false;
+			enPassant = "-";
     	}else if (bCastleQSide && MOVE.equals(new move("e8", "c8"))) {
     		movePiece("k", new move("e8", "c8"));
     		movePiece("r", new move("a8", "d8"));
     		bCastleKSide = false;
     		bCastleQSide = false;
+			enPassant = "-";
 		}else {
 			movePiece(piece, MOVE);
 			//Black queen side rook moved or taken in a move
@@ -331,20 +360,8 @@ public class game {
 				bCastleKSide = false;
 				bCastleQSide = false;
 			}
-			
+			enPassant = "-";
 		}
-
-    	
-    	if( board[startCoord[0]][startCoord[1]].toUpperCase().equals("P") ) {// If the piece moved is a pawn
-    		halfmove = 0;
-    	}else if( !board[targetCoord[0]][targetCoord[1]].equals(" ") ) { // if a piece is caputed on the move
-    		halfmove = 0;
-    	}else {// Increment halfmove if a piece is moved with no capture
-    		halfmove++;
-    	}
-    	if(playerToMove == -1) {// After black has made a move the fullmove counter is incremented
-    		fullmove++;
-    	}
     	
     	togglePlayerToMove();
     	fen = generateFENfromBoard();
@@ -566,11 +583,9 @@ public class game {
    	 	}
    	 	
    	 	ArrayList<piece> opponentPiecesPawns = getListOfPawns(opponent);
-   	 	System.out.println("attacking moves");
    	 	for(piece pawn : opponentPiecesPawns) {
    	 		ArrayList<move> pawnAttckingMoves = pawn.generateAttackingMoves(board);
    	 		for(move attackingMove:pawnAttckingMoves) {
-   	 			System.out.println(attackingMove);
    	 			attackingMoves.add(attackingMove);
    	 		}
    	 	}
