@@ -34,7 +34,6 @@ public class MainWindow{
 	int index = 0;
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
-	JDialogpawnPromotion promotion;
 	
 	/** Launch the application. */
 	public static void main(String[] args) {
@@ -184,7 +183,7 @@ public class MainWindow{
 		JButton btnNewGame = new JButton("New Game");
 		btnNewGame.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {newGame();System.out.println(promotion.getPieceSelected());}
+			public void actionPerformed(ActionEvent e) {newGame();}
 		});
 		GridBagConstraints gbc_btnNewGame = new GridBagConstraints();
 		gbc_btnNewGame.anchor = GridBagConstraints.NORTHWEST;
@@ -267,7 +266,6 @@ public class MainWindow{
 							lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 							lblFENVal.setText(game.getFEN());
 						}else {
-							//JOptionPane.showMessageDialog(null, "invalid move");
 							System.out.println("invalid move: "+userMove);
 						}
 
