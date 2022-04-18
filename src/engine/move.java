@@ -80,7 +80,7 @@ public class move {
 		return 	this.startSquareStr.equals(move2.startSquareStr) &&
 				this.targetSquareStr.equals(move2.targetSquareStr);
 	}
-		
+
 	@Override
 	public String toString() { return startSquareStr + " -> "+targetSquareStr; }
 }
