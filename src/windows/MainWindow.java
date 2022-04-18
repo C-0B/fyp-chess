@@ -25,13 +25,14 @@ import javax.swing.UIManager;
 import chessFunc.func;
 import engine.game;
 import engine.move;
+import java.awt.Toolkit;
 
 public class MainWindow{
-	private JFrame frame;
+	private JFrame frmChess;
 	private tile[][] boardTiles = new tile[8][8];
 	private game game;
 	private ArrayList<move> moves;
-	int colourOfPlayer = -1;
+	int colourOfPlayer = 1; // 1 = white, -1 = black
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
 	JLabel lblBoardVal, lblPtoMoveVal, lblFENVal;
 	
@@ -50,9 +51,7 @@ public class MainWindow{
 	/** Construct the application. */
 	public MainWindow() {
 		initialize(); // Generate GUI
-		newGame(); // create new game, load it to GUI and set up other elements
-		
-//		promotion = new JDialogpawnPromotion(1);
+		newGame(); // create new game, load it to GUI and set up other elements	
 	}
 
 	private void newGame() {
@@ -144,18 +143,20 @@ public class MainWindow{
 	/** Initialise the contents (elements) of the frame. */
 	private void initialize() {
 		// basics of the frame
-		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.DARK_GRAY);
-		frame.setBackground(Color.DARK_GRAY);
-		frame.getContentPane().setForeground(new Color(0, 102, 153));
-		frame.setBounds(100, 100, 1600, 900); // This is just big enough to not be full screen but show all elements (not birng hidden)
+		frmChess = new JFrame();
+		frmChess.setTitle("Chess");
+		frmChess.setIconImage(Toolkit.getDefaultToolkit().getImage(MainWindow.class.getResource("/icons/titleIcon.png")));
+		frmChess.getContentPane().setBackground(Color.DARK_GRAY);
+		frmChess.setBackground(Color.DARK_GRAY);
+		frmChess.getContentPane().setForeground(new Color(0, 102, 153));
+		frmChess.setBounds(100, 100, 1600, 900); // This is just big enough to not be full screen but show all elements (not birng hidden)
 		//frame.setExtendedState(JFrame.MAXIMIZED_BOTH );
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmChess.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();		
 		gridBagLayout.columnWidths = new int[]{ 0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0};
-		frame.getContentPane().setLayout(gridBagLayout);
+		frmChess.getContentPane().setLayout(gridBagLayout);
 				
 		// ----- Left panel -----
 		JPanel leftPanel = new JPanel();
@@ -165,7 +166,7 @@ public class MainWindow{
 		lpGBC.fill = GridBagConstraints.BOTH;
 		lpGBC.gridx = 0;
 		lpGBC.gridy = 1;
-		frame.getContentPane().add(leftPanel, lpGBC);
+		frmChess.getContentPane().add(leftPanel, lpGBC);
 		GridBagLayout gbl_leftPanel = new GridBagLayout();
 		gbl_leftPanel.columnWidths = new int[]{0, 0, 0};
 		gbl_leftPanel.rowHeights = new int[]{0, 0, 0};
@@ -221,7 +222,7 @@ public class MainWindow{
 		mpGBL.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		mainPanel.setLayout(mpGBL);
 		
-		frame.getContentPane().add(mainPanel, mpGBC);
+		frmChess.getContentPane().add(mainPanel, mpGBC);
 		
 		//Set up the chess board (inside the middle panel)
 //		boolean colour = false; //false = white, true = black
@@ -271,10 +272,18 @@ public class MainWindow{
 						String targetSquareStr = endTile.getSqName();
 						move userMove = new move(startSquareStr, targetSquareStr);
 						if( game.isMoveLegal(userMove)) {
-							game.playMove(userMove, 1);
+							if( game.isPromotionMove(userMove)) {
+				    			JDialogpawnPromotion p = new JDialogpawnPromotion(game.getPlayerToMove());
+				    			System.out.println("Selected Piece: "+p.getPieceSelected());
+				    			if( !p.getPieceSelected().equals(" ") ){
+				    				game.playMove(userMove, 1, p.getPieceSelected());
+				    			}
+							}else{
+								game.playMove(userMove, 1, "");
+							}
+
 							loadGameToGUI();
 							moves = game.generateMoves();
-							
 							lblBoardVal.setText(game.getBoardasStr());
 							lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
 							lblFENVal.setText(game.getFEN());
@@ -329,7 +338,7 @@ public class MainWindow{
 		rpGBC.gridy = 1;
 //		rpGBC.weightx = 0.21875;
 //		rpGBC.weighty = 0.8;
-		frame.getContentPane().add(rightPanel, rpGBC);
+		frmChess.getContentPane().add(rightPanel, rpGBC);
 
 		// The layout of elements in the right panel
 		GridBagLayout gbl_RP = new GridBagLayout();
@@ -432,7 +441,7 @@ public class MainWindow{
 
 		// End of right panel + and it's elements
 //		frame.pack(); // Keep this at the end
-		frame.setVisible(true);
+		frmChess.setVisible(true);
 	}
 	
 	/** IS NEVER USED LOCALLY <p>

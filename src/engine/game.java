@@ -10,13 +10,12 @@ import engine.pieces.pawn;
 import engine.pieces.piece;
 import engine.pieces.queen;
 import engine.pieces.rook;
-import windows.JDialogpawnPromotion;
 
 public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
-    private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private String startFEN = "1kq5/1ppp4/7P/8/p7/8/4PPP1/5QK1 w - - 0 1";
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
@@ -172,16 +171,40 @@ public class game {
     public ArrayList<move> generateMoves(){
     	long startTime = System.nanoTime();
     	ArrayList<move> pseudolegalMoves = generatePseudoLegalMoves();
-    	
     	ArrayList<move> legalMoves = new ArrayList<move>();
 
      	/* Check if each move leaves the players king in check */
     	for(move move : pseudolegalMoves) {
     		int plyr = getPlayerToMove();
     		game tempGame = new game(this.fen);
-    		tempGame.playMove(move, 2);
+    		tempGame.playMove(move, 2, "");
     		if( !tempGame.isPlayerInCheck(plyr) ) {
-    			legalMoves.add(move);
+    			if( isPromotionMove(move) ){
+    				if(getPlayerToMove() == 1) {
+    					promotionMove promoMove1 = new promotionMove(move, "Q");
+    					promotionMove promoMove2 = new promotionMove(move, "R");
+    					promotionMove promoMove3 = new promotionMove(move, "N");
+    					promotionMove promoMove4 = new promotionMove(move, "B");
+    					
+    					legalMoves.add(promoMove1);
+    					legalMoves.add(promoMove2);
+    					legalMoves.add(promoMove3);
+    					legalMoves.add(promoMove4);
+    				}else if(getPlayerToMove() == -1) {
+    					promotionMove promoMove1 = new promotionMove(move, "Q");
+    					promotionMove promoMove2 = new promotionMove(move, "R");
+    					promotionMove promoMove3 = new promotionMove(move, "N");
+    					promotionMove promoMove4 = new promotionMove(move, "B");
+
+    					legalMoves.add(promoMove1);
+    					legalMoves.add(promoMove2);
+    					legalMoves.add(promoMove3);
+    					legalMoves.add(promoMove4);
+    				}	
+    			}else {//Any move that is not a promotion move
+    				legalMoves.add(move);
+    			}
+    			
     		}
     	}
     	// Remove all moves where the the current players king is left attacked, 
@@ -190,6 +213,9 @@ public class game {
     	long duration  = (endTime-startTime)/1000000;
     	
     	legalMovesForPosition = legalMoves;
+//    	for(move move : legalMovesForPosition){
+//    		System.out.println(move);
+//    	}
     	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
@@ -244,10 +270,31 @@ public class game {
    	 		squaresAttackingStr.add(attackingMove.getTargetSquareStr());
    	 	}
    	 	
-   	 	if( squaresAttackingStr.contains(kingCoordStr) ) { System.out.println("illegal move"); }
-   	 	else 											 { System.out.println("legal move"); }
+//   	 	if( squaresAttackingStr.contains(kingCoordStr) ) { System.out.println("illegal move"); }
+//   	 	else 											 { System.out.println("legal move"); }
 		return squaresAttackingStr.contains(kingCoordStr);
-	}    
+	}
+    
+    public boolean isPromotionMove(move MOVE) {
+    	int startSqInt = func.sqStrToInt(MOVE.getStartSquareStr());
+    	int targetSqInt = func.sqStrToInt(MOVE.getTargetSquareStr());
+    	
+    	int[] startCoord = func.sqIntToCoord(startSqInt);
+    	int[] targetCoord = func.sqIntToCoord(targetSqInt);
+    	
+    	String piece = board[startCoord[0]][startCoord[1]];
+    	
+    	if( piece.equals("p") ) {
+    		if(targetCoord[0] == 7) {
+    			return true;
+    		}
+    	}else if( piece.equals("P")){
+    		if(targetCoord[0] == 0) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 	
     public boolean isMoveLegal(move userMove) {
     	for(move legalMove: legalMovesForPosition) {
@@ -259,7 +306,7 @@ public class game {
     /** Make a legal move on the board,
      *  only legal moves should be passed to this function <br><br>
      *  castling will call this twice.*/
-    public void playMove (move MOVE, int depth) {
+    public void playMove (move MOVE, int depth, String promotionPiece) {
     	int startSqInt = func.sqStrToInt(MOVE.getStartSquareStr());
     	int targetSqInt = func.sqStrToInt(MOVE.getTargetSquareStr());
     	
@@ -279,8 +326,7 @@ public class game {
     		if(targetCoord[0] == 7 && depth == 1) {//Promotions
     			//promote pawn
     			System.out.print("promote pawn ");
-    			JDialogpawnPromotion p = new JDialogpawnPromotion(-1);
-    			movePiece(p.getPieceSelected(), MOVE); 
+    			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]-2) ){// double move
     			movePiece(piece, MOVE);
@@ -299,8 +345,7 @@ public class game {
     	}else if(piece.equals("P")) {
     		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
     			System.out.print("promote pawn ");
-    			JDialogpawnPromotion p = new JDialogpawnPromotion(1);
-    			movePiece(p.getPieceSelected(), MOVE); 
+    			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]+2) ){// double move
     			movePiece(piece, MOVE);
@@ -367,11 +412,11 @@ public class game {
     	fen = generateFENfromBoard();
     	
     	if(depth == 1) {
-    		System.out.println("\nfirst call after mouseReleased");
+//    		System.out.println("\nfirst call after mouseReleased");
     		generateMoves();
     		depth++;
     	}else {
-    		System.out.print(MOVE+" | ");
+//    		System.out.print(MOVE+" | ");
     	}
     }
     
@@ -611,7 +656,7 @@ public class game {
         	game tempGame = new game();
         	System.out.println("Move: "+ ++moveCount);
         	System.out.println(move);
-        	tempGame.playMove(move, 2);
+        	tempGame.playMove(move, 2, "");
         	tempGame.printBoard();
         	System.out.println();
         }
