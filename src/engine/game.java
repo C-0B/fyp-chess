@@ -15,7 +15,7 @@ public class game {
     String[][] board = new String[8][8];
     ArrayList<String> PGN; // What type should this be?
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
-    private String startFEN = "1kq5/1ppp4/7P/8/p7/8/4PPP1/5QK1 w - - 0 1";
+    private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
@@ -79,13 +79,6 @@ public class game {
         enPassant = splitFEN[3];// eg a1, h4, d3 ....
         halfmove = Integer.parseInt(splitFEN[4]);// Half move counter
         fullmove = Integer.parseInt(splitFEN[5]);// Full move counter        
-      /*  printBoard();
-        System.out.println("Player To Move: "+splitFEN[1]+" aka "+playerToMove);
-        System.out.println("wK: "+wCastleKSide+" wQ: "+wCastleQSide);
-        System.out.println("bK: "+bCastleKSide+" bQ: "+bCastleQSide);
-        System.out.println("En Passant: "+enPassant);
-        System.out.println("fullmove: "+fullmove);
-        System.out.println("halfmove: "+halfmove); */
     } // End of readFEN function
     
     
@@ -144,21 +137,17 @@ public class game {
     	
     	//en passant moves
     	if( !enPassant.equals("-") ) {
-    		System.out.println("en passant available");
     		ArrayList<piece> pawns = getListOfPawns(getPlayerToMove());
     		ArrayList<move> pawnAttackingMoves = new ArrayList<move>();
     		for(piece pawn : pawns) {
     			pawnAttackingMoves.addAll(pawn.generateAttackingMoves(board));
-    			System.out.println("pawnAttackingMoves = pawn.generateAttackingMoves(board);");
     		}
     		for(move attackingPawnMove : pawnAttackingMoves) {
-    			System.out.println("pawn attacks: "+attackingPawnMove);
     			if(attackingPawnMove.getTargetSquareStr().equals(enPassant)) {
     				pseudolegalMoves.add(attackingPawnMove);
     			}
     		}
     	}
-    	
     	return pseudolegalMoves;
     }// end of generateMoves function  
     
@@ -181,25 +170,25 @@ public class game {
     		if( !tempGame.isPlayerInCheck(plyr) ) {
     			if( isPromotionMove(move) ){
     				if(getPlayerToMove() == 1) {
-    					promotionMove promoMove1 = new promotionMove(move, "Q");
-    					promotionMove promoMove2 = new promotionMove(move, "R");
-    					promotionMove promoMove3 = new promotionMove(move, "N");
-    					promotionMove promoMove4 = new promotionMove(move, "B");
+    					promotionMove promoMoveQ = new promotionMove(move, "Q");
+    					promotionMove promoMoveR = new promotionMove(move, "R");
+    					promotionMove promoMoveN = new promotionMove(move, "N");
+    					promotionMove promoMoveB = new promotionMove(move, "B");
     					
-    					legalMoves.add(promoMove1);
-    					legalMoves.add(promoMove2);
-    					legalMoves.add(promoMove3);
-    					legalMoves.add(promoMove4);
+    					legalMoves.add(promoMoveQ);
+    					legalMoves.add(promoMoveR);
+    					legalMoves.add(promoMoveN);
+    					legalMoves.add(promoMoveB);
     				}else if(getPlayerToMove() == -1) {
-    					promotionMove promoMove1 = new promotionMove(move, "Q");
-    					promotionMove promoMove2 = new promotionMove(move, "R");
-    					promotionMove promoMove3 = new promotionMove(move, "N");
-    					promotionMove promoMove4 = new promotionMove(move, "B");
+    					promotionMove promoMoveq = new promotionMove(move, "q");
+    					promotionMove promoMover = new promotionMove(move, "r");
+    					promotionMove promoMoven = new promotionMove(move, "n");
+    					promotionMove promoMoveb = new promotionMove(move, "b");
 
-    					legalMoves.add(promoMove1);
-    					legalMoves.add(promoMove2);
-    					legalMoves.add(promoMove3);
-    					legalMoves.add(promoMove4);
+    					legalMoves.add(promoMoveq);
+    					legalMoves.add(promoMover);
+    					legalMoves.add(promoMoven);
+    					legalMoves.add(promoMoveb);
     				}	
     			}else {//Any move that is not a promotion move
     				legalMoves.add(move);
@@ -213,8 +202,8 @@ public class game {
     	long duration  = (endTime-startTime)/1000000;
     	
     	legalMovesForPosition = legalMoves;
-//    	for(move move : legalMovesForPosition){
-//    		System.out.println(move);
+//    	for(move legalMove : legalMovesForPosition){
+//    		System.out.println(legalMove);
 //    	}
     	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
@@ -269,9 +258,6 @@ public class game {
    	 	for(move attackingMove : attackingMoves) {
    	 		squaresAttackingStr.add(attackingMove.getTargetSquareStr());
    	 	}
-   	 	
-//   	 	if( squaresAttackingStr.contains(kingCoordStr) ) { System.out.println("illegal move"); }
-//   	 	else 											 { System.out.println("legal move"); }
 		return squaresAttackingStr.contains(kingCoordStr);
 	}
     
@@ -325,7 +311,6 @@ public class game {
     	if(piece.equals("p")) {
     		if(targetCoord[0] == 7 && depth == 1) {//Promotions
     			//promote pawn
-    			System.out.print("promote pawn ");
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]-2) ){// double move
@@ -344,7 +329,6 @@ public class game {
     		}
     	}else if(piece.equals("P")) {
     		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
-    			System.out.print("promote pawn ");
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]+2) ){// double move
@@ -412,11 +396,16 @@ public class game {
     	fen = generateFENfromBoard();
     	
     	if(depth == 1) {
-//    		System.out.println("\nfirst call after mouseReleased");
-    		generateMoves();
+    		//generateMoves();
     		depth++;
+    		int playerWhoMovedLast = getPlayerToMove() - (2*getPlayerToMove());
+    		if(playerWhoMovedLast == 1) {
+    			System.out.println("white played: "+piece+" "+MOVE);
+    		}else {
+        		System.out.println("black played: "+piece+" "+MOVE);
+    		}
     	}else {
-//    		System.out.print(MOVE+" | ");
+    		
     	}
     }
     
@@ -434,22 +423,66 @@ public class game {
 	}
     /** Goes though a series of checks to see if
      *  the game is finished. eg stalemate, checkmate,
-     *  draw by repetition. 
-     *  
-     *  not used locally */
+     *  draw by repetition. */
     public boolean isGameFinshed() {
-    	if(legalMovesForPosition.size() == 0) {
-    		return true;
+//    	for(move legalMove : legalMovesForPosition) {
+//    		System.out.println(legalMove);
+//    	}
+    	if( legalMovesForPosition.size() == 0 ) {
+    		System.out.println("no legal moves");
+			if( isPlayerInCheck(getPlayerToMove())){
+				int winner = getPlayerToMove() - (2*getPlayerToMove());
+				if(winner == 1) {
+					System.out.println("White wins by checkmate");
+					return true; //White wins by checkmate
+				}else if(winner == -1) {
+					System.out.println("Black wins by checkmate");
+					return true;//Black wins by checkmate
+				}
+			}else {
+				System.out.println("stalemate");
+				return true; // Stalemate
+			}
+		}
+    	
+    	if(halfmove >= 100) {
+    		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	// if one player has king and knight award win to the other player
-    	// if one played has king and bishop award win to the other player
+    	// if one played has king and bishop award win to the other player    	
+    	ArrayList<String> whitePieces = getAllPieces(1);
+    	ArrayList<String> blackPieces = getAllPieces(-1);
+    	if(whitePieces.size() == 2 && blackPieces.size() == 2) {
+    		System.out.println("2 pieces each");
+    		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B"))) {
+    			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b"))) {
+    				System.out.println("draw");
+        			return true; // Checkmate not possible
+        		}
+    		}
+    	}
+    	// Add draw by repetition.
     	return false;
-    }
+    } 
     
-    private String getPieceAt(String tileName) {
-    	int sqInt = func.sqStrToInt(tileName);
-    	int[] sqCoords = func.sqIntToCoord(sqInt);
-    	return board[sqCoords[0]][sqCoords[1]];
+    public ArrayList<String> getAllPieces(int colourOfPieceToGet) {
+    	ArrayList<String> pieces = new ArrayList<String>();
+    	
+    	for(String[] row : board) {
+    		for(String pieceInRow : row) {
+    			if(colourOfPieceToGet == 1) {
+    				if(pieceInRow.equals(pieceInRow.toUpperCase()) && !pieceInRow.equals(" ") ) {
+    					pieces.add(pieceInRow);
+        			}
+    			}else if(colourOfPieceToGet == -1) {
+    				if(pieceInRow.equals(pieceInRow.toLowerCase()) && !pieceInRow.equals(" ") ) {
+        				pieces.add(pieceInRow);
+        			}
+    			}
+    			
+    		}
+    	}
+    	return pieces;
     }
     
 	/** Generates the FEN for the current board[][] / game */
@@ -480,7 +513,7 @@ public class game {
        	// Change the player to move
        	if(getPlayerToMove() == 1) { newFEN += "w "; }
        	else if(getPlayerToMove() == -1) { newFEN += "b "; }
-       	else { System.out.println("genFEN() setting the player to move"); }// error: should never run 
+       	else { System.out.println("genFEN() error setting the player to move"); }// error: should never run 
        
        	// Castling privileges
        	if(( (wCastleKSide || wCastleQSide) || (bCastleKSide||bCastleQSide))) {
@@ -648,8 +681,7 @@ public class game {
 	}
 	
 	
-    /** ONLT FOR TESTING THE GUI
-     *  @param moves */
+    /** ONLT FOR TESTING THE GUI */
     public void printPossibleMoves(ArrayList<move> moves) {
     	int moveCount = 0;
         for(move move : moves) {
