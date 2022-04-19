@@ -57,6 +57,19 @@ public class logger {
 	    return false;
 	}
 	
+	public void logGame(String gameName, String endCondition) {
+	    try {
+	        String s = endCondition;
+	        FileWriter fw = new FileWriter("resources/"+gameName+".log", true);
+	        BufferedWriter bw = new BufferedWriter(fw);
+	        bw.write(s);
+	        bw.newLine();
+	        bw.close();
+	      } catch (IOException e) {
+	        e.printStackTrace();
+	      }
+	}
+	
 
 	
 	
