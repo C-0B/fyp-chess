@@ -26,9 +26,8 @@ public class game {
     int halfmove = 0; // Num plies since a pawn was moved or piece taken //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
     int fullmove = 0; // Incremented after each of black's moves //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
     
-    pawn vunerbalePawn; // pawn that will be captured when the en passant capture occurs 
-    // could be change to lastPawnMoved
-    
+    private String endCondition = "active";
+    public String getEndCondition() { return endCondition; }
     
     /* Board is from the perspective of white  - does this need to be change when the board is flipped ? no
      *  - Fifty move rule check function to be applied after each move
@@ -205,7 +204,7 @@ public class game {
 //    	for(move legalMove : legalMovesForPosition){
 //    		System.out.println(legalMove);
 //    	}
-    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
+//    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
     
@@ -398,12 +397,12 @@ public class game {
     	if(depth == 1) {
     		//generateMoves();
     		depth++;
-    		int playerWhoMovedLast = getPlayerToMove() - (2*getPlayerToMove());
-    		if(playerWhoMovedLast == 1) {
-    			System.out.println("white played: "+piece+" "+MOVE);
-    		}else {
-        		System.out.println("black played: "+piece+" "+MOVE);
-    		}
+//    		int playerWhoMovedLast = getPlayerToMove() - (2*getPlayerToMove());
+//    		if(playerWhoMovedLast == 1) {
+//    			System.out.println("white played: "+piece+" "+MOVE);
+//    		}else {
+//        		System.out.println("black played: "+piece+" "+MOVE);
+//    		}
     	}else {
     		
     	}
@@ -429,23 +428,27 @@ public class game {
 //    		System.out.println(legalMove);
 //    	}
     	if( legalMovesForPosition.size() == 0 ) {
-    		System.out.println("no legal moves");
 			if( isPlayerInCheck(getPlayerToMove())){
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
-					System.out.println("White wins by checkmate");
+					endCondition = "White wins";
+//					System.out.println("White wins by checkmate");
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
-					System.out.println("Black wins by checkmate");
+					endCondition = "Black wins";
+//					System.out.println("Black wins by checkmate");
 					return true;//Black wins by checkmate
 				}
 			}else {
-				System.out.println("stalemate");
+				endCondition = "Stalemate";
+//				System.out.println("Stalemate");
 				return true; // Stalemate
 			}
 		}
     	
     	if(halfmove >= 100) {
+			endCondition = "50 move count reached";
+//    		System.out.println("50 move count reached");
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	// if one player has king and knight award win to the other player
@@ -453,10 +456,10 @@ public class game {
     	ArrayList<String> whitePieces = getAllPieces(1);
     	ArrayList<String> blackPieces = getAllPieces(-1);
     	if(whitePieces.size() == 2 && blackPieces.size() == 2) {
-    		System.out.println("2 pieces each");
     		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B"))) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b"))) {
-    				System.out.println("draw");
+    				endCondition = "draw - no checkmate possible";
+//    				System.out.println("draw, no checkmates possible");
         			return true; // Checkmate not possible
         		}
     		}
@@ -672,7 +675,7 @@ public class game {
    	 	for(move attackingMove : attackingMoves){
    	 		squaresAttacked.add(attackingMove.getTargetSquareStr());
    	 	}
-		return attackingMoves.contains(sqToChkStr);
+		return squaresAttacked.contains(sqToChkStr);
 	}
 	
 	private boolean isSquareEmpty(int sqToChk) {
