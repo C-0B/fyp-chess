@@ -26,6 +26,9 @@ import chessFunc.func;
 import engine.game;
 import engine.move;
 import java.awt.Toolkit;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class MainWindow{
 	private JFrame frmChess;
@@ -274,7 +277,6 @@ public class MainWindow{
 						if( game.isMoveLegal(userMove)) {
 							if( game.isPromotionMove(userMove)) {
 				    			JDialogpawnPromotion p = new JDialogpawnPromotion(game.getPlayerToMove());
-				    			System.out.println("Selected Piece: "+p.getPieceSelected());
 				    			if( !p.getPieceSelected().equals(" ") ){
 				    				game.playMove(userMove, 1, p.getPieceSelected());
 				    			}
@@ -292,12 +294,8 @@ public class MainWindow{
 						}
 						resetTileCololurs();
 						
-						if(moves.size() == 0){
-							if( game.isPlayerInCheck(game.getPlayerToMove())){
-								JOptionPane.showMessageDialog(null, "Checkmate");
-							}else {
-								JOptionPane.showMessageDialog(null, "StaleMate");
-							}
+						if(game.isGameFinshed()){
+							JOptionPane.showMessageDialog(null, "END");
 						}
 					}
 					
@@ -438,6 +436,19 @@ public class MainWindow{
 		gbc_btnLoadFromFEN.gridx = 0;
 		gbc_btnLoadFromFEN.gridy = 3;
 		rightPanel.add(btnLoadFromFEN, gbc_btnLoadFromFEN);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frmChess.setJMenuBar(menuBar);
+		
+		JMenu mnGame = new JMenu("Game");
+		menuBar.add(mnGame);
+		
+		JMenuItem mnItmSolo = new JMenuItem("New Solo Game");
+		mnGame.add(mnItmSolo);
+		
+		JMenuItem nmItmNewGameRandom = new JMenuItem("New Game v Random");
+		nmItmNewGameRandom.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/question.png")));
+		mnGame.add(nmItmNewGameRandom);
 
 		// End of right panel + and it's elements
 //		frame.pack(); // Keep this at the end
