@@ -2,7 +2,6 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Currency;
 
 import chessFunc.func;
 import engine.pieces.bishop;
@@ -209,7 +208,7 @@ public class game {
     	long duration  = (endTime-startTime)/1000000;
     	
     	legalMovesForPosition = legalMoves;
-    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
+//    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
     
@@ -314,7 +313,7 @@ public class game {
     	String piece = board[startCoord[0]][startCoord[1]];
     	
     	if(piece.equals("p")) {
-    		if(targetCoord[0] == 7 ) {//Promotions
+    		if(targetCoord[0] == 7 && depth == 1) {//Promotions
     			//promote pawn
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
@@ -333,7 +332,7 @@ public class game {
     			enPassant = "-";
     		}
     	}else if(piece.equals("P")) {
-    		if(targetCoord[0] == 0) {//promote pawn
+    		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]+2) ){// double move
@@ -395,6 +394,11 @@ public class game {
 				bCastleQSide = false;
 			}
 			enPassant = "-";
+			
+	    	if(depth == 1) {
+	    		//generateMoves();
+	    		depth++;
+	    	}
 		}
     	
     	togglePlayerToMove();
