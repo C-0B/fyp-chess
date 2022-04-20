@@ -16,6 +16,9 @@ public class game {
     ArrayList<String> PGN; // What type should this be?
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
     private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    
+    ArrayList<String> previousPosition = new ArrayList<String>();//Threefold repitition 
+    
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
     int playerToMove = 1; // 1 = white, -1 = black: plauerToMove = 0-playerToMove
@@ -34,8 +37,12 @@ public class game {
      *  - Move function 
      *  - castling privileges check
      *  - check if the king is in 'check' */
-    public game()					   { readFEN(startFEN);  }
-    public game(String FENtoStartFrom) { readFEN(FENtoStartFrom); }
+    public game() {
+    	readFEN(startFEN); 
+    }
+    public game(String FENtoStartFrom) {
+    	readFEN(FENtoStartFrom);
+	}
     
     
     //Getter and setters (utilities)
@@ -91,7 +98,7 @@ public class game {
     	
     	/* Gets a list of the players pieces */
     	 ArrayList<piece> pieces = getListOfPiecesOf(getPlayerToMove());
-    	 
+    	 int count = 1;
     	/* Loops through the players pieces and calculates to pseudolegal moves for each piece */
      	for (piece curPiece : pieces) {
     		ArrayList<move> pieceMoves = new ArrayList<move>();
@@ -152,8 +159,6 @@ public class game {
     
     
     
-    
-    
     /**@return A List of legal move for the current player given the current
      * board position */
     public ArrayList<move> generateMoves(){
@@ -201,10 +206,7 @@ public class game {
     	long duration  = (endTime-startTime)/1000000;
     	
     	legalMovesForPosition = legalMoves;
-//    	for(move legalMove : legalMovesForPosition){
-//    		System.out.println(legalMove);
-//    	}
-//    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
+    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
     
@@ -234,6 +236,7 @@ public class game {
    	 			}
    	 		}
    	 	}
+   	 	
    	 	String kingCoordStr = func.sqIntToStr( (plyrKingCoords[0]*8) + plyrKingCoords[1] );
    	 	ArrayList<move> attackingMoves = new ArrayList<move>();
    	 	
@@ -397,15 +400,7 @@ public class game {
     	if(depth == 1) {
     		//generateMoves();
     		depth++;
-//    		int playerWhoMovedLast = getPlayerToMove() - (2*getPlayerToMove());
-//    		if(playerWhoMovedLast == 1) {
-//    			System.out.println("white played: "+piece+" "+MOVE);
-//    		}else {
-//        		System.out.println("black played: "+piece+" "+MOVE);
-//    		}
-    	}else {
-    		
-    	}
+    		}
     }
     
     /** Moves a piece from its square to another square and 
@@ -424,47 +419,49 @@ public class game {
      *  the game is finished. eg stalemate, checkmate,
      *  draw by repetition. */
     public boolean isGameFinshed() {
-//    	for(move legalMove : legalMovesForPosition) {
-//    		System.out.println(legalMove);
-//    	}
     	if( legalMovesForPosition.size() == 0 ) {
-			if( isPlayerInCheck(getPlayerToMove())){
+			if( isPlayerInCheck(getPlayerToMove()) ){
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
-					endCondition = "White wins";
-//					System.out.println("White wins by checkmate");
+					endCondition = "white win";
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
-					endCondition = "Black wins";
-//					System.out.println("Black wins by checkmate");
+					endCondition = "black win";
 					return true;//Black wins by checkmate
 				}
 			}else {
-				endCondition = "Stalemate";
-//				System.out.println("Stalemate");
+				endCondition = "draw by stalemate";
 				return true; // Stalemate
 			}
-		}
-    	
-    	if(halfmove >= 100) {
-			endCondition = "50 move count reached";
-//    		System.out.println("50 move count reached");
+		}else if(halfmove >= 100) {
+			endCondition = "draw by 50 move rule";
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
+    	
+    	
+    	
+    	//else if 3 fold repitition
+    	// Add draw by repetition.
+    	
+    	
+    	
+    	
     	// if one player has king and knight award win to the other player
     	// if one played has king and bishop award win to the other player    	
     	ArrayList<String> whitePieces = getAllPieces(1);
     	ArrayList<String> blackPieces = getAllPieces(-1);
     	if(whitePieces.size() == 2 && blackPieces.size() == 2) {
-    		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B"))) {
-    			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b"))) {
-    				endCondition = "draw - no checkmate possible";
-//    				System.out.println("draw, no checkmates possible");
+    		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
+    			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
+    				endCondition = "draw by insufficient material";
         			return true; // Checkmate not possible
         		}
     		}
+    	}else if( (whitePieces.size() == 1) && (blackPieces.size() == 1) ) {
+    		//only kings left
+    		endCondition = "draw by insufficient material";
+			return true; // Checkmate not possible
     	}
-    	// Add draw by repetition.
     	return false;
     } 
     
@@ -548,7 +545,7 @@ public class game {
 				}
 			}
     	}else if(colourOfPlayer == -1){//Black is next to move
-    		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
+    		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
 				String currentSqStr = board[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSqStr.equals(" ")) && (currentSqStr.equals(currentSqStr.toLowerCase())) ) {//Lower case = black
 					piece currentPiece = createPiece(currentSqStr, squareNum);
@@ -574,7 +571,7 @@ public class game {
 				}
 			}
     	}else if(colourOfPlayer == -1){//Black is next to move
-    		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
+    		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
 				String currentSqStr = board[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSqStr.equals(" ")) && (currentSqStr.equals(currentSqStr.toLowerCase())) ) {//Lower case = black
 					if( !currentSqStr.equals("p") ) {// no pawns
@@ -602,7 +599,7 @@ public class game {
 				}
 			}
     	}else if(colourOfPlayer == -1){//Black is next to move
-    		for (int squareNum = 0; squareNum < 63; squareNum++) {//Starting form top left to bottom right loop though all squares
+    		for (int squareNum = 0; squareNum < 64; squareNum++) {//Starting form top left to bottom right loop though all squares
 				String currentSqStr = board[squareNum /8][squareNum % 8]; //Contents of current square
 				if( (!currentSqStr.equals(" ")) && (currentSqStr.equals(currentSqStr.toLowerCase())) ) {//Lower case = black
 					if( currentSqStr.equals("p") ) {// no pawns
