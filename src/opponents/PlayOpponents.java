@@ -65,7 +65,7 @@ public class PlayOpponents {
 			moves = game.generateMoves();
 		}
 		logger logger = new logger();
-		logger.logGame("randomVrandom2", game.getEndCondition()+" | "+game.getFEN());
+		logger.logGame("randomVrandom", game.getEndCondition()+" | "+game.getFEN());
 	}
 	
 	
