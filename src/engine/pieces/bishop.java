@@ -48,7 +48,6 @@ public class bishop extends piece {
 				}
 			}
 		}
-		//return new ArrayList<move>();
 		return moves;
 	}
 

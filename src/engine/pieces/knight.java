@@ -52,7 +52,6 @@ public class knight extends piece {
 			}
 		}
 		
-		//return new ArrayList<move>(); return empty arraylist, was used for testing
 		return moves;
 	}
 }
