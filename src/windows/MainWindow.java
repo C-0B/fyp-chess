@@ -361,7 +361,6 @@ public class MainWindow{
 							updateMetadata();
 							resetTileCololurs();
 
-							moves = game.generateMoves();
 
 							if( !(gamemode == 0) ) {
 								playOpponentsMove();
