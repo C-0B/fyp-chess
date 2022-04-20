@@ -1,6 +1,8 @@
 package engine;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Currency;
 
 import chessFunc.func;
 import engine.pieces.bishop;
@@ -17,7 +19,7 @@ public class game {
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
     private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
-    ArrayList<String> previousPosition = new ArrayList<String>();//Threefold repitition 
+    ArrayList<String> previousPositions = new ArrayList<String>();//Threefold repitition 
     
     String fen = "";
     String enPassant = "-";     // enPassant; the square where enPassant is available (empty if not)
@@ -39,6 +41,7 @@ public class game {
      *  - check if the king is in 'check' */
     public game() {
     	readFEN(startFEN); 
+    	previousPositions.add(FENtoPosition(this.fen));
     }
     public game(String FENtoStartFrom) {
     	readFEN(FENtoStartFrom);
@@ -311,7 +314,7 @@ public class game {
     	String piece = board[startCoord[0]][startCoord[1]];
     	
     	if(piece.equals("p")) {
-    		if(targetCoord[0] == 7 && depth == 1) {//Promotions
+    		if(targetCoord[0] == 7 ) {//Promotions
     			//promote pawn
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
@@ -330,7 +333,7 @@ public class game {
     			enPassant = "-";
     		}
     	}else if(piece.equals("P")) {
-    		if(targetCoord[0] == 0 && depth == 1) {//promote pawn
+    		if(targetCoord[0] == 0) {//promote pawn
     			movePiece(promotionPiece, MOVE); 
     			enPassant = "-";
     		} else if(startCoord[0] == (targetCoord[0]+2) ){// double move
@@ -397,10 +400,8 @@ public class game {
     	togglePlayerToMove();
     	fen = generateFENfromBoard();
     	
-    	if(depth == 1) {
-    		//generateMoves();
-    		depth++;
-    		}
+    	previousPositions.add( FENtoPosition(fen) ); //  for threefold repitition
+
     }
     
     /** Moves a piece from its square to another square and 
@@ -438,13 +439,16 @@ public class game {
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	
-    	
-    	
-    	//else if 3 fold repitition
-    	// Add draw by repetition.
-    	
-    	
-    	
+    	// 3 fold repitition
+
+		String[] splitFEN = fen.split(" ");
+		String currentPostion = splitFEN[0]+" "+splitFEN[1]+" "+splitFEN[2]+" "+splitFEN[3];
+    	int numOccurences = Collections.frequency(previousPositions, currentPostion);
+    	if( numOccurences >= 3) {
+    		endCondition = "draw by threefold repitition";
+    		return true;
+    	}
+    
     	
     	// if one player has king and knight award win to the other player
     	// if one played has king and bishop award win to the other player    	
@@ -454,16 +458,36 @@ public class game {
     		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
     				endCondition = "draw by insufficient material";
-        			return true; // Checkmate not possible
+        			return true; // King + Knight/Bishop v King + Knight/Bishop
         		}
     		}
-    	}else if( (whitePieces.size() == 1) && (blackPieces.size() == 1) ) {
+    	}else if( (whitePieces.size() == 1) && (blackPieces.size() == 2) ) {
+    		if( whitePieces.contains("K") ) {
+    			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
+    				endCondition = "draw by insufficient material";
+        			return true; // King V King + Bishop / Knight
+    			}
+    		}
+    	}else if( (whitePieces.size() == 2) && (blackPieces.size() == 1) ) {
+    		if( blackPieces.contains("k") ) {
+    			if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
+    				endCondition = "draw by insufficient material";
+        			return true; // King V King and Bishop / Knight
+    			}
+    		}
+    	}
+    	else if( (whitePieces.size() == 1) && (blackPieces.size() == 1) ) {
     		//only kings left
     		endCondition = "draw by insufficient material";
 			return true; // Checkmate not possible
     	}
     	return false;
     } 
+    
+    private String FENtoPosition(String fenToConvert) {
+    	String[] splitFEN = fenToConvert.split(" ");
+    	return splitFEN[0]+" "+splitFEN[1]+" "+splitFEN[2]+" "+splitFEN[3];
+    }
     
     public ArrayList<String> getAllPieces(int colourOfPieceToGet) {
     	ArrayList<String> pieces = new ArrayList<String>();
