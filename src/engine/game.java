@@ -26,7 +26,13 @@ public class game {
     boolean wCastleKSide = false;
     boolean wCastleQSide = false;
     boolean bCastleKSide = false;
-    boolean bCastleQSide = false;
+	boolean bCastleQSide = false;
+	
+    public boolean canwCastleKSide() { return wCastleKSide; }
+	public boolean canwCastleQSide() { return wCastleQSide; }
+	public boolean canbCastleKSide() { return bCastleKSide; }
+	public boolean canbCastleQSide() { return bCastleQSide; }
+    
     int halfmove = 0; // Num plies since a pawn was moved or piece taken //Halfmove clock: The number of halfmoves since the last capture or pawn advance, used for the fifty-move rule.[7]
     int fullmove = 0; // Incremented after each of black's moves //Fullmove number: The number of the full move. It starts at 1, and is incremented after Black's move.
     
@@ -120,8 +126,12 @@ public class game {
             	}
             	if(wCastleQSide) {
             		if( !isSquareAttacked(58, getPlayerToMove())) {
-            			if( isSquareEmpty(58) && isSquareEmpty(59) ) {
-                			pseudolegalMoves.add(new move("e1", "c1"));
+            			if( isSquareEmpty(59) ) {
+	            			if( isSquareEmpty(58)) {
+	            				if( isSquareEmpty(57) ) {
+	            					pseudolegalMoves.add(new move("e1", "c1"));
+	            				}
+	            			}
             			}
             		} 
             	}
@@ -134,8 +144,12 @@ public class game {
             		}
 	            	if(bCastleQSide) {
 	            		if( !isSquareAttacked(3, getPlayerToMove()) ) {
-	            			if( isSquareEmpty(3) && isSquareEmpty(2)) {
-	            				pseudolegalMoves.add(new move("e8", "c8"));
+	            			if( isSquareEmpty(3) ) {
+		            			if( isSquareEmpty(2)) {
+		            				if( isSquareEmpty(1) ) {
+		            					pseudolegalMoves.add(new move("e8", "c8"));
+		            				}
+		            			}
 	            			}
 	            		}
 	            	}
@@ -429,17 +443,21 @@ public class game {
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
 					endCondition = "white win";
+					System.out.println(endCondition);
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
 					endCondition = "black win";
+					System.out.println(endCondition);
 					return true;//Black wins by checkmate
 				}
 			}else {
 				endCondition = "draw by stalemate";
+				System.out.println(endCondition);
 				return true; // Stalemate
 			}
 		}else if(halfmove >= 100) {
 			endCondition = "draw by 50 move rule";
+			System.out.println(endCondition);
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	
@@ -450,6 +468,7 @@ public class game {
     	int numOccurences = Collections.frequency(previousPositions, currentPostion);
     	if( numOccurences >= 3) {
     		endCondition = "draw by threefold repitition";
+			System.out.println(endCondition);
     		return true;
     	}
     
@@ -462,6 +481,7 @@ public class game {
     		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
     				endCondition = "draw by insufficient material";
+					System.out.println(endCondition);
         			return true; // King + Knight/Bishop v King + Knight/Bishop
         		}
     		}
@@ -469,6 +489,7 @@ public class game {
     		if( whitePieces.contains("K") ) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
     				endCondition = "draw by insufficient material";
+					System.out.println(endCondition);
         			return true; // King V King + Bishop / Knight
     			}
     		}
@@ -476,6 +497,7 @@ public class game {
     		if( blackPieces.contains("k") ) {
     			if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
     				endCondition = "draw by insufficient material";
+					System.out.println(endCondition);
         			return true; // King V King and Bishop / Knight
     			}
     		}
@@ -483,6 +505,7 @@ public class game {
     	else if( (whitePieces.size() == 1) && (blackPieces.size() == 1) ) {
     		//only kings left
     		endCondition = "draw by insufficient material";
+			System.out.println(endCondition);
 			return true; // Checkmate not possible
     	}
     	return false;
