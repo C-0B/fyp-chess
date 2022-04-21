@@ -10,7 +10,7 @@ public class gameNode {
 	game game;
 	int evaluation = 0;
 	int depth, maxDepth;
-	boolean isLeafNode = true;
+	boolean isLeafNode = false;
 	int PLAYERTOMOVE;
 	
 	// Immediate subnodes from this node.
@@ -19,11 +19,36 @@ public class gameNode {
 	ArrayList<move> legalMoves = new ArrayList<move>();
 	
 	public static void main(String[] args) {
+		long startTime = System.nanoTime();
 		game rootGame = new game();
 		int maxTreeDepth = 4;
-		gameNode tree = new gameNode(rootGame,0 , maxTreeDepth);
+		
+		gameNode tree = new gameNode(rootGame, 0, maxTreeDepth);
+		
+		
+		long endTime = System.nanoTime();
+		long duration  = (endTime-startTime)/1000000000;
+    	System.out.println("tree created in nodes counted in "+duration+"s");
+    	
+		System.out.println(tree.subNodes.size());
+		System.out.println();
+		
+//		long numSubNodes = tree.getTotalPossibleGames();
+//		long endTime = System.nanoTime();
+//		long duration  = (endTime-startTime)/1000000000;
+//    	System.out.println(numSubNodes+" games counted in "+duration+"s");
+    	
+//    	long numNodesTotal = tree.getTotalNodes();
+    	
+
 	}
 	
+	/**
+	 * create the tree
+	 * @param GAME root game
+	 * @param DEPTH current depth, starts at 0
+	 * @param MAXDEPTH maximum depth of the tree.
+	 */
 	public gameNode(game GAME, int DEPTH, int MAXDEPTH) {
 		game = GAME;
 		depth = DEPTH;
@@ -31,25 +56,130 @@ public class gameNode {
 		PLAYERTOMOVE = game.getPlayerToMove();
 		legalMoves = game.generateMoves();
 		
-		if( depth < MAXDEPTH ) {
-			for(move move :legalMoves) {
-				//Copy the nodes game to all subnodes
-				game subGame = new game(game.getFEN());
-				
-				if( move instanceof promotionMove ) {
-					promotionMove pMove = (promotionMove)move;
-					subGame.playMove(pMove, 1, pMove.getPromotionPiece());
-				}else {
-					subGame.playMove(move, 1, "");
+		if ( !(game.isGameFinshed()) ) {//if the has possible moves to be played
+			if( depth < MAXDEPTH ) {
+				for(move move :legalMoves) { // create all subnodes (0 legal moves if game is finished)
+					
+					game subGame = new game(game.getFEN());
+					
+					if( move instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)move;
+						subGame.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						subGame.playMove(move, 1, "");
+					}
+					
+					gameNode subNode = new gameNode(subGame, (this.depth+1), maxDepth);
+					subNodes.add(subNode);
 				}
-				
-				gameNode subNode = new gameNode(subGame, (this.depth+1), maxDepth);
-				subNodes.add(subNode);
+			}else {
+				isLeafNode = true;
 			}
-			isLeafNode = false;
+		}else {
+			isLeafNode = true;
 		}
 	}
 	
+	/**
+	 * Minimax algorithm to evaluate a tree of gameNode objects with 
+	 * @param rootNode
+	 * @param currentDepth
+	 * @param maxDepth
+	 * @return evaluation
+	 */
+	public int minimaxGame(gameNode rootNode, int currentDepth, int maxDepth) {
+		if ( (rootNode.game.isGameFinshed()) ||
+			 (currentDepth == maxDepth) ) {
+			// static eval of board
+			// return static eval
+		}
+		if ( game.getPlayerToMove() == 1 ) { // white to play, max
+			int maximumEval = Integer.MIN_VALUE;
+			for(gameNode subGameNode : subNodes) {
+				int evaluation = minimaxGame(subGameNode, currentDepth+1, maxDepth);
+				maximumEval = Math.max(maximumEval, evaluation);
+			}
+			return maximumEval;
+		} else if (game.getPlayerToMove() == -1) { // black to play, min
+			int minimumEval = Integer.MAX_VALUE;
+			for(gameNode subGameNode : subNodes) {
+				int evaluation = minimaxGame(subGameNode, currentDepth+1, maxDepth);
+				minimumEval = Math.min(minimumEval, evaluation);
+			}
+			return minimumEval;
+		}
+		
+		return 0;
+	}
+	
+	/**
+	 * Minimax algorithm with alpha beta pruning to
+	 * increase performance
+	 * @param rootNode
+	 * @param currentDepth
+	 * @param maxDepth
+	 * @param alpha
+	 * @param beta
+	 * @return the final evaluation
+	 */
+	public int alphaBetaPruning(gameNode rootNode, int currentDepth, int maxDepth, int alpha, int beta) {
+		if ( (rootNode.game.isGameFinshed()) ||
+				 (currentDepth == maxDepth) ) {
+				// static eval of board
+				// return static eval
+			}
+			if ( game.getPlayerToMove() == 1 ) { // white to play, max
+				int maximumEval = Integer.MIN_VALUE;
+				for(gameNode subGameNode : subNodes) {
+					maximumEval = alphaBetaPruning(subGameNode, currentDepth+1, maxDepth, alpha, beta);
+					if (maximumEval >= beta) {
+						break;
+					}
+					alpha = Math.max(alpha, maximumEval);
+				}
+				return maximumEval;
+			} else if (game.getPlayerToMove() == -1) { // black to play, min
+				int minimumEval = Integer.MAX_VALUE;
+				for(gameNode subGameNode : subNodes) {
+					minimumEval = alphaBetaPruning(subGameNode, currentDepth+1, maxDepth, alpha, beta);
+					if (minimumEval <= alpha) {
+						break;
+					}
+					beta = Math.min(beta, minimumEval);
+				}
+				return minimumEval;
+			}
+			return 0;
+	}
+	
+	
+	public int getTotalPossibleGames() {
+		if ( subNodes.size() == 0) {
+			return 1;
+		}else {
+			int sum = 0;
+			for(gameNode subNode : subNodes) {
+				sum += subNode.getTotalPossibleGames();
+			}
+			return sum;
+		}
+	}
+	
+	public int getTotalNodes() {
+		if ( isLeafNode ) {
+			return 1;
+		}else {
+			int sum = 0;
+			for(gameNode subNode : subNodes) {
+				sum += subNode.getTotalNodes();
+			}
+			sum += 1;// count all nodes in the tree
+			return sum;
+		}
+	}
+/*
+ * -----------------------------------------------------------------------------
+ */
 	public int evaluate() {
 		int EVALUATION = 0;
 		
@@ -98,9 +228,5 @@ public class gameNode {
 			}
 		}
 		return maxEval;
-	}
-	
-	public void printNumSubNodes() {
-		System.out.println(subNodes.size()+" subnodes");
 	}
 }
