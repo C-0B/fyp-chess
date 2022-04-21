@@ -18,6 +18,12 @@ public class gameNode {
 	ArrayList<gameNode> subNodes = new ArrayList<gameNode>();
 	ArrayList<move> legalMoves = new ArrayList<move>();
 	
+	public static void main(String[] args) {
+		game rootGame = new game();
+		int maxTreeDepth = 4;
+		gameNode tree = new gameNode(rootGame,0 , maxTreeDepth);
+	}
+	
 	public gameNode(game GAME, int DEPTH, int MAXDEPTH) {
 		game = GAME;
 		depth = DEPTH;
