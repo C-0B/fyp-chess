@@ -1,4 +1,4 @@
- package windows;
+ package windows.stringGame;
 
 import java.awt.Color;
 import java.awt.Dimension;
