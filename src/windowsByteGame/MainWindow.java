@@ -1,4 +1,4 @@
-package windows.byteGame;
+package windowsByteGame;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -45,7 +45,7 @@ public class MainWindow{
 	private ArrayList<byteMove> moves;
 	int colourOfPlayer = 1; // 1 = white, -1 = black
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
-	JLabel lblBoardVal, lblPtoMoveVal;
+	JLabel lblPtoMoveVal;
 	private JTextField tfDisplayFEN;
 	private JTextField tfLoadFEN;
 	
@@ -158,8 +158,11 @@ public class MainWindow{
     }
     
     private void updateMetadata() {
-		lblBoardVal.setText(game.getBoardasStr());
-		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
+    	if(game.getPlayerToMove() == 1) {
+    		lblPtoMoveVal.setText("White");
+    	}else {
+    		lblPtoMoveVal.setText("Black");
+    	}
 		tfDisplayFEN.setText(game.getFEN());
 		
     }
@@ -463,25 +466,6 @@ public class MainWindow{
 		gbc_lblPtoMoveVal.gridy = 1;
 		rightPanel.add(lblPtoMoveVal, gbc_lblPtoMoveVal);
 		
-		JLabel lblBoard = new JLabel("Board:   ");
-		lblBoard.setForeground(Color.WHITE);
-		lblBoard.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblBoard = new GridBagConstraints();
-		gbc_lblBoard.insets = new Insets(0, 0, 5, 5);
-		gbc_lblBoard.gridx = 0;
-		gbc_lblBoard.gridy = 2;
-		rightPanel.add(lblBoard, gbc_lblBoard);
-		
-		lblBoardVal = new JLabel("some board?");
-		lblBoardVal.setForeground(Color.WHITE);
-		lblBoardVal.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblBoardVal = new GridBagConstraints();
-		gbc_lblBoardVal.insets = new Insets(0, 0, 5, 5);
-		gbc_lblBoardVal.fill = GridBagConstraints.BOTH;
-		gbc_lblBoardVal.gridx = 1;
-		gbc_lblBoardVal.gridy = 2;
-		rightPanel.add(lblBoardVal, gbc_lblBoardVal);
-		
 		JButton btnLoadFromFEN = new JButton("Load Game From FEN");
 		btnLoadFromFEN.addActionListener(new ActionListener() {
 			@Override
@@ -499,6 +483,13 @@ public class MainWindow{
 				updateMetadata();
 			}
 		});
+		
+		Component verticalStrut = Box.createVerticalStrut(20);
+		GridBagConstraints gbc_verticalStrut = new GridBagConstraints();
+		gbc_verticalStrut.insets = new Insets(0, 0, 5, 5);
+		gbc_verticalStrut.gridx = 0;
+		gbc_verticalStrut.gridy = 2;
+		rightPanel.add(verticalStrut, gbc_verticalStrut);
 		GridBagConstraints gbc_btnLoadFromFEN = new GridBagConstraints();
 		gbc_btnLoadFromFEN.insets = new Insets(0, 0, 5, 5);
 		gbc_btnLoadFromFEN.fill = GridBagConstraints.VERTICAL;
@@ -509,8 +500,9 @@ public class MainWindow{
 		// Load Game from FEN GUI elements in right panel	
 		tfLoadFEN = new JTextField();
 		GridBagConstraints gbc_tfLoadFEN = new GridBagConstraints();
+		gbc_tfLoadFEN.gridheight = 2;
 		gbc_tfLoadFEN.insets = new Insets(0, 0, 5, 10);
-		gbc_tfLoadFEN.fill = GridBagConstraints.BOTH;
+		gbc_tfLoadFEN.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfLoadFEN.gridx = 1;
 		gbc_tfLoadFEN.gridy = 3;
 		rightPanel.add(tfLoadFEN, gbc_tfLoadFEN);

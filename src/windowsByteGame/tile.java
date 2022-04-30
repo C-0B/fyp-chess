@@ -1,4 +1,4 @@
- package windows.byteGame;
+ package windowsByteGame;
 
 import java.awt.Color;
 import java.awt.Dimension;
