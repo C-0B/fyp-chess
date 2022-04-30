@@ -1,13 +1,16 @@
-package windows.stringGame;
+package windows;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.imageio.stream.IIOByteBuffer;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -31,6 +35,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 
+import org.hamcrest.CustomTypeSafeMatcher;
+
 import chessFunc.func;
 import engine.game;
 import engine.move;
@@ -44,15 +50,14 @@ public class MainWindow{
 	private ArrayList<move> moves;
 	int colourOfPlayer = 1; // 1 = white, -1 = black
 	tile startTile, endTile, recentTile; //Start and tile of the proposed move
-	JLabel lblBoardVal, lblPtoMoveVal;
+	JLabel lblPtoMoveVal;
 	private JTextField tfDisplayFEN;
 	private JTextField tfLoadFEN;
 	
 	int gamemode = 0;
 	/* 0 - solo play
 	 * 1 - white v random
-	 * 2 - random v black
-	 */
+	 * 2 - random v black */
 	
 	/** Launch the application. */
 	public static void main(String[] args) {
@@ -157,13 +162,17 @@ public class MainWindow{
     }
     
     private void updateMetadata() {
-		lblBoardVal.setText(game.getBoardasStr());
-		lblPtoMoveVal.setText(Integer.toString(game.getPlayerToMove()));
+    	if(game.getPlayerToMove() == 1) {
+    		lblPtoMoveVal.setText("White");
+    	}else {
+    		lblPtoMoveVal.setText("Black");
+    	}
 		tfDisplayFEN.setText(game.getFEN());
 		
     }
 	/** Initialise the contents (elements) of the frame. */
 	private void initialize() {
+	
 		// basics of the frame
 		frmChess = new JFrame();
 		frmChess.setTitle("Chess");
@@ -192,16 +201,6 @@ public class MainWindow{
 		gbl_leftPanel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
 		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, 0.0};
 		leftPanel.setLayout(gbl_leftPanel);
-		
-		JToggleButton tglPlayerColour = new JToggleButton("Black");
-		tglPlayerColour.setOpaque(true);
-		tglPlayerColour.setSelected(true);
-		GridBagConstraints gbc_tglPlayerColour = new GridBagConstraints();
-		gbc_tglPlayerColour.fill = GridBagConstraints.HORIZONTAL;
-		gbc_tglPlayerColour.insets = new Insets(5, 0, 5, 10);
-		gbc_tglPlayerColour.gridx = 1;
-		gbc_tglPlayerColour.gridy = 1;
-		leftPanel.add(tglPlayerColour, gbc_tglPlayerColour);
 		
 		JLabel lblGameMode = new JLabel("Gamemode:    ");
 		lblGameMode.setForeground(Color.WHITE);
@@ -333,6 +332,7 @@ public class MainWindow{
 					 *  be released */
 					@Override
 					public void mousePressed(MouseEvent e) {
+						frmChess.setCursor(Cursor.HAND_CURSOR);
 						startTile = boardTiles[RANK][FILE];
 						showPossibleMoves(startTile.getSqName(), moves);
 					}
@@ -342,6 +342,7 @@ public class MainWindow{
 					 *  on the element */
 					@Override
 					public void mouseReleased(MouseEvent e) {
+						frmChess.setCursor(null);
 						endTile = recentTile; // Determined by which tiles the mouse has entered during the press(drag)
 						String startSquareStr = startTile.getSqName();
 						String targetSquareStr = endTile.getSqName();
@@ -462,25 +463,6 @@ public class MainWindow{
 		gbc_lblPtoMoveVal.gridy = 1;
 		rightPanel.add(lblPtoMoveVal, gbc_lblPtoMoveVal);
 		
-		JLabel lblBoard = new JLabel("Board:   ");
-		lblBoard.setForeground(Color.WHITE);
-		lblBoard.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblBoard = new GridBagConstraints();
-		gbc_lblBoard.insets = new Insets(0, 0, 5, 5);
-		gbc_lblBoard.gridx = 0;
-		gbc_lblBoard.gridy = 2;
-		rightPanel.add(lblBoard, gbc_lblBoard);
-		
-		lblBoardVal = new JLabel("some board?");
-		lblBoardVal.setForeground(Color.WHITE);
-		lblBoardVal.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
-		GridBagConstraints gbc_lblBoardVal = new GridBagConstraints();
-		gbc_lblBoardVal.insets = new Insets(0, 0, 5, 5);
-		gbc_lblBoardVal.fill = GridBagConstraints.BOTH;
-		gbc_lblBoardVal.gridx = 1;
-		gbc_lblBoardVal.gridy = 2;
-		rightPanel.add(lblBoardVal, gbc_lblBoardVal);
-		
 		JButton btnLoadFromFEN = new JButton("Load Game From FEN");
 		btnLoadFromFEN.addActionListener(new ActionListener() {
 			@Override
@@ -508,8 +490,9 @@ public class MainWindow{
 		// Load Game from FEN GUI elements in right panel	
 		tfLoadFEN = new JTextField();
 		GridBagConstraints gbc_tfLoadFEN = new GridBagConstraints();
+		gbc_tfLoadFEN.gridheight = 2;
 		gbc_tfLoadFEN.insets = new Insets(0, 0, 5, 10);
-		gbc_tfLoadFEN.fill = GridBagConstraints.BOTH;
+		gbc_tfLoadFEN.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfLoadFEN.gridx = 1;
 		gbc_tfLoadFEN.gridy = 3;
 		rightPanel.add(tfLoadFEN, gbc_tfLoadFEN);

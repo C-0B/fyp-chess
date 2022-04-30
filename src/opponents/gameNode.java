@@ -6,7 +6,7 @@ import engine.game;
 import engine.move;
 import engine.promotionMove;
 
-public class gameNodeStr {
+public class gameNode {
 	game game;
 	int evaluation = 0;
 	int depth, maxDepth;
@@ -15,32 +15,25 @@ public class gameNodeStr {
 	
 	// Immediate subnodes from this node.
 	// One for each legal move a resulting following posiiton
-	ArrayList<gameNodeStr> subNodes = new ArrayList<gameNodeStr>();
+	ArrayList<gameNode> subNodes = new ArrayList<gameNode>();
 	ArrayList<move> legalMoves = new ArrayList<move>();
 	
 	public static void main(String[] args) {
 		long startTime = System.nanoTime();
 		game rootGame = new game();
-		int maxTreeDepth = 4;
+		int maxTreeDepth = 2;
 		
-		gameNodeStr tree = new gameNodeStr(rootGame, 0, maxTreeDepth);
-		
+		gameNode tree = new gameNode(rootGame, 0, maxTreeDepth);
 		
 		long endTime = System.nanoTime();
 		long duration  = (endTime-startTime)/1000000000;
     	System.out.println("tree created in nodes counted in "+duration+"s");
     	
-		System.out.println(tree.getTotalPossibleGames());
+    	System.out.println(tree.getTotalPossibleGames());
 		System.out.println();
 		
 //		long numSubNodes = tree.getTotalPossibleGames();
-//		long endTime = System.nanoTime();
-//		long duration  = (endTime-startTime)/1000000000;
-//    	System.out.println(numSubNodes+" games counted in "+duration+"s");
-    	
-//    	long numNodesTotal = tree.getTotalNodes();
-    	
-
+//    	System.out.println(numSubNodes+" games counted in "+duration+"s");    
 	}
 	
 	/**
@@ -49,7 +42,7 @@ public class gameNodeStr {
 	 * @param DEPTH current depth, starts at 0
 	 * @param MAXDEPTH maximum depth of the tree.
 	 */
-	public gameNodeStr(game GAME, int DEPTH, int MAXDEPTH) {
+	public gameNode(game GAME, int DEPTH, int MAXDEPTH) {
 		game = GAME;
 		depth = DEPTH;
 		maxDepth = MAXDEPTH;
@@ -69,14 +62,10 @@ public class gameNodeStr {
 						subGame.playMove(move, 1, "");
 					}
 					
-					gameNodeStr subNode = new gameNodeStr(subGame, (this.depth+1), maxDepth);
-					subNodes.add(subNode);
+					gameNode subNode = new gameNode(subGame, (this.depth+1), maxDepth);
+					//subNodes.add(subNode);
 				}
-			}else {
-				isLeafNode = true;
 			}
-		}else {
-			isLeafNode = true;
 		}
 	}
 	
@@ -87,7 +76,7 @@ public class gameNodeStr {
 	 * @param maxDepth
 	 * @return evaluation
 	 */
-	public int minimaxGame(gameNodeStr rootNode, int currentDepth, int maxDepth) {
+	public int minimaxGame(gameNode rootNode, int currentDepth, int maxDepth) {
 		if ( (rootNode.game.isGameFinshed()) ||
 			 (currentDepth == maxDepth) ) {
 			// static eval of board
@@ -95,14 +84,14 @@ public class gameNodeStr {
 		}
 		if ( game.getPlayerToMove() == 1 ) { // white to play, max
 			int maximumEval = Integer.MIN_VALUE;
-			for(gameNodeStr subGameNode : subNodes) {
+			for(gameNode subGameNode : subNodes) {
 				int evaluation = minimaxGame(subGameNode, currentDepth+1, maxDepth);
 				maximumEval = Math.max(maximumEval, evaluation);
 			}
 			return maximumEval;
 		} else if (game.getPlayerToMove() == -1) { // black to play, min
 			int minimumEval = Integer.MAX_VALUE;
-			for(gameNodeStr subGameNode : subNodes) {
+			for(gameNode subGameNode : subNodes) {
 				int evaluation = minimaxGame(subGameNode, currentDepth+1, maxDepth);
 				minimumEval = Math.min(minimumEval, evaluation);
 			}
@@ -122,7 +111,7 @@ public class gameNodeStr {
 	 * @param beta
 	 * @return the final evaluation
 	 */
-	public int alphaBetaPruning(gameNodeStr rootNode, int currentDepth, int maxDepth, int alpha, int beta) {
+	public int alphaBetaPruning(gameNode rootNode, int currentDepth, int maxDepth, int alpha, int beta) {
 		if ( (rootNode.game.isGameFinshed()) ||
 				 (currentDepth == maxDepth) ) {
 				// static eval of board
@@ -130,7 +119,7 @@ public class gameNodeStr {
 			}
 			if ( game.getPlayerToMove() == 1 ) { // white to play, max
 				int maximumEval = Integer.MIN_VALUE;
-				for(gameNodeStr subGameNode : subNodes) {
+				for(gameNode subGameNode : subNodes) {
 					maximumEval = alphaBetaPruning(subGameNode, currentDepth+1, maxDepth, alpha, beta);
 					if (maximumEval >= beta) {
 						break;
@@ -140,7 +129,7 @@ public class gameNodeStr {
 				return maximumEval;
 			} else if (game.getPlayerToMove() == -1) { // black to play, min
 				int minimumEval = Integer.MAX_VALUE;
-				for(gameNodeStr subGameNode : subNodes) {
+				for(gameNode subGameNode : subNodes) {
 					minimumEval = alphaBetaPruning(subGameNode, currentDepth+1, maxDepth, alpha, beta);
 					if (minimumEval <= alpha) {
 						break;
@@ -158,7 +147,7 @@ public class gameNodeStr {
 			return 1;
 		}else {
 			int sum = 0;
-			for(gameNodeStr subNode : subNodes) {
+			for(gameNode subNode : subNodes) {
 				sum += subNode.getTotalPossibleGames();
 			}
 			return sum;
@@ -170,7 +159,7 @@ public class gameNodeStr {
 			return 1;
 		}else {
 			int sum = 0;
-			for(gameNodeStr subNode : subNodes) {
+			for(gameNode subNode : subNodes) {
 				sum += subNode.getTotalNodes();
 			}
 			sum += 1;// count all nodes in the tree
@@ -210,7 +199,7 @@ public class gameNodeStr {
 	
 	public int minimumEval() {
 		int minEval = Integer.MAX_VALUE;
-		for(gameNodeStr node : subNodes ) {
+		for(gameNode node : subNodes ) {
 			int curMoveEval = node.evaluate();
 			if (curMoveEval >= minEval) {
 				minEval = curMoveEval;
@@ -221,7 +210,7 @@ public class gameNodeStr {
 	
 	public int maximumEval() {
 		int maxEval = Integer.MIN_VALUE;
-		for(gameNodeStr node :subNodes) {
+		for(gameNode node :subNodes) {
 			int curMoveEval = node.evaluate();
 			if (curMoveEval >= maxEval) {
 				maxEval = curMoveEval;

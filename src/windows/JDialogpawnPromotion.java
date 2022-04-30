@@ -1,4 +1,4 @@
-package windows.stringGame;
+package windows;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -1,4 +1,4 @@
- package windows.stringGame;
+ package windows;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -87,7 +87,7 @@ public class tile{
 	public void setSelectedColour() {
 		// Light and dark red colours
 		if(colour == -1)    { button.setBackground(new Color(215, 102, 101)); } // "dark"
-		else if(colour == 1){ button.setBackground(new Color(230, 150, 140)); } // "light"	236, 126, 112
+		else if(colour == 1){ button.setBackground(new Color(230, 150, 140)); } // "light"
 		
 	}
 	
