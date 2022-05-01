@@ -2,6 +2,82 @@ package chessFunc;
 
 public abstract class func {
 	
+	public static boolean ByteArrContains(byte[] arr, byte elementToCheck) {
+		for(byte element : arr) {
+			if(element == elementToCheck) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	
+	public static String pieceByteToStr(byte piece) {
+		switch (piece) {
+		case 0:
+			return " ";
+		case 1:
+			return "p";
+		case 2:
+			return "n";
+		case 3:
+			return "b";
+		case 4:
+			return "r";
+		case 5:
+			return "q";
+		case 6:
+			return "k";
+		case 7:
+			return "P";
+		case 8:
+			return "N";
+		case 9:
+			return "B";
+		case 10:
+			return "R";
+		case 11:
+			return "Q";
+		case 12:
+			return "K";
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + piece);
+		}
+	}
+	
+	public static byte pieceStrToByte (String piece) {
+		switch (piece) {
+		case " ":
+			return 0;
+		case "p":
+			return 1;
+		case "n":
+			return 2;
+		case "b":
+			return 3;
+		case "r":
+			return 4;
+		case "q":
+			return 5;
+		case "k":
+			return 6;
+		case "P":
+			return 7;
+		case "N":
+			return 8;
+		case "B":
+			return 9;
+		case "R":
+			return 10;
+		case "Q":
+			return 11;
+		case "K":
+			return 12;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + piece);
+		}
+	}
+	
 	/**@param squareNum 0-63 int
 	 * @return 2D array of [0,0] to [7, 7] aka a8 to h1 [top left to bottom right]
 	 */
