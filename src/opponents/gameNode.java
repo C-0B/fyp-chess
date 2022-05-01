@@ -13,8 +13,10 @@ public class gameNode {
 	boolean isLeafNode = false;
 	int PLAYERTOMOVE;
 	
-	move moveToPlay = null;
 	move lastMovePlayed = null;
+	private move moveToPlay = null;
+	public move getMoveToPlay() {return moveToPlay;}
+	
 	
 	// Immediate subnodes from this node.
 	// One for each legal move a resulting following posiiton
@@ -23,8 +25,8 @@ public class gameNode {
 	
 	public static void main(String[] args) {
 		long startTime = System.nanoTime();
-		game rootGame = new game("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
-		int maxTreeDepth = 3;
+		game rootGame = new game("rnQq1k1r/pp2bppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R b KQ - 0 8");
+		int maxTreeDepth = 2;
 		
 		gameNode tree = new gameNode(rootGame, 0, maxTreeDepth, null);
 		
@@ -89,7 +91,7 @@ public class gameNode {
 			
 		}else {//game not finished
 			if( this.isLeafNode ) { // no subnodes
-				EVALUATION = eval.getPieceEval(this.game.getBoard());
+				EVALUATION = eval.getPositionEval(this.game.getBoard());
 			}else { // Has subnodes
 				if(PLAYERTOMOVE == 1) {//white to move
 					EVALUATION = maximumEval();
