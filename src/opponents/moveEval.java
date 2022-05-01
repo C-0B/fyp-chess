@@ -2,8 +2,6 @@ package opponents;
 
 import java.util.ArrayList;
 
-import org.junit.Ignore;
-
 import engine.move;
 
 public class moveEval {
@@ -12,8 +10,10 @@ public class moveEval {
 	
 	public move getMove() { return move; }
 	public int getEval() { return eval; }
-
-
+	public void setMove(move newMove) { move = newMove; }
+	public void setEval(int newEval) { eval = newEval; }
+	public void addEval(int newEval) { eval += newEval; }
+	
 	public moveEval(move MOVE, int EVAL) {
 		move = MOVE;
 		eval = EVAL;
