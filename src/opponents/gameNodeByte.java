@@ -21,27 +21,14 @@ public class gameNodeByte {
 	
 	public static void main(String[] args) {
 		long startTime = System.nanoTime();
-		byteGame rootGame = new byteGame();
-		int maxTreeDepth = 4;
+		byteGame rootGame = new byteGame("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
+		int maxTreeDepth = 3;
 		
 		gameNodeByte tree = new gameNodeByte(rootGame, 0, maxTreeDepth);
 		
-		
 		long endTime = System.nanoTime();
-		long duration  = (endTime-startTime)/1000000000;
-    	System.out.println("tree created in nodes counted in "+duration+"s");
-    	
-		System.out.println(tree.getTotalPossibleGames());
-		System.out.println();
-		
-//		long numSubNodes = tree.getTotalPossibleGames();
-//		long endTime = System.nanoTime();
-//		long duration  = (endTime-startTime)/1000000000;
-//    	System.out.println(numSubNodes+" games counted in "+duration+"s");
-    	
-//    	long numNodesTotal = tree.getTotalNodes();
-    	
-
+		long duration  = (endTime-startTime)/1000000;
+    	System.out.println(tree.getTotalPossibleGames()+" games counted in "+duration+"ms");
 	}
 	
 	/**
@@ -79,6 +66,7 @@ public class gameNodeByte {
 		}else {
 			isLeafNode = true;
 		}
+		
 	}
 	
 	/**
