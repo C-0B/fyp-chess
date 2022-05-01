@@ -122,7 +122,6 @@ public class byteGame {
     	
     	/* Gets a list of the players pieces */
     	 ArrayList<piece> pieces = getListOfPiecesOf(getPlayerToMove());
-    	 int count = 1;
     	/* Loops through the players pieces and calculates to pseudolegal moves for each piece */
      	for (piece curPiece : pieces) {
     		ArrayList<byteMove> pieceMoves = new ArrayList<byteMove>();
