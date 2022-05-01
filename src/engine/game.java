@@ -18,6 +18,9 @@ public class game {
     ArrayList<move> legalMovesForPosition = new ArrayList<move>();
     private String startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
+    String wKingPos = "e1"; // square 60
+    String bKingPos = "e8"; // square 4
+    
     ArrayList<String> previousPositions = new ArrayList<String>();//Threefold repitition 
     
     String fen = "";
@@ -216,13 +219,7 @@ public class game {
     			
     		}
     	}
-    	// Remove all moves where the the current players king is left attacked, 
-    	// by a following pseudolegal move by the opponent
-    	long endTime = System.nanoTime();
-    	long duration  = (endTime-startTime)/1000000;
-    	
     	legalMovesForPosition = legalMoves;
-//    	System.out.println(legalMovesForPosition.size()+" legal move(s) generated in "+duration+" ms\n");
     	return legalMoves;
     }
     
@@ -443,21 +440,17 @@ public class game {
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
 					endCondition = "white win";
-					System.out.println(endCondition);
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
 					endCondition = "black win";
-					System.out.println(endCondition);
 					return true;//Black wins by checkmate
 				}
 			}else {
 				endCondition = "draw by stalemate";
-				System.out.println(endCondition);
 				return true; // Stalemate
 			}
 		}else if(halfmove >= 100) {
 			endCondition = "draw by 50 move rule";
-			System.out.println(endCondition);
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	
@@ -468,7 +461,6 @@ public class game {
     	int numOccurences = Collections.frequency(previousPositions, currentPostion);
     	if( numOccurences >= 3) {
     		endCondition = "draw by threefold repitition";
-			System.out.println(endCondition);
     		return true;
     	}
     
@@ -481,7 +473,6 @@ public class game {
     		if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
     				endCondition = "draw by insufficient material";
-					System.out.println(endCondition);
         			return true; // King + Knight/Bishop v King + Knight/Bishop
         		}
     		}
@@ -489,7 +480,6 @@ public class game {
     		if( whitePieces.contains("K") ) {
     			if(blackPieces.contains("k") && (blackPieces.contains("n") || blackPieces.contains("b")) ) {
     				endCondition = "draw by insufficient material";
-					System.out.println(endCondition);
         			return true; // King V King + Bishop / Knight
     			}
     		}
@@ -497,7 +487,6 @@ public class game {
     		if( blackPieces.contains("k") ) {
     			if(whitePieces.contains("K") && (whitePieces.contains("N") || whitePieces.contains("B")) ) {
     				endCondition = "draw by insufficient material";
-					System.out.println(endCondition);
         			return true; // King V King and Bishop / Knight
     			}
     		}
@@ -505,7 +494,6 @@ public class game {
     	else if( (whitePieces.size() == 1) && (blackPieces.size() == 1) ) {
     		//only kings left
     		endCondition = "draw by insufficient material";
-			System.out.println(endCondition);
 			return true; // Checkmate not possible
     	}
     	return false;
