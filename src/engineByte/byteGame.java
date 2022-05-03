@@ -461,22 +461,18 @@ public class byteGame {
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
 					endCondition = "white win";
-					System.out.println(endCondition);
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
 					endCondition = "black win";
-					System.out.println(endCondition);
 					return true;//Black wins by checkmate
 				}
 			}else {
 				System.out.println(fen);
-				endCondition = "draw by stalemate";
 				System.out.println(endCondition);
 				return true; // Stalemate
 			}
 		}else if(halfmove >= 100) {
 			endCondition = "draw by 50 move rule";
-			System.out.println(endCondition);
     		return true; // 50 consecutive moves without the movement of any pawn and without any capture
     	}
     	
@@ -487,7 +483,6 @@ public class byteGame {
     	int numOccurences = Collections.frequency(previousPositions, currentPostion);
     	if( numOccurences >= 3) {
     		endCondition = "draw by threefold repitition";
-			System.out.println(endCondition);
     		return true;
     	}
     

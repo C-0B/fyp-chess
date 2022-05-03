@@ -143,7 +143,6 @@ public class eval {
 				}
 			}
 		}
-		
 		int score = 0;
 		for(String piece : wPieces) {
 			if( piece.equals("P") ) {

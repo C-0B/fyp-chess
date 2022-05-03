@@ -8,9 +8,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +16,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.imageio.stream.IIOByteBuffer;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -26,22 +23,17 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.UIManager;
-
-import org.hamcrest.CustomTypeSafeMatcher;
 
 import chessFunc.func;
 import engine.game;
 import engine.move;
 import engine.promotionMove;
 import opponents.PlayOpponents;
+import opponents.alphaBetaGameNode;
 
 public class MainWindow{
 	private JFrame frmChess;
@@ -175,21 +167,24 @@ public class MainWindow{
 	
 		// basics of the frame
 		frmChess = new JFrame();
+		frmChess.setResizable(false);
 		frmChess.setTitle("Chess");
 		frmChess.setIconImage(Toolkit.getDefaultToolkit().getImage(MainWindow.class.getResource("/icons/titleIcon256x256.png")));
 		frmChess.getContentPane().setBackground(Color.DARK_GRAY);
 		frmChess.setBackground(Color.DARK_GRAY);
 		frmChess.getContentPane().setForeground(new Color(0, 102, 153));
-		frmChess.setBounds(100, 100, 1700, 900); // This is just big enough to not be full screen but show all elements (not birng hidden)
+		frmChess.setBounds(50, 50, 960, 965); // This is just big enough to not be full screen but show all elements (not birng hidden)
 		frmChess.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWeights = new double[]{0, 0, 0};
-		gridBagLayout.rowWeights = new double[]{0};
+		gridBagLayout.columnWeights = new double[]{1.0, 0};
+		gridBagLayout.rowWeights = new double[]{0, 0.0};
 		frmChess.getContentPane().setLayout(gridBagLayout);
 						
 		// ----- Left panel -----
 		JPanel leftPanel = new JPanel();
 		GridBagConstraints gbc_leftPanel = new GridBagConstraints();
+		gbc_leftPanel.gridheight = 2;
+		gbc_leftPanel.insets = new Insets(10, 10, 10, 10);
 		gbc_leftPanel.fill = GridBagConstraints.VERTICAL;
 		gbc_leftPanel.gridx = 0;
 		gbc_leftPanel.gridy = 0;
@@ -197,30 +192,29 @@ public class MainWindow{
 		leftPanel.setBackground(Color.BLACK);
 		GridBagLayout gbl_leftPanel = new GridBagLayout();
 		gbl_leftPanel.columnWidths = new int[]{0, 0, 0, 0};
-		gbl_leftPanel.rowHeights = new int[]{0, 0, 0};
+		gbl_leftPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_leftPanel.columnWeights = new double[]{0.0, 1.0, 0.0, Double.MIN_VALUE};
-		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, 0.0};
+		gbl_leftPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 		leftPanel.setLayout(gbl_leftPanel);
 		
-		JLabel lblGameMode = new JLabel("Gamemode:    ");
-		lblGameMode.setForeground(Color.WHITE);
-		GridBagConstraints gbc_lblGameMode = new GridBagConstraints();
-		gbc_lblGameMode.insets = new Insets(0, 10, 5, 5);
-		gbc_lblGameMode.anchor = GridBagConstraints.EAST;
-		gbc_lblGameMode.gridx = 0;
-		gbc_lblGameMode.gridy = 2;
-		leftPanel.add(lblGameMode, gbc_lblGameMode);
-		
 		JComboBox comboMode = new JComboBox();
-		comboMode.setModel(new DefaultComboBoxModel(new String[] {"Solo Game", "V Random", "V Checkmate"}));
+		comboMode.setModel(new DefaultComboBoxModel(new String[] {"Solo Game", "V Random", "V Checkmate", "V Piece Value", "V Piece Position", "V Minimax (2)", "V Alpha Beta (2)", "V Alha Beta (4)"}));
 		comboMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				gamemode = comboMode.getSelectedIndex();
 			}
 		});
+		
+		JLabel lblGameMode = new JLabel("Gamemode:    ");
+		lblGameMode.setForeground(Color.WHITE);
+		GridBagConstraints gbc_lblGameMode = new GridBagConstraints();
+		gbc_lblGameMode.insets = new Insets(0, 10, 5, 5);
+		gbc_lblGameMode.gridx = 1;
+		gbc_lblGameMode.gridy = 1;
+		leftPanel.add(lblGameMode, gbc_lblGameMode);
 		GridBagConstraints gbc_comboMode = new GridBagConstraints();
-		gbc_comboMode.insets = new Insets(5, 0, 5, 10);
+		gbc_comboMode.insets = new Insets(0, 10, 0, 10);
 		gbc_comboMode.gridx = 1;
 		gbc_comboMode.gridy = 2;
 		leftPanel.add(comboMode, gbc_comboMode);
@@ -246,11 +240,18 @@ public class MainWindow{
 			@Override
 			public void actionPerformed(ActionEvent e) {newGame();}
 		});
+		
+		Component verticalStrut = Box.createVerticalStrut(75);
+		GridBagConstraints gbc_verticalStrut = new GridBagConstraints();
+		gbc_verticalStrut.insets = new Insets(0, 0, 5, 5);
+		gbc_verticalStrut.gridx = 1;
+		gbc_verticalStrut.gridy = 3;
+		leftPanel.add(verticalStrut, gbc_verticalStrut);
 		GridBagConstraints gbc_btnNewGame = new GridBagConstraints();
 		gbc_btnNewGame.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnNewGame.insets = new Insets(5, 0, 5, 10);
+		gbc_btnNewGame.insets = new Insets(0, 10, 0, 10);
 		gbc_btnNewGame.gridx = 1;
-		gbc_btnNewGame.gridy = 3;
+		gbc_btnNewGame.gridy = 4;
 		leftPanel.add(btnNewGame, gbc_btnNewGame);
 		
 		JButton btnNextMove = new JButton("Next Move");
@@ -265,30 +266,38 @@ public class MainWindow{
 				
 			}
 		});
+		
+		Component verticalStrut_1 = Box.createVerticalStrut(75);
+		GridBagConstraints gbc_verticalStrut_1 = new GridBagConstraints();
+		gbc_verticalStrut_1.insets = new Insets(0, 0, 5, 5);
+		gbc_verticalStrut_1.gridx = 1;
+		gbc_verticalStrut_1.gridy = 5;
+		leftPanel.add(verticalStrut_1, gbc_verticalStrut_1);
 		GridBagConstraints gbc_btnNextMove = new GridBagConstraints();
 		gbc_btnNextMove.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnNextMove.insets = new Insets(5, 0, 5, 10);
+		gbc_btnNextMove.insets = new Insets(0, 10, 0, 10);
 		gbc_btnNextMove.gridx = 1;
-		gbc_btnNextMove.gridy = 4;
+		gbc_btnNextMove.gridy = 6;
 		leftPanel.add(btnNextMove, gbc_btnNextMove);
+		
+		Component verticalStrut_2 = Box.createVerticalStrut(75);
+		GridBagConstraints gbc_verticalStrut_2 = new GridBagConstraints();
+		gbc_verticalStrut_2.insets = new Insets(0, 0, 5, 5);
+		gbc_verticalStrut_2.gridx = 1;
+		gbc_verticalStrut_2.gridy = 7;
+		leftPanel.add(verticalStrut_2, gbc_verticalStrut_2);
 		GridBagConstraints gbc_btnFlipBoard = new GridBagConstraints();
 		gbc_btnFlipBoard.anchor = GridBagConstraints.SOUTH;
-		gbc_btnFlipBoard.insets = new Insets(5, 0, 5, 10);
+		gbc_btnFlipBoard.insets = new Insets(0, 10, 0, 10);
 		gbc_btnFlipBoard.gridx = 1;
-		gbc_btnFlipBoard.gridy = 5;
-		leftPanel.add(btnFlipBoard, gbc_btnFlipBoard);
-		
-		Component horizontalStrut = Box.createHorizontalStrut(50);
-		GridBagConstraints gbc_horizontalStrut = new GridBagConstraints();
-		gbc_horizontalStrut.gridx = 1;
-		gbc_horizontalStrut.gridy = 0;
-		frmChess.getContentPane().add(horizontalStrut, gbc_horizontalStrut);
-						
+		gbc_btnFlipBoard.gridy = 8;
+		leftPanel.add(btnFlipBoard, gbc_btnFlipBoard);				
 							
 		// ----- Middle Panel ----- (chess board)
 		JPanel mainPanel = new JPanel();
 		GridBagConstraints gbc_mainPanel = new GridBagConstraints();
-		gbc_mainPanel.gridx = 2;
+		gbc_mainPanel.insets = new Insets(10, 0, 10, 10);
+		gbc_mainPanel.gridx = 1;
 		gbc_mainPanel.gridy = 0;
 		frmChess.getContentPane().add(mainPanel, gbc_mainPanel);
 		mainPanel.setBorder(null);
@@ -356,12 +365,10 @@ public class MainWindow{
 							}else{
 								game.playMove(userMove, 1, "");
 							}
-
-							loadGameToGUI();
 							moves = game.generateMoves();
+							loadGameToGUI();
 							updateMetadata();
 							resetTileCololurs();
-
 
 							if( !(gamemode == 0) ) {
 								playOpponentsMove();
@@ -399,38 +406,34 @@ public class MainWindow{
 			colour -= 2*colour;
 		}
 		
-		Component horizontalStrut_1 = Box.createHorizontalStrut(50);
-		GridBagConstraints gbc_horizontalStrut_1 = new GridBagConstraints();
-		gbc_horizontalStrut_1.gridx = 3;
-		gbc_horizontalStrut_1.gridy = 0;
-		frmChess.getContentPane().add(horizontalStrut_1, gbc_horizontalStrut_1);
-		
 
-		// ----- Right panel -----
-		JPanel rightPanel = new JPanel();
-		GridBagConstraints gbc_rightPanel = new GridBagConstraints();
-		gbc_rightPanel.fill = GridBagConstraints.VERTICAL;
-		gbc_rightPanel.gridx = 4;
-		gbc_rightPanel.gridy = 0;
-		frmChess.getContentPane().add(rightPanel, gbc_rightPanel);
-		rightPanel.setBackground(Color.BLACK);
+		// ----- Bottom panel -----
+		JPanel bottomPanel = new JPanel();
+		GridBagConstraints gbc_bottomPanel = new GridBagConstraints();
+		gbc_bottomPanel.insets = new Insets(0, 0, 10, 10);
+		gbc_bottomPanel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_bottomPanel.gridx = 1;
+		gbc_bottomPanel.gridy = 1;
+		frmChess.getContentPane().add(bottomPanel, gbc_bottomPanel);
+		bottomPanel.setBackground(Color.BLACK);
 		
 		// The layout of elements in the right panel
-		GridBagLayout gbl_RP = new GridBagLayout();
-		gbl_RP.columnWidths = new int[] {0, 0, 0};
-		gbl_RP.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
-		gbl_RP.columnWeights = new double[]{0.0, 1.0};
-		gbl_RP.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
-		rightPanel.setLayout(gbl_RP);
+		GridBagLayout gbl_bottomPanel = new GridBagLayout();
+		gbl_bottomPanel.columnWidths = new int[] {0, 0, 0};
+		gbl_bottomPanel.rowHeights = new int[] {0, 0, 0, 0, 0, 0, 0};
+		gbl_bottomPanel.columnWeights = new double[]{0.0, 1.0};
+		gbl_bottomPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+		bottomPanel.setLayout(gbl_bottomPanel);
 		
 		JLabel lblFEN = new JLabel("FEN:   ");
 		lblFEN.setForeground(Color.WHITE);
 		lblFEN.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblFEN = new GridBagConstraints();
+		gbc_lblFEN.anchor = GridBagConstraints.EAST;
 		gbc_lblFEN.insets = new Insets(0, 0, 5, 5);
 		gbc_lblFEN.gridx = 0;
 		gbc_lblFEN.gridy = 0;
-		rightPanel.add(lblFEN, gbc_lblFEN);
+		bottomPanel.add(lblFEN, gbc_lblFEN);
 		
 		tfDisplayFEN = new JTextField();
 		tfDisplayFEN.setToolTipText("FEN of the current board position");
@@ -440,18 +443,19 @@ public class MainWindow{
 		gbc_tfDisplayFEN.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfDisplayFEN.gridx = 1;
 		gbc_tfDisplayFEN.gridy = 0;
-		rightPanel.add(tfDisplayFEN, gbc_tfDisplayFEN);
+		bottomPanel.add(tfDisplayFEN, gbc_tfDisplayFEN);
 		tfDisplayFEN.setColumns(500);
 		
 		JLabel lblPtoMove = new JLabel("Player To Move:   ");
 		lblPtoMove.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
 		lblPtoMove.setForeground(Color.WHITE);
 		GridBagConstraints gbc_RP = new GridBagConstraints();
+		gbc_RP.anchor = GridBagConstraints.EAST;
 		gbc_RP.insets = new Insets(0, 0, 5, 5);
-		gbc_RP.fill = GridBagConstraints.BOTH;
+		gbc_RP.fill = GridBagConstraints.VERTICAL;
 		gbc_RP.gridx = 0;
 		gbc_RP.gridy = 1;
-		rightPanel.add(lblPtoMove, gbc_RP);
+		bottomPanel.add(lblPtoMove, gbc_RP);
 		
 		lblPtoMoveVal = new JLabel("start - white?");
 		lblPtoMoveVal.setForeground(Color.WHITE);
@@ -461,7 +465,7 @@ public class MainWindow{
 		gbc_lblPtoMoveVal.fill = GridBagConstraints.BOTH;
 		gbc_lblPtoMoveVal.gridx = 1;
 		gbc_lblPtoMoveVal.gridy = 1;
-		rightPanel.add(lblPtoMoveVal, gbc_lblPtoMoveVal);
+		bottomPanel.add(lblPtoMoveVal, gbc_lblPtoMoveVal);
 		
 		JButton btnLoadFromFEN = new JButton("Load Game From FEN");
 		btnLoadFromFEN.addActionListener(new ActionListener() {
@@ -485,7 +489,7 @@ public class MainWindow{
 		gbc_btnLoadFromFEN.fill = GridBagConstraints.VERTICAL;
 		gbc_btnLoadFromFEN.gridx = 0;
 		gbc_btnLoadFromFEN.gridy = 3;
-		rightPanel.add(btnLoadFromFEN, gbc_btnLoadFromFEN);
+		bottomPanel.add(btnLoadFromFEN, gbc_btnLoadFromFEN);
 		
 		// Load Game from FEN GUI elements in right panel	
 		tfLoadFEN = new JTextField();
@@ -495,7 +499,7 @@ public class MainWindow{
 		gbc_tfLoadFEN.fill = GridBagConstraints.HORIZONTAL;
 		gbc_tfLoadFEN.gridx = 1;
 		gbc_tfLoadFEN.gridy = 3;
-		rightPanel.add(tfLoadFEN, gbc_tfLoadFEN);
+		bottomPanel.add(tfLoadFEN, gbc_tfLoadFEN);
 		
 		JButton btnCleartfFEN = new JButton("Clear FEN");
 		btnCleartfFEN.addActionListener(new ActionListener() {
@@ -508,37 +512,7 @@ public class MainWindow{
 		gbc_btnCleartfFEN.insets = new Insets(0, 0, 5, 5);
 		gbc_btnCleartfFEN.gridx = 0;
 		gbc_btnCleartfFEN.gridy = 4;
-		rightPanel.add(btnCleartfFEN, gbc_btnCleartfFEN);
-		
-		Component horizontalStrut_2 = Box.createHorizontalStrut(400);
-		GridBagConstraints gbc_horizontalStrut_2 = new GridBagConstraints();
-		gbc_horizontalStrut_2.insets = new Insets(0, 0, 0, 5);
-		gbc_horizontalStrut_2.gridx = 1;
-		gbc_horizontalStrut_2.gridy = 6;
-		rightPanel.add(horizontalStrut_2, gbc_horizontalStrut_2);
-		
-		JMenuBar menuBar = new JMenuBar();
-		frmChess.setJMenuBar(menuBar);
-		
-		JMenu mnGame = new JMenu("Game");
-		mnGame.setBackground(Color.DARK_GRAY);
-		menuBar.add(mnGame);
-		
-		JMenuItem mnItmSolo = new JMenuItem("New Solo Game");
-		mnItmSolo.setBackground(Color.DARK_GRAY);
-		mnGame.add(mnItmSolo);
-		
-		JMenuItem nmItmNewGameRandom = new JMenuItem("New Game as black v Random");
-		nmItmNewGameRandom.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/question.png")));
-		mnGame.add(nmItmNewGameRandom);
-		
-		JMenuItem mntmNewMenuItem = new JMenuItem("New Game as white V Random");
-		mntmNewMenuItem.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/white-question.png")));
-		mnGame.add(mntmNewMenuItem);
-		
-		JMenuItem mnItmGameVChecks = new JMenuItem("New Game v Checks");
-		mnItmGameVChecks.setIcon(new ImageIcon(MainWindow.class.getResource("/icons/black-king.png")));
-		mnGame.add(mnItmGameVChecks);
+		bottomPanel.add(btnCleartfFEN, gbc_btnCleartfFEN);
 
 		// End of right panel + and it's elements
 //		frmChess.pack(); // Keep this at the end
@@ -557,7 +531,8 @@ public class MainWindow{
 						game.playMove(randomMove, 1, "");
 					}
 					break;
-				case 2: // 1 depth 
+					
+				case 2: // 1 depth checkmate
 					move checkmateMove = PlayOpponents.getRandomMove(game);
 					if( checkmateMove instanceof promotionMove ) {
 						promotionMove pMove = (promotionMove)checkmateMove;
@@ -566,24 +541,67 @@ public class MainWindow{
 						game.playMove(checkmateMove, 1, "");
 					}
 					break;
+					
+				case 3: // piece value
+					move matVal = PlayOpponents.getMaterialValueMove(game);
+					if( matVal instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)matVal;
+						game.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						game.playMove(matVal, 1, "");
+					}
+					break;
+					
+				case 4: // piece position
+					move posVal = PlayOpponents.getMaterialPosValueMovePos(game);
+					if( posVal instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)posVal;
+						game.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						game.playMove(posVal, 1, "");
+					}
+					break;
+					
+				case 5: // minimax
+					move minimax2 = PlayOpponents.getMinimaxMove(game);
+					if( minimax2 instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)minimax2;
+						game.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						game.playMove(minimax2, 1, "");
+					}
+					break;
+					
+				case 6: // alpha beta depth 2
+					alphaBetaGameNode tree2 = new alphaBetaGameNode(game, 0, 2, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+					move alphaBeta2 = tree2.getMoveToPlay();
+					
+					if( alphaBeta2 instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)alphaBeta2;
+						game.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						game.playMove(alphaBeta2, 1, "");
+					}
+					break;
+				case 7: // alpha beta depth 4
+					alphaBetaGameNode tree4 = new alphaBetaGameNode(game, 0, 2, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+					move alphaBeta4 = tree4.getMoveToPlay();
+					
+					if( alphaBeta4 instanceof promotionMove ) {
+						promotionMove pMove = (promotionMove)alphaBeta4;
+						game.playMove(pMove, 1, pMove.getPromotionPiece());
+					}else {
+						game.playMove(alphaBeta4, 1, "");
+					}
+					break;
+					
 				default:
+					JOptionPane.showMessageDialog(null, "Error detecting the opponent");
 					break;
 			}
 			moves = game.generateMoves();
 			loadGameToGUI();
 			updateMetadata();
 		}
-	}
-	
-	/** IS NEVER USED LOCALLY <p>
-	 * Checks if a string can be converted to an Integer */
-	private static boolean isNumber(String str) {
-		try {  
-			Integer.parseInt(str);  
-		    return true;
-		}catch(NumberFormatException e){  
-		    return false;  
-		}  
-	}
-	
+	}	
 }

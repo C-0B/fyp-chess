@@ -21,14 +21,14 @@ public class gameNodeByte {
 	
 	public static void main(String[] args) {
 		long startTime = System.nanoTime();
-		byteGame rootGame = new byteGame("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
+		byteGame rootGame = new byteGame("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
 		int maxTreeDepth = 3;
 		
 		gameNodeByte tree = new gameNodeByte(rootGame, 0, maxTreeDepth);
 		
 		long endTime = System.nanoTime();
 		long duration  = (endTime-startTime)/1000000;
-    	System.out.println(tree.getTotalPossibleGames()+" games counted in "+duration+"ms");
+    	System.out.println(tree.getTotalPossibleGames()+" games counted in "+duration+" ms");
 	}
 	
 	/**

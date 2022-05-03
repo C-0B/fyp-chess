@@ -1,7 +1,10 @@
 package chessFunc;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.net.PasswordAuthentication;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +35,11 @@ class funcTest {
 	@Test
 	void squareIntToStringCoordh8() {assertEquals("h8", func.sqIntToStr(7));}
 	
+	@Test
+	void squareIntToStringCoordErroneous() {assertFalse( func.sqIntToStr(70).length() == 1 );}
+	@Test
+	void squareIntToStringCoordErroneous2() {assertFalse( func.sqIntToStr(700).length() == 1 );}
+	
 	
 	
 	@Test
@@ -52,6 +60,7 @@ class funcTest {
 				}
 			}
 		}catch (Exception e) {fail();}
+		//pass
 	}
 	@Test
 	void sqStrToIntTesta1() {assertEquals(56, func.sqStrToInt("a1"));}
