@@ -32,9 +32,9 @@ public class LogicVString {
 //				or64BitLongs();
 //			}
 			
-//			for(int i = 0; i<10000000; i++) {
-//				and64BitLongs();
-//			}
+			for(int i = 0; i<10000000; i++) {
+				and64BitLongs();
+			}
 			
 //			for(int i = 0; i<10000000; i++) {
 //				shift64bitLongs();
@@ -106,9 +106,6 @@ public class LogicVString {
 		long result = 0;
 		long l1 = getRandom64Bit();
 		long l2 = getRandom64Bit();
-		if(l1 < l2) {
-			return result;
-		}
 		result = l1 & l2;
 		return result;
 	}
