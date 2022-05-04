@@ -32,8 +32,12 @@ public class LogicVString {
 //				or64BitLongs();
 //			}
 			
+//			for(int i = 0; i<10000000; i++) {
+//				and64BitLongs();
+//			}
+			
 			for(int i = 0; i<10000000; i++) {
-				and64BitLongs();
+				not64bitLongs();
 			}
 			
 //			for(int i = 0; i<10000000; i++) {
@@ -92,6 +96,13 @@ public class LogicVString {
 		long result = 0;
 		long l1 = getRandom64Bit();
 		result = l1 << 1;
+		return result;
+	}
+	
+	private static long not64bitLongs() {
+		long result = 0;
+		long l1 = getRandom64Bit();
+		result = ~l1;
 		return result;
 	}
 	
