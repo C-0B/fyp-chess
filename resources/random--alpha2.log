@@ -99,4 +99,6 @@ black win | r4rk1/2p4p/7q/1p2n3/P2b1p2/RP1p1b1K/8/8 w - - 0 53
 draw by threefold repitition | 3r2k1/8/8/4n3/7K/4b3/pp1p4/6r1 b - - 9 86
 black win | r1bqk2r/pp4pp/2n1p3/2bp1p2/P4P2/2P3PK/Q2PPnBP/RN4NR w kq - 3 14
 black win | 4r1k1/8/5b1p/4p2P/P2nn3/Kq6/4p1p1/8 w - - 4 50
+
+50 game(s) computed in 1193307ms
 random--alpha2 50 game(s) computed in 1287913 ms
