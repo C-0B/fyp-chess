@@ -1,5 +1,5 @@
 
-# Algorithms and Techniques to Play the Game of Chess
+# Algorithms and Techniques to Create and Play the Game of Chess
 
 This project covers the various techniques and algorithms that have been implemented into creating chess
 in a computer and getting computers to play games of chess. A Java application has been developed
