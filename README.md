@@ -1,14 +1,15 @@
 
 # Algorithms and Techniques to Play the Game of Chess
 
-08/11/2021 @ 23:42  
-This software should in the future provide the user the ability to play a game of chess against a number of computer opponents.
-
-@ 23:44  
-Eclipse workspace copied. 
-
-09/11/2021 @ 01:53  
-This is a test to see which github account pushes the commit
+This project covers the various techniques and algorithms that have been implemented into creating chess
+in a computer and getting computers to play games of chess. A Java application has been developed
+where users can play chess in a solo game or against computer controlled opponents. These opponents
+each use different methods to select the move that they will play and have been tested against each other
+to determine each strength’s, weaknesses and overall performance.
+This project was not undertook with aspirations to become the world’s next greatest chess engine, but
+to cover some of the fundamentals of computer chess and begin to look at the methods used to enable
+computers to perform tasks that are impossible for humans, such as large calculations involved in playing
+games of chess.
 
 
 *Connor O'Brien*  
