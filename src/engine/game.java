@@ -439,10 +439,10 @@ public class game {
 			if( isPlayerInCheck(getPlayerToMove()) ){
 				int winner = getPlayerToMove() - (2*getPlayerToMove());
 				if(winner == 1) {
-					endCondition = "white win";
+					endCondition = "white wins";
 					return true; //White wins by checkmate
 				}else if(winner == -1) {
-					endCondition = "black win";
+					endCondition = "black wins";
 					return true;//Black wins by checkmate
 				}
 			}else {

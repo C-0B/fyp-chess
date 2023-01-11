@@ -377,7 +377,7 @@ public class MainWindow{
 						resetTileCololurs();
 
 						if(game.isGameFinshed()){
-							JOptionPane.showMessageDialog(null, "The has finished\n"+game.getEndCondition());
+							JOptionPane.showMessageDialog(null, "The has game finished, "+game.getEndCondition());
 						}
 					}
 					
@@ -457,7 +457,7 @@ public class MainWindow{
 		gbc_RP.gridy = 1;
 		bottomPanel.add(lblPtoMove, gbc_RP);
 		
-		lblPtoMoveVal = new JLabel("start - white?");
+		lblPtoMoveVal = new JLabel("White");
 		lblPtoMoveVal.setForeground(Color.WHITE);
 		lblPtoMoveVal.setFont(new Font("CaskaydiaCove Nerd Font Mono", Font.PLAIN, 14));
 		GridBagConstraints gbc_lblPtoMoveVal = new GridBagConstraints();
